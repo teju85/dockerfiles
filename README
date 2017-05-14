@@ -1,0 +1,3 @@
+Some dockerfiles that I created just for my own learning purposes
+In order to build images, just use the Makefile in this folder
+
