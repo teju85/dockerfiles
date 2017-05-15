@@ -1,6 +1,8 @@
 FROM ubuntu:16.04
 LABEL com.nvidia.volumes.needed="nvidia_driver"
 
+# shamelessly copied over from nvidia's dockerfiles on github!
+
 # cuda 8.0 runtime
 RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
     NVIDIA_GPGKEY_FPR=ae09fe4bbd223a84b2ccfce3f60f4b3d7fa2af80 && \
@@ -48,4 +50,3 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         cuda-driver-dev-$CUDA_PKG_VERSION && \
     rm -rf /var/lib/apt/lists/*
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs:${LIBRARY_PATH}BEL com.nvidia.volumes.needed="nvidia_driver"
-
