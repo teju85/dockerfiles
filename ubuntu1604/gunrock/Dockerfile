@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git cmake && \
     git config --global http.sslVerify false && \
     git clone --recursive https://github.com/gunrock/gunrock && \
     cd gunrock && mkdir build && cd build && \
-    cmake .. -DGUNROCK_GENCODE_SM60=ON -DGUNROCK_GENCODE_SM30=OFF && make && \
+    cmake .. -DGUNROCK_GENCODE_SM60=ON -DGUNROCK_GENCODE_SM61=ON && make && \
     rm -rf /var/lib/apt/lists/*
 
 # download large datasets as well for benchmarking
