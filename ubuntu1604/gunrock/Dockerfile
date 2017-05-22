@@ -16,3 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends git cmake && \
     cmake .. -DGUNROCK_GENCODE_SM60=ON -DGUNROCK_GENCODE_SM30=OFF && make && \
     rm -rf /var/lib/apt/lists/*
 
+# download large datasets as well for benchmarking
+RUN apt-get update && apt-get install -y --no-install-recommends unzip && \
+    cd gunrock/dataset/large && make WGET="wget --no-check-certificate" TOPC && \
+    rm -rf /var/lib/apt/lists/*
+
