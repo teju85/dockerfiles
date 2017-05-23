@@ -23,3 +23,6 @@ RUN git config --global http.sslVerify false && \
 # download large datasets as well for benchmarking
 RUN cd gunrock/dataset/large && \
     make WGET="wget --no-check-certificate" TOPC
+
+# update the topc scripts for benchmarking
+COPY topc gunrock/dataset/test-scripts/topc
