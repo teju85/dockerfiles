@@ -25,4 +25,10 @@ RUN cd gunrock/dataset/large && \
     make WGET="wget --no-check-certificate" TOPC
 
 # update the topc scripts for benchmarking
+# TODO: remove this instruction once the changes in 'topc' have been
+# merged into gunrock repo
 COPY topc gunrock/dataset/test-scripts/topc
+
+# command to benchmark
+CMD cd gunrock/data/set/test-scripts/topc && \
+    ./topc-test.sh ../../../build/bin/ ../../large/
