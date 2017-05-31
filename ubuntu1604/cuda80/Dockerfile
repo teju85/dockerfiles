@@ -49,4 +49,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         cuda-cudart-dev-$CUDA_PKG_VERSION \
         cuda-driver-dev-$CUDA_PKG_VERSION && \
     rm -rf /var/lib/apt/lists/*
-ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs:${LIBRARY_PATH}BEL com.nvidia.volumes.needed="nvidia_driver"
+ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs:${LIBRARY_PATH}

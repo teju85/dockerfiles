@@ -8,6 +8,7 @@ default:
 	@echo "  . pyml-env     install jupyter/pandas/... libraries commonly used for ML projects"
 	@echo "  . cudnn51      install cudnn v5.1"
 	@echo "  . tensorflow10 install tensorflow 1.0"
+	@echo "  . xgboost      install latest version of xgboost"
 
 .PHONY: cuda80
 cuda80:
@@ -36,3 +37,7 @@ cudnn51: cuda80
 .PHONY: tensorflow10
 tensorflow10: cudnn51 python27
 	cd tensorflow10 && docker build -t tensorflow:1.0 .
+
+.PHONY: xgboost
+xgboost: cuda80
+	cd xgboost && nvidia-docker build -t xgboost:latest .

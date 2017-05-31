@@ -1,3 +1,3 @@
-Some dockerfiles that I created just for my own learning purposes
+All dockerfiles that I created for various learning/work purposes.
 In order to build images, first go to the relevant ubuntu version
 and then just use the Makefile inside that folder
