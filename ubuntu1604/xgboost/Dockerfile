@@ -10,32 +10,32 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python-setuptools \
         libblas-dev \
         liblapack-dev \
+        tar \
         unzip && \
     pip install --upgrade pip && \
     pip install nose numpy scipy sklearn && \
     rm -rf /var/lib/apt/lists/*
 
-RUN git config --global http.sslVerify false && \
-    git clone --recursive https://github.com/teju85/xgboost && \
-    mkdir -p xgboost/.gtest xgboost/.gtest/include xgboost/.gtest/lib && \
-    cd xgboost/.gtest && \
-    git clone https://github.com/google/googletest
+RUN wget https://cmake.org/files/v3.8/cmake-3.8.2.tar.gz && \
+    tar xf cmake-3.8.2.tar.gz && \
+    cd cmake-3.8.2 && \
+    ./bootstrap && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf cmake-3.8.2.tar.gz cmake-3.8.2
 
-RUN cd xgboost/.gtest/googletest/googletest && \
-    g++ -Iinclude -I. -pthread -c src/gtest-all.cc -o ../../lib/gtest-all.o && \
-    cd ../../lib && \
-    ar -rv libgtest.a gtest-all.o && \
-    cd ../ && \
-    cp -r googletest/googletest/include/gtest include
+RUN git config --global http.sslVerify false && \
+    git clone --recursive https://github.com/teju85/xgboost
 
 RUN cd xgboost && \
-    make PLUGIN_UPDATER_GPU=ON COMPUTE="60 61" GTEST_PATH=./.gtest -j4 && \
-    make PLUGIN_UPDATER_GPU=ON COMPUTE="60 61" GTEST_PATH=./.gtest -j4 tests/cpp/xgboost_test && \ 
-    cd python-package && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCUDA_ARCH_NAME=Pascal -DPLUGIN_UPDATER_GPU=ON && \
+    make && \
+    cd ../python-package && \
     python setup.py install
 
-CMD cd xgboost && \
-    ./tests/cpp/xgboost_test && \
-    cd plugin/updater_gpu && \
-    python -m nose test/ && \
+CMD cd xgboost/plugin/updater_gpu && \
+    python -m nose test/python/ && \
     python benchmark/benchmark.py --algorithm all
