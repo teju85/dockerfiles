@@ -2,18 +2,22 @@
 FROM cuda:8.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        wget \
-        libbz2-dev \
         git \
-        python-pip \
-        python-dev \
-        python-setuptools \
         libblas-dev \
+        libbz2-dev \
         liblapack-dev \
+        python-dev \
+        python-pip \
+        python-setuptools \
         tar \
-        unzip && \
+        unzip \
+        wget && \
     pip install --upgrade pip && \
-    pip install nose numpy scipy sklearn && \
+    pip install --no-cache-dir \
+        nose \
+        numpy \
+        scipy \
+        sklearn && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget https://cmake.org/files/v3.8/cmake-3.8.2.tar.gz && \

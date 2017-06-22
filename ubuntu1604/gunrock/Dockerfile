@@ -2,11 +2,11 @@ FROM cuda:8.0
 
 # install essentials
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        wget \
-        libbz2-dev \
-        git \
         cmake \
-        unzip
+        git \
+        libbz2-dev \
+        unzip \
+        wget
 
 # install boost
 RUN wget --no-check-certificate 'https://versaweb.dl.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz' && \

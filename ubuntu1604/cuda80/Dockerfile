@@ -14,15 +14,15 @@ ENV CUDA_VERSION 8.0.61
 ENV CUDA_PKG_VERSION 8-0=$CUDA_VERSION-1
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        cuda-nvrtc-$CUDA_PKG_VERSION \
-        cuda-nvgraph-$CUDA_PKG_VERSION \
-        cuda-cusolver-$CUDA_PKG_VERSION \
         cuda-cublas-$CUDA_PKG_VERSION \
+        cuda-cudart-$CUDA_PKG_VERSION \
         cuda-cufft-$CUDA_PKG_VERSION \
         cuda-curand-$CUDA_PKG_VERSION \
+        cuda-cusolver-$CUDA_PKG_VERSION \
         cuda-cusparse-$CUDA_PKG_VERSION \
         cuda-npp-$CUDA_PKG_VERSION \
-        cuda-cudart-$CUDA_PKG_VERSION && \
+        cuda-nvgraph-$CUDA_PKG_VERSION \
+        cuda-nvrtc-$CUDA_PKG_VERSION && \
     ln -s cuda-8.0 /usr/local/cuda && \
     rm -rf /var/lib/apt/lists/*
 RUN echo "/usr/local/cuda/lib64" >> /etc/ld.so.conf.d/cuda.conf && \
@@ -34,19 +34,19 @@ ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_P
 
 # cuda 8.0 devel
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        cuda-core-$CUDA_PKG_VERSION \
-        cuda-misc-headers-$CUDA_PKG_VERSION \
         cuda-command-line-tools-$CUDA_PKG_VERSION \
-        cuda-nvrtc-dev-$CUDA_PKG_VERSION \
-        cuda-nvml-dev-$CUDA_PKG_VERSION \
-        cuda-nvgraph-dev-$CUDA_PKG_VERSION \
-        cuda-cusolver-dev-$CUDA_PKG_VERSION \
+        cuda-core-$CUDA_PKG_VERSION \
         cuda-cublas-dev-$CUDA_PKG_VERSION \
+        cuda-cudart-dev-$CUDA_PKG_VERSION \
         cuda-cufft-dev-$CUDA_PKG_VERSION \
         cuda-curand-dev-$CUDA_PKG_VERSION \
+        cuda-cusolver-dev-$CUDA_PKG_VERSION \
         cuda-cusparse-dev-$CUDA_PKG_VERSION \
+        cuda-driver-dev-$CUDA_PKG_VERSION \
+        cuda-misc-headers-$CUDA_PKG_VERSION \
         cuda-npp-dev-$CUDA_PKG_VERSION \
-        cuda-cudart-dev-$CUDA_PKG_VERSION \
-        cuda-driver-dev-$CUDA_PKG_VERSION && \
+        cuda-nvgraph-dev-$CUDA_PKG_VERSION \
+        cuda-nvml-dev-$CUDA_PKG_VERSION \
+        cuda-nvrtc-dev-$CUDA_PKG_VERSION && \
     rm -rf /var/lib/apt/lists/*
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs:${LIBRARY_PATH}
