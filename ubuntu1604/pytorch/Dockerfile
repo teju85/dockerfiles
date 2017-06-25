@@ -16,20 +16,35 @@ RUN apt-get update && \
 
 RUN curl -o miniconda.sh -O  https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh  && \
     chmod +x miniconda.sh && \
-    ./miniconda.sh -b -p /opt/conda && \     
-    rm miniconda.sh && \
-    /opt/conda/bin/conda install conda-build && \
-    /opt/conda/bin/conda create -y --name pytorch-py35 python=3.5.2 numpy pyyaml scipy ipython mkl && \
-    /opt/conda/bin/conda clean -ya 
+    ./miniconda.sh -b -p /opt/conda && \
+    rm miniconda.sh
 
-# install optional dependencies
 ENV PATH=/opt/conda/bin:$PATH
 ENV CMAKE_PREFIX_PATH=/opt/conda
-RUN conda install numpy pyyaml mkl setuptools cmake gcc cffi
-
 ENV PATH /opt/conda/envs/pytorch-py35/bin:$PATH
 
-RUN conda install --name pytorch-py35 -c soumith magma-cuda80
+RUN conda install conda-build && \
+    conda create --name pytorch-py35 && \
+    conda install --name pytorch-py35 \
+        cffi \
+        cmake \
+        gcc \
+        ipython \
+        jupyter \
+        matplotlib \
+        mkl \
+        numpy \
+        pandas \
+        python=3.5.2 \
+        py-xgboost \
+        pyyaml \
+        scikit-learn \
+        scipy \
+        setuptools \
+        urllib3 && \
+    conda install --name pytorch-py35 -c creditx scikit-optimize && \
+    conda install --name pytorch-py35 -c soumith magma-cuda80 && \
+    conda clean -ya
 
 RUN git clone https://github.com/pytorch/pytorch /opt/pytorch && \
     cd /opt/pytorch && \
