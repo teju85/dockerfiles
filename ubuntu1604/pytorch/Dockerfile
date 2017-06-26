@@ -54,3 +54,10 @@ RUN git clone https://github.com/pytorch/pytorch /opt/pytorch && \
 
 WORKDIR /workspace
 RUN chmod -R a+w /workspace
+
+# Add a notebook profile.
+RUN mkdir -p -m 700 /root/.jupyter/ && \
+    echo "c.NotebookApp.ip = '*'" >> /root/.jupyter/jupyter_notebook_config.py
+
+EXPOSE 8888
+CMD jupyter notebook --allow-root --no-browser
