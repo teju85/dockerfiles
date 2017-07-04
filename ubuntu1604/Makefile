@@ -6,11 +6,13 @@ default:
 	@echo "  . cudnn60      install cudnn v6.0"
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
-	@echo "  . pyml-env     install jupyter/pandas/... libraries commonly used for ML projects"
+	@echo "  . pyml-env     install jupyter/pandas/... and other ML libraries"
 	@echo "  . python27     install python 2.7"
-	@echo "  . pytorch      install pytorch"
+	@echo "  . pytorch      install pytorch (also has a full-fledged jupyter env on top)"
 	@echo "  . tensorflow10 install tensorflow 1.0"
+	@echo "  . xgboost-dev  install a development environment for xgboost"
 	@echo "  . xgboost      install latest version of xgboost"
+	@echo "  . kaldi        install kaldi framework (shared lib version)"
 
 .PHONY: cuda80
 cuda80:
@@ -48,6 +50,14 @@ pytorch: cudnn60
 tensorflow10: cudnn51 python27
 	cd tensorflow10 && docker build -t tensorflow:1.0 .
 
+.PHONY: xgboost-dev
+xgboost-dev: cuda80
+	cd xgboost-dev && docker build -t xgboost-dev:latest .
+
 .PHONY: xgboost
-xgboost: cuda80
+xgboost: xgboost-dev
 	cd xgboost && docker build -t xgboost:latest .
+
+.PHONY: kaldi
+kaldi: cudnn60
+	cd kaldi && docker build -t kaldi:latest .

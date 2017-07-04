@@ -12,7 +12,8 @@ RUN apt-get update && \
         python-dev \
         python-pip \
         python-setuptools \
-        wget
+        wget && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN curl -o miniconda.sh -O  https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh  && \
     chmod +x miniconda.sh && \
