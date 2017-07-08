@@ -12,6 +12,7 @@ default:
 	@echo "  . tensorflow10 install tensorflow 1.0"
 	@echo "  . xgboost-dev  install a development environment for xgboost"
 	@echo "  . xgboost      install latest version of xgboost"
+	@echo "  . xg-dev-vnc   starts vnc server on top of xgboost-dev"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 
 .PHONY: cuda80
@@ -57,6 +58,11 @@ xgboost-dev: cuda80
 .PHONY: xgboost
 xgboost: xgboost-dev
 	cd xgboost && docker build -t xgboost:latest .
+
+.PHONY: xg-dev-vnc
+xg-dev-vnc: xgboost-dev
+	cd xg-dev-vnc && docker build -t xg-dev-vnc:latest \
+		--build-arg user=${USER} --build-arg uid=`id -u ${USER}` .
 
 .PHONY: kaldi
 kaldi: cudnn60
