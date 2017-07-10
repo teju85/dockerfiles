@@ -61,8 +61,7 @@ xgboost: xgboost-dev
 
 .PHONY: xg-dev-vnc
 xg-dev-vnc: xgboost-dev
-	cd xg-dev-vnc && docker build -t xg-dev-vnc:latest \
-		--build-arg user=${USER} --build-arg uid=`id -u ${USER}` .
+	cd xg-dev-vnc && docker build -t xg-dev-vnc:latest .
 
 .PHONY: kaldi
 kaldi: cudnn60
