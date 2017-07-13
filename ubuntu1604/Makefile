@@ -12,6 +12,8 @@ help:
 	@echo "  . xgboost-dev  install a development environment for xgboost"
 	@echo "  . xgboost      install latest version of xgboost"
 	@echo "  . xg-dev-vnc   starts vnc server on top of xgboost-dev"
+	@echo "                   XG_DEV_VNC_PORT - vnc port [5900]"
+	@echo "                   XG_DEV_VNC_UID - user id [id -u $USER]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 
 .PHONY: cuda80
@@ -63,9 +65,14 @@ xgboost-dev: cuda80
 xgboost: xgboost-dev
 	cd xgboost && docker build -t xgboost:latest .
 
+XG_DEV_VNC_PORT ?= 5900
+XG_DEV_VNC_UID  ?= $(shell id -u ${USER})
 .PHONY: xg-dev-vnc
 xg-dev-vnc: xgboost-dev
-	cd xg-dev-vnc && docker build -t xg-dev-vnc:latest .
+	cd xg-dev-vnc && \
+	    docker build -t xg-dev-vnc:latest \
+	        --build-arg port=$(XG_DEV_VNC_PORT) \
+	        --build-arg userid=$(XG_DEV_VNC_UID) .
 
 .PHONY: kaldi
 kaldi: cudnn60
