@@ -15,3 +15,5 @@ $ make cuda80  # just a 'make' with no targets will print usage info
 * docker
 * nvidia-docker
 * latest cuda driver
+* C pre-processor
+* GNU-make

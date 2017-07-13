@@ -1,14 +1,13 @@
 
-default:
+help:
 	@echo "make what? Available targets are:"
 	@echo "  . cuda80       cuda v8.0 image"
 	@echo "  . cudnn51      install cudnn v5.1"
 	@echo "  . cudnn60      install cudnn v6.0"
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
-	@echo "  . pyml-env     install jupyter/pandas/... and other ML libraries"
-	@echo "  . python27     install python 2.7"
-	@echo "  . pytorch      install pytorch (also has a full-fledged jupyter env on top)"
+	@echo "  . pyml-env     jupyter/pandas/scikit and other famous ML libs"
+	@echo "  . pytorch      gpu enabled pytorch (on top of pyml-env libs)"
 	@echo "  . tensorflow10 install tensorflow 1.0"
 	@echo "  . xgboost-dev  install a development environment for xgboost"
 	@echo "  . xgboost      install latest version of xgboost"
@@ -36,24 +35,29 @@ postgres:
 	cd postgres && docker build -t postgres:latest .
 
 .PHONY: pyml-env
-pyml-env: python27
-	cd pyml-env && docker build -t pyml-env:2.7 .
-
-.PHONY: python27
-python27:
-	cd python27 && docker build -t python:2.7 .
+pyml-env:
+	cd pyml-env && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    docker build -t pyml-env:2.7 . && \
+	    rm -f Dockerfile
 
 .PHONY: pytorch
 pytorch: cudnn60
 	cd pytorch && docker build -t pytorch:0.1.12 .
 
 .PHONY: tensorflow10
-tensorflow10: cudnn51 python27
-	cd tensorflow10 && docker build -t tensorflow:1.0 .
+tensorflow10: cudnn51
+	cd tensorflow10 && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    docker build -t tensorflow:1.0 . && \
+	    rm -f Dockerfile
 
 .PHONY: xgboost-dev
 xgboost-dev: cuda80
-	cd xgboost-dev && docker build -t xgboost-dev:latest .
+	cd xgboost-dev && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    docker build -t xgboost-dev:latest . && \
+	    rm -f Dockerfile
 
 .PHONY: xgboost
 xgboost: xgboost-dev

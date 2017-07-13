@@ -1,0 +1,18 @@
+
+This directory contains some of the common commands that can be (re)used by
+other Dockerfile's as per their requirements! Ideally, commands that are used
+again-and-again in other Dockerfiles in this project will end up here.
+
+Other Dockerfile's can then '#include' file(s) here and use C pre-processor
+to expand their contents with commands in these file(s)!
+
+Example usage:
+```bash
+$ ls
+reusables Dockerfile.cpp
+$ cat Dockerfile.cpp
+FROM ubuntu:16.04
+#include "resuables/python-dev-2.7"
+$ cpp -o Dockerfile Dockerfile.cpp
+$ docker build -t myimage:mytag .
+```

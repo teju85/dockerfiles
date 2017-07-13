@@ -1,0 +1,11 @@
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        cpanminus \\
+        curl \\
+        libexpat1-dev \\
+        make \\
+        perl \\
+        wget && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists

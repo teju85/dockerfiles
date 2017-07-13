@@ -6,12 +6,13 @@ ENV USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         lxde \
-        nvidia-visual-profiler \
+        cuda-visual-tools-$CUDA_PKG_VERSION \
         x11vnc \
         xorg \
         xrdp \
         xterm \
         xvfb && \
+    rm -rf /var/lib/apt/lists/* && \
     mkdir /root/.vnc
 
 EXPOSE 5900
