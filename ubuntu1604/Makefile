@@ -11,9 +11,12 @@ help:
 	@echo "  . tensorflow10 install tensorflow 1.0"
 	@echo "  . xgboost-dev  install a development environment for xgboost"
 	@echo "  . xgboost      install latest version of xgboost"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
 	@echo "  . xg-dev-vnc   starts vnc server on top of xgboost-dev"
+	@echo "                 Some flags to customize behavior:"
 	@echo "                   XG_DEV_VNC_PORT - vnc port [5900]"
-	@echo "                   XG_DEV_VNC_UID - user id [id -u $USER]"
+	@echo "                   XG_DEV_VNC_UID - user id [id -u $(USER)]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 
 .PHONY: cuda80
@@ -61,16 +64,21 @@ xgboost-dev: cuda80
 	    docker build -t xgboost-dev:latest . && \
 	    rm -f Dockerfile
 
+XG_ARCH ?= 35;50;52;60;61
 .PHONY: xgboost
-xgboost: xgboost-dev
-	cd xgboost && docker build -t xgboost:latest .
+xgboost: cuda80
+	cd xgboost && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    docker build -t xgboost:latest \
+	        --build-arg arch="$(XG_ARCH)" . && \
+	    rm -f Dockerfile
 
 XG_DEV_VNC_PORT ?= 5900
 XG_DEV_VNC_UID  ?= $(shell id -u ${USER})
 .PHONY: xg-dev-vnc
 xg-dev-vnc: xgboost-dev
 	cd xg-dev-vnc && \
-	    docker build -t xg-dev-vnc:latest \
+	    docker build -t xg-dev-vnc:${USER} \
 	        --build-arg port=$(XG_DEV_VNC_PORT) \
 	        --build-arg userid=$(XG_DEV_VNC_UID) .
 

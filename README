@@ -7,8 +7,10 @@ and then just use the Makefile inside that folder
 If you want to setup a cuda SDK v8.0 image on your system:
 ```bash
 $ cd ubuntu1604
-$ make cuda80  # just a 'make' with no targets will print usage info
+$ make cuda80
 ```
+Just typing a 'make' with no targets will print usage info. Check it out
+to know other images which can be built using this flow.
 
 =Pre-reqs
 * gpu-enabled system
