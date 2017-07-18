@@ -18,6 +18,7 @@ help:
 	@echo "                   XG_DEV_VNC_PORT - vnc port [5900]"
 	@echo "                   XG_DEV_VNC_UID - user id [id -u $(USER)]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
+	@echo "  . nvcaffe      install nv-caffe and its dependencies"
 
 .PHONY: cuda80
 cuda80:
@@ -85,3 +86,7 @@ xg-dev-vnc: xgboost-dev
 .PHONY: kaldi
 kaldi: cudnn60
 	cd kaldi && docker build -t kaldi:latest .
+
+.PHONY: nvcaffe
+nvcaffe: cudnn60
+	cd nvcaffe && docker build -t nvcaffe:latest .
