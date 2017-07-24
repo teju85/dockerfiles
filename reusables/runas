@@ -1,0 +1,3 @@
+
+COPY contexts/runas.sh /runas.sh
+ENTRYPOINT ["/runas.sh"]

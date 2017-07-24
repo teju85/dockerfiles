@@ -1,0 +1,27 @@
+
+ARG port=5900
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        dbus \\
+        dbus-x11 \\
+        lxde \\
+        cuda-visual-tools-$CUDA_PKG_VERSION \\
+        x11vnc \\
+        xorg \\
+        xrdp \\
+        xterm \\
+        xvfb && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+EXPOSE $port
+
+COPY contexts/.xinitrc /.xinitrc
+COPY contexts/vncserver.sh /vncserver.sh
+COPY contexts/.xsession /.xsession
+
+RUN sed -i "0,/port=-1/{s/port=-1/port=$port/}" /etc/xrdp/xrdp.ini && \\
+    chmod +x /.xinitrc /.xsession /vncserver.sh

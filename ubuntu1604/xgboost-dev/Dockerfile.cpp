@@ -16,8 +16,5 @@
 FROM cuda:8.0
 
 #include "../../reusables/xgb-dev"
-
-COPY runas.sh /runas.sh
-ENTRYPOINT ["/runas.sh"]
-
 VOLUME ["/xgboost"]
+#include "../../reusables/runas"

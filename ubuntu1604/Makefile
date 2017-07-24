@@ -16,7 +16,6 @@ help:
 	@echo "  . xg-dev-vnc   starts vnc server on top of xgboost-dev"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XG_DEV_VNC_PORT - vnc port [5900]"
-	@echo "                   XG_DEV_VNC_UID - user id [id -u $(USER)]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 	@echo "  . nvcaffe      install nv-caffe and its dependencies"
 
@@ -62,8 +61,10 @@ tensorflow10: cudnn51
 xgboost-dev: cuda80
 	cd xgboost-dev && \
 	    cpp -o Dockerfile Dockerfile.cpp && \
+	    rm -rf contexts && \
+	    cp -r ../../shared-contexts contexts && \
 	    docker build -t xgboost-dev:latest . && \
-	    rm -f Dockerfile
+	    rm -rf contexts Dockerfile
 
 XG_ARCH ?= 35;50;52;60;61
 .PHONY: xgboost
@@ -75,13 +76,15 @@ xgboost: cuda80
 	    rm -f Dockerfile
 
 XG_DEV_VNC_PORT ?= 5900
-XG_DEV_VNC_UID  ?= $(shell id -u ${USER})
 .PHONY: xg-dev-vnc
 xg-dev-vnc: xgboost-dev
 	cd xg-dev-vnc && \
-	    docker build -t xg-dev-vnc:${USER} \
-	        --build-arg port=$(XG_DEV_VNC_PORT) \
-	        --build-arg userid=$(XG_DEV_VNC_UID) .
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    rm -rf contexts && \
+	    cp -r ../../shared-contexts contexts && \
+	    docker build -t xg-dev-vnc:latest \
+	        --build-arg port=$(XG_DEV_VNC_PORT) . && \
+	    rm -rf contexts Dockerfile
 
 .PHONY: kaldi
 kaldi: cudnn60
