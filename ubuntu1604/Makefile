@@ -7,6 +7,8 @@ help:
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
 	@echo "  . pytorch      gpu enabled pytorch (on top of pyml-env libs)"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   PT_PORT - Jupyter port to be exposed [8888]"
 	@echo "  . tensorflow10 install tensorflow 1.0"
 	@echo "  . xgboost      install latest version of xgboost"
 	@echo "                 Some flags to customize behavior:"
@@ -37,9 +39,15 @@ gunrock: cuda80
 postgres:
 	cd postgres && docker build -t postgres:latest .
 
+PT_PORT ?= 8888
 .PHONY: pytorch
 pytorch: cudnn60
-	cd pytorch && docker build -t pytorch:0.1.12 .
+	cd pytorch && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    cp -r ../../shared-contexts contexts && \
+	    docker build -t pytorch:0.1.12 \
+	        --build-arg port=$(PT_PORT) . && \
+	    rm -rf contexts Dockerfile
 
 .PHONY: tensorflow10
 tensorflow10: cudnn51
