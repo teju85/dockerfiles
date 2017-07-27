@@ -14,6 +14,7 @@ USAGE:
   -v                     Start vncserver. [starts bash terminal]
   <xgpath>    Path to the root of xgboost repo. Mandatory!
 EOF
+    exit 0
 }
 
 
@@ -25,6 +26,7 @@ startVnc=0
 while [ "$1" != "" ]; do
     case "$1" in
         "-h")
+            shift
             showHelp;;
         "-i")
             shift
