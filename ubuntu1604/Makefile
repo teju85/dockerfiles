@@ -6,16 +6,14 @@ help:
 	@echo "  . cudnn60      install cudnn v6.0"
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
-	@echo "  . pyml-env     jupyter/pandas/scikit and other famous ML libs"
 	@echo "  . pytorch      gpu enabled pytorch (on top of pyml-env libs)"
 	@echo "  . tensorflow10 install tensorflow 1.0"
-	@echo "  . xgboost-dev  install a development environment for xgboost"
 	@echo "  . xgboost      install latest version of xgboost"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
-	@echo "  . xg-dev-vnc   starts vnc server on top of xgboost-dev"
+	@echo "  . xgb-dev      Starts vnc server with env for xgboost development"
 	@echo "                 Some flags to customize behavior:"
-	@echo "                   XG_DEV_VNC_PORT - vnc port [5900]"
+	@echo "                   XGB_DEV_VNC_PORT - vnc port [5900]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 	@echo "  . nvcaffe      install nv-caffe and its dependencies"
 
@@ -39,13 +37,6 @@ gunrock: cuda80
 postgres:
 	cd postgres && docker build -t postgres:latest .
 
-.PHONY: pyml-env
-pyml-env:
-	cd pyml-env && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
-	    docker build -t pyml-env:2.7 . && \
-	    rm -f Dockerfile
-
 .PHONY: pytorch
 pytorch: cudnn60
 	cd pytorch && docker build -t pytorch:0.1.12 .
@@ -57,33 +48,24 @@ tensorflow10: cudnn51
 	    docker build -t tensorflow:1.0 . && \
 	    rm -f Dockerfile
 
-.PHONY: xgboost-dev
-xgboost-dev: cuda80
-	cd xgboost-dev && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
-	    rm -rf contexts && \
-	    cp -r ../../shared-contexts contexts && \
-	    docker build -t xgboost-dev:latest . && \
-	    rm -rf contexts Dockerfile
-
 XG_ARCH ?= 35;50;52;60;61
 .PHONY: xgboost
 xgboost: cuda80
 	cd xgboost && \
 	    cpp -o Dockerfile Dockerfile.cpp && \
-	    docker build -t xgboost:latest \
+	    docker build -t xgboost:8.0 \
 	        --build-arg arch="$(XG_ARCH)" . && \
 	    rm -f Dockerfile
 
-XG_DEV_VNC_PORT ?= 5900
-.PHONY: xg-dev-vnc
-xg-dev-vnc: xgboost-dev
-	cd xg-dev-vnc && \
+XGB_DEV_VNC_PORT ?= 5900
+.PHONY: xgb-vnc
+xgb-dev: cuda80
+	cd xgb-dev && \
 	    cpp -o Dockerfile Dockerfile.cpp && \
 	    rm -rf contexts && \
 	    cp -r ../../shared-contexts contexts && \
-	    docker build -t xg-dev-vnc:latest \
-	        --build-arg port=$(XG_DEV_VNC_PORT) . && \
+	    docker build -t xgb-dev:8.0 \
+	        --build-arg port=$(XGB_DEV_VNC_PORT) . && \
 	    rm -rf contexts Dockerfile
 
 .PHONY: kaldi

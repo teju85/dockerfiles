@@ -1,3 +1,5 @@
 
+// this provides an entrypoint using which one can run as non-root
+
 COPY contexts/runas.sh /runas.sh
 ENTRYPOINT ["/runas.sh"]

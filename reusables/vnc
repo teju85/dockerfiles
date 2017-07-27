@@ -25,3 +25,5 @@ COPY contexts/.xsession /.xsession
 
 RUN sed -i "0,/port=-1/{s/port=-1/port=$port/}" /etc/xrdp/xrdp.ini && \\
     chmod +x /.xinitrc /.xsession /vncserver.sh
+
+CMD ["/vncserver.sh"]
