@@ -1,34 +1,44 @@
 #!/bin/bash
 
-IMAGE=xgb-dev:8.0
 SCRIPT=$0
 
 function showHelp() {
     echo <<EOF
-Script to run container on the image: $IMAGE
+Script to run container on the images built with vnc capability
 USAGE:
  $SCRIPT [-h, -u, -v <port>] <xgpath>
-  -h          Print this help
-  -u          Run as the current user. Default is to run as root.
-  -v <port>   Start vncserver on this port. Default is to start a bash terminal.
+  -h                     Print this help
+  -i                     Image to be used. [xgb-dev:8.0]
+  -p <host>:<container>  Start vncserver on this port. [5900:5900]
+  -u                     Run as current user. [runs as root]
+  -v                     Start vncserver. [starts bash terminal]
   <xgpath>    Path to the root of xgboost repo. Mandatory!
 EOF
 }
 
 
+image=xgb-dev:8.0
 xgpath=
 needUser=0
-startVnc=
+vncPort=5900:5900
+startVnc=0
 while [ "$1" != "" ]; do
     case "$1" in
         "-h")
             showHelp;;
+        "-i")
+            shift
+            image=$1
+            shift;;
+        "-p")
+            shift
+            vncPort=$1
+            shift;;
         "-u")
             needUser=1
             shift;;
         "-v")
-            shift
-            startVnc=$1
+            startVnc=1
             shift;;
         *)
             xgpath=$1
@@ -54,9 +64,9 @@ portsOpt=
 if [ "$startVnc" = "" ]; then
     startCmd="/bin/bash"
 else
-    portsOpt="-p $startVnc:$startVnc"
+    portsOpt="-p $vncPort"
 fi
 
-cmd="nvidia-docker run --rm -it -v $xgpath:/xgboost:rw $userOpts $portsOpt $IMAGE $startCmd"
+cmd="nvidia-docker run --rm -it -v $xgpath:/xgboost:rw $userOpts $portsOpt $image $startCmd"
 echo $cmd
 exec $cmd
