@@ -2,9 +2,20 @@
 #include "xgb-dev"
 
 ARG arch=35;50;52;60;61
+ARG xgCommit=0e06d1805d06fab063ee5f39563a6c6ad7510345
+
+#ifndef XGB_REPO
+#define XGB_REPO "teju85"
+#endif
+
+#define XGB_LINK "https://github.com/"XGB_REPO"/xgboost"
 
 RUN git config --global http.sslVerify false && \\
-    git clone --recursive "https://github.com/teju85/xgboost"
+    git clone --recursive XGB_LINK && \\
+    cd xgboost && \\
+    git reset --hard $xgCommit
+
+ENV XG_COMMIT_ID $xgCommit
 
 RUN cd xgboost && \\
     mkdir build && \\

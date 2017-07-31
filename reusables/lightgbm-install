@@ -1,0 +1,30 @@
+
+#include "pyml-env-2.7"
+
+ARG lgCommit=6c3f24489b66cd31cbda99553f03cf011e9e2d03
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        git \\
+        cmake \\
+        libboost-dev \\
+        libboost-filesystem-dev \\
+        libboost-system-dev \\
+        make \\
+        ocl-icd-libopencl1 \\
+        ocl-icd-opencl-dev \\
+        tar \\
+        unzip \\
+        wget && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+RUN git config --global http.sslVerify false && \\
+    git clone --recursive "https://github.com/Microsoft/LightGBM" && \\
+    cd LightGBM && \\
+    git reset --hard $lgCommit
+
+ENV LG_COMMIT_ID $lgCommit
+
+RUN cd LightGBM/python-package && \\
+    python setup.py install --gpu

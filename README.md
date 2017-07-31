@@ -14,9 +14,12 @@ Just typing a 'make' with no targets will print usage info. Check it out
 to know other images which can be built using this flow.
 
 # Pre-reqs
-* gpu-enabled system (preferrably >= Maxwell arch)
-* docker
-* nvidia-docker
-* latest cuda driver (which is compatible with SDK v8.0)
+The main goal behind this setup is to have as minimal dependencies as possible.
+That way, users can start with bare-minimal host OS installation and express
+complexities inside their docker images.
 * C pre-processor (to support '#include'ing dockerfiles for reusability!)
 * GNU-make
+* docker
+* gpu-enabled system (preferrably >= Maxwell arch)
+* nvidia-docker
+* latest cuda driver

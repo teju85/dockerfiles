@@ -13,11 +13,17 @@ help:
 	@echo "  . xgboost      install latest version of xgboost"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
+	@echo "                   XG_COMMIT - commit ID to which to sync [0e06d1805d06fab063ee5f39563a6c6ad7510345]"
 	@echo "  . xgb-dev      Starts vnc server with env for xgboost development"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XGB_DEV_VNC_PORT - vnc port [5900]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 	@echo "  . nvcaffe      install nv-caffe and its dependencies"
+	@echo "  . xgb-lgb      xgboost and lightgbm benchmarking image"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
+	@echo "                   XG_COMMIT - xgboost commit ID to which to sync [0e06d1805d06fab063ee5f39563a6c6ad7510345]"
+	@echo "                   LG_COMMIT - lightgbm commit ID to which to sync [6c3f24489b66cd31cbda99553f03cf011e9e2d03]"
 
 .PHONY: cuda80
 cuda80:
@@ -57,12 +63,14 @@ tensorflow10: cudnn51
 	    rm -f Dockerfile
 
 XG_ARCH ?= 35;50;52;60;61
+XG_COMMIT ?= 0e06d1805d06fab063ee5f39563a6c6ad7510345
 .PHONY: xgboost
 xgboost: cuda80
 	cd xgboost && \
 	    cpp -o Dockerfile Dockerfile.cpp && \
 	    docker build -t xgboost:8.0 \
-	        --build-arg arch="$(XG_ARCH)" . && \
+	        --build-arg arch="$(XG_ARCH)" \
+	        --build-arg xgCommit=$(XG_COMMIT) . && \
 	    rm -f Dockerfile
 
 XGB_DEV_VNC_PORT ?= 5900
@@ -83,3 +91,16 @@ kaldi: cudnn60
 .PHONY: nvcaffe
 nvcaffe: cudnn60
 	cd nvcaffe && docker build -t nvcaffe:latest .
+
+LG_COMMIT ?= 6c3f24489b66cd31cbda99553f03cf011e9e2d03
+.PHONY: xgb-lgb
+xgb-lgb: cuda80
+	cd xgb-lgb && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    rm -rf contexts && \
+	    cp -r ../../shared-contexts contexts && \
+	    docker build -t xgb-lgb:latest \
+	        --build-arg arch="$(XG_ARCH)" \
+	        --build-arg xgCommit=$(XG_COMMIT) \
+	        --build-arg lgCommit=$(LG_COMMIT) . && \
+	    rm -rf contexts Dockerfile
