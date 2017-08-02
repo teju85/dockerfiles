@@ -3,7 +3,7 @@
 SCRIPT=$0
 
 function showHelp() {
-    echo <<EOF
+    cat <<EOF
 Script to run container on the images built with vnc capability
 USAGE:
  $SCRIPT [-h, -u, -v <port>] <xgpath>
@@ -63,7 +63,7 @@ fi
 
 startCmd=
 portsOpt=
-if [ "$startVnc" = "" ]; then
+if [ "$startVnc" = "0" ]; then
     startCmd="/bin/bash"
 else
     portsOpt="-p $vncPort"
