@@ -2,7 +2,10 @@
 #include "xgb-dev"
 
 ARG arch=35;50;52;60;61
-ARG xgCommit=0e06d1805d06fab063ee5f39563a6c6ad7510345
+#ifndef XGB_COMMIT
+#define XGB_COMMIT 998ac6e27107af6d5e73022f1bcbbf5e5dd10d72
+#endif
+ARG xgCommit=XGB_COMMIT
 
 #ifndef XGB_REPO
 #define XGB_REPO "teju85"

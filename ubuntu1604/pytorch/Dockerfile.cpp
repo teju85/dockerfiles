@@ -47,8 +47,6 @@ RUN cd /opt/pytorch && \\
         pip install -v .
 
 COPY contexts/jupyter.sh /jupyter.sh
-#include "../../reusables/runas"
 
 EXPOSE $port
-ENV NB_PORT $port
-CMD ["/jupyter.sh"]
+CMD ["/jupyter.sh", $port]

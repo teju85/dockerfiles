@@ -13,7 +13,7 @@ help:
 	@echo "  . xgboost      install latest version of xgboost"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
-	@echo "                   XG_COMMIT - commit ID to which to sync [0e06d1805d06fab063ee5f39563a6c6ad7510345]"
+	@echo "                   XG_COMMIT - commit ID to which to sync [$(XG_COMMIT)]"
 	@echo "  . xgb-dev      Starts vnc server with env for xgboost development"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XGB_DEV_VNC_PORT - vnc port [5900]"
@@ -22,8 +22,8 @@ help:
 	@echo "  . xgb-lgb      xgboost and lightgbm benchmarking image"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
-	@echo "                   XG_COMMIT - xgboost commit ID to which to sync [0e06d1805d06fab063ee5f39563a6c6ad7510345]"
-	@echo "                   LG_COMMIT - lightgbm commit ID to which to sync [6c3f24489b66cd31cbda99553f03cf011e9e2d03]"
+	@echo "                   XGLG_XG_COMMIT - xgboost commit ID to which to sync [$(XGLG_XG_COMMIT)]"
+	@echo "                   XGLG_LG_COMMIT - lightgbm commit ID to which to sync [$(XGLG_LG_COMMIT)]"
 
 .PHONY: cuda80
 cuda80:
@@ -63,7 +63,7 @@ tensorflow10: cudnn51
 	    rm -f Dockerfile
 
 XG_ARCH ?= 35;50;52;60;61
-XG_COMMIT ?= 0e06d1805d06fab063ee5f39563a6c6ad7510345
+XG_COMMIT ?= 998ac6e27107af6d5e73022f1bcbbf5e5dd10d72
 .PHONY: xgboost
 xgboost: cuda80
 	cd xgboost && \
@@ -92,7 +92,8 @@ kaldi: cudnn60
 nvcaffe: cudnn60
 	cd nvcaffe && docker build -t nvcaffe:latest .
 
-LG_COMMIT ?= 6c3f24489b66cd31cbda99553f03cf011e9e2d03
+XGLG_XG_COMMIT ?= 0e06d1805d06fab063ee5f39563a6c6ad7510345
+XGLG_LG_COMMIT ?= 6c3f24489b66cd31cbda99553f03cf011e9e2d03
 .PHONY: xgb-lgb
 xgb-lgb: cuda80
 	cd xgb-lgb && \
@@ -101,6 +102,6 @@ xgb-lgb: cuda80
 	    cp -r ../../shared-contexts contexts && \
 	    docker build -t xgb-lgb:latest \
 	        --build-arg arch="$(XG_ARCH)" \
-	        --build-arg xgCommit=$(XG_COMMIT) \
-	        --build-arg lgCommit=$(LG_COMMIT) . && \
+	        --build-arg xgCommit=$(XGLG_XG_COMMIT) \
+	        --build-arg lgCommit=$(XGLG_LG_COMMIT) . && \
 	    rm -rf contexts Dockerfile

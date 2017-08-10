@@ -12,6 +12,4 @@
 FROM cuda:8.0
 
 #include "../../reusables/xgb-dev"
-VOLUME ["/xgboost"]
-#include "../../reusables/runas"
 #include "../../reusables/vnc"
