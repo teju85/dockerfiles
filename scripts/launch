@@ -1,0 +1,161 @@
+#!/usr/bin/env python
+import json
+import subprocess
+import string
+from argparse import ArgumentParser, REMAINDER
+import os
+
+class Launcher:
+    def get(self, image, *args):
+        output = subprocess.check_output("docker inspect %s" % image,
+                                         shell=True)
+        output = json.loads(output)[0]
+        for a in args:
+            if a not in output:
+                return ""
+            output = output[a]
+        return output
+
+    def getCmd(self, args):
+        arr = self.get(args.image, "Config", "Cmd")
+        if len(args.cmd) > 0:
+            cmd = " ".join(args.cmd)
+        elif len(arr) > 0:
+            cmd = " ".join(arr)
+        else:
+            cmd = "/bin/bash"
+        return ["%s" % cmd]
+
+    def getPort(self, image):
+        arr = self.get(image, "Config", "ExposedPorts")
+        if len(arr) <= 0:
+            return ""
+        out = []
+        for p in arr.keys():
+            tmp = string.replace(p, "/tcp", "")
+            out.append("-p %s:%s" % (tmp, tmp))
+        return out
+
+    def getVols(self, args):
+        vols = []
+        for vol in args.v:
+            vols.append("-v %s" % vol)
+        if not args.nopwd:
+            vols.append("-v %s:/work:rw" % os.getcwd())
+            vols.append("-w /work")
+        return vols
+
+    def getUser(self, args):
+        out = []
+        bindir = os.path.abspath(os.path.dirname(__file__))
+        if args.user:
+            out.append("-e UID=%d" % os.getuid())
+            out.append("-v %s/runas.sh:/runas.sh:ro" % bindir)
+            out.append("--entrypoint=/runas.sh")
+        return out
+
+    def launch(self):
+        args = self.getParser().parse_args()
+        finalcmd = ["nvidia-docker", "run", "-it", "--rm"]
+        finalcmd += self.getPort(args.image)
+        finalcmd += self.getVols(args)
+        finalcmd += self.getUser(args)
+        finalcmd.append(args.image)
+        finalcmd += self.getCmd(args)
+        finalcmd = " ".join(finalcmd)
+        print(finalcmd)
+        subprocess.check_call(finalcmd, shell=True)
+        return
+
+    # override this method to define your custom parser
+    # it'll be better to call this method from the child class as well!
+    def getParser(self):
+        parser = ArgumentParser(description="Wrapper to launch as current user")
+        parser.add_argument("-v", default=[], action="append", type=str,
+                            help="Volumes to mount. Same syntax as docker run")
+        parser.add_argument("-user", action="store_true", default=False,
+                            help="Runs as current user, default is root")
+        parser.add_argument("-nopwd", action="store_true", default=False,
+                            help="Do not mount current dir as /work")
+        parser.add_argument("image", help="Image to be launched")
+        parser.add_argument("cmd", nargs=REMAINDER,
+                            help="Command to run inside the container")
+        return parser
+
+if __name__ == "__main__":
+    Launcher().launch()
+
+###!/bin/bash
+##
+##SCRIPT=$0
+##
+##function showHelp() {
+##    cat <<EOF
+##Script to run container on the images built with vnc capability
+##USAGE:
+## $SCRIPT [-h, -u, -v <port>] <xgpath>
+##  -h                     Print this help
+##  -i                     Image to be used. [xgb-dev:8.0]
+##  -p <host>:<container>  Start vncserver on this port. [5900:5900]
+##  -u                     Run as current user. [runs as root]
+##  -v                     Start vncserver. [starts bash terminal]
+##  <xgpath>    Path to the root of xgboost repo. Mandatory!
+##EOF
+##    exit 0
+##}
+##
+##
+##image=xgb-dev:8.0
+##xgpath=
+##needUser=0
+##vncPort=5900:5900
+##startVnc=0
+##while [ "$1" != "" ]; do
+##    case "$1" in
+##        "-h")
+##            shift
+##            showHelp;;
+##        "-i")
+##            shift
+##            image=$1
+##            shift;;
+##        "-p")
+##            shift
+##            vncPort=$1
+##            shift;;
+##        "-u")
+##            needUser=1
+##            shift;;
+##        "-v")
+##            startVnc=1
+##            shift;;
+##        *)
+##            xgpath=$1
+##            shift;;
+##    esac
+##done
+##if [ "$xgpath" = "" ]; then
+##    echo "USAGE: xgb-dev.sh <xgboostRepoPath>"
+##    exit 1
+##fi
+##if [ ! -d "$xgpath" ]; then
+##    echo "Directory "$xgpath" does not exist!"
+##    exit 1
+##fi
+##
+##userOpts=
+##if [ "$needUser" = "1" ]; then
+##    userOpts="-e USER=$USER -e UID=`id -u $USER`"
+##fi
+##
+##startCmd=
+##portsOpt=
+##if [ "$startVnc" = "0" ]; then
+##    startCmd="/bin/bash"
+##else
+##    portsOpt="-p $vncPort"
+##fi
+##
+##cmd="nvidia-docker run --rm -it -v $xgpath:/xgboost:rw $userOpts $portsOpt $image $startCmd"
+##echo $cmd
+##exec $cmd

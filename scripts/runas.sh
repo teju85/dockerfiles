@@ -13,8 +13,8 @@ if [ "$UID" != "" ]; then
     mkdir -p /etc/sudoers.d
     echo "$USER ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USER
     chmod 0440 /etc/sudoers.d/$USER
-    echo >> $HOME/.bashrc
-    env | grep -v LS_COLORS >> $HOME/.bashrc
+    echo > $HOME/.bashrc
+    env | grep -v -e LS_COLORS -e UID >> $HOME/.bashrc
     ldconfig
 else
     USER=root
@@ -37,7 +37,7 @@ fi
 echo "Cmd to run: $*"
 # run as that user
 if [ "$USER" != "root" ]; then
-    su - $USER -c $*
+    exec su - $USER -c "cd `pwd`; $*"
 else
     exec $*
 fi

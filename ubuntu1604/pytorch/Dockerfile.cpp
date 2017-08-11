@@ -50,4 +50,4 @@ COPY contexts/jupyter.sh /jupyter.sh
 
 EXPOSE $port
 ENV NBPORT $port
-CMD /jupyter.sh $NBPORT
+CMD /jupyter.sh
