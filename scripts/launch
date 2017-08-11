@@ -45,6 +45,12 @@ class Launcher:
             vols.append("-w /work")
         return vols
 
+    def getDns(self, args):
+        dns = []
+        for d in args.dns:
+            dns.append("--dns %s" % dns)
+        return dns
+
     def getUser(self, args):
         out = []
         bindir = os.path.abspath(os.path.dirname(__file__))
@@ -60,6 +66,7 @@ class Launcher:
         finalcmd += self.getPort(args.image)
         finalcmd += self.getVols(args)
         finalcmd += self.getUser(args)
+        finalcmd += self.getDns(args)
         finalcmd.append(args.image)
         finalcmd += self.getCmd(args)
         finalcmd = " ".join(finalcmd)
@@ -77,6 +84,8 @@ class Launcher:
                             help="Runs as current user, default is root")
         parser.add_argument("-nopwd", action="store_true", default=False,
                             help="Do not mount current dir as /work")
+        parser.add_argument("-dns", default=[], action="append", type=str,
+                            help="Pass DNS servers to be used inside container")
         parser.add_argument("image", help="Image to be launched")
         parser.add_argument("cmd", nargs=REMAINDER,
                             help="Command to run inside the container")
