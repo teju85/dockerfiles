@@ -1,18 +1,15 @@
 #!/bin/bash
 # env-vars
 #  . UID  - uid of the user. Eg: $(id -u $USER)
-#  . GID  - gid of the user. Eg: $(id -g $USER)
 
 USER=myuser
-GROUP=mygroup
 
 # if both these vars are set
 # create a new user and setup his/her env
-if [ "$UID" != "" ] && [ "$GID" != "" ]; then
+if [ "$UID" != "" ]; then
+    echo "Creating env for the user uid=$UID"
     HOME=/home/$USER
-    addgroup --gid $GID $GROUP
-    adduser --disabled-password --gecos "" --gid $GID -G sudo,$GROUP \
-            --uid $UID --home $HOME $USER
+    adduser --disabled-password --gecos "" --uid $UID --home $HOME $USER
     mkdir -p /etc/sudoers.d
     echo "$USER ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USER
     chmod 0440 /etc/sudoers.d/$USER
@@ -37,6 +34,7 @@ if [ "$VNC_SETUP" = "1" ]; then
     chown $HOME/.xinitrc
 fi
 
+echo "Cmd to run: $*"
 # run as that user
 if [ "$USER" != "root" ]; then
     su - $USER -c $*

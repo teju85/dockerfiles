@@ -1,7 +1,7 @@
 #!/bin/bash
 # script to setup jupyter env and start a session
 # Usage: jupyter.sh <notebookPort>
-port=${1:8888}
+port=${1:-8888}
 jpdir=$HOME/.jupyter
 jpcfg=$jpdir/jupyter_notebook_config.py
 mkdir -p -m 0700 $jpdir

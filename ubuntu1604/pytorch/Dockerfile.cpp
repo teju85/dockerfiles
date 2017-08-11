@@ -49,4 +49,5 @@ RUN cd /opt/pytorch && \\
 COPY contexts/jupyter.sh /jupyter.sh
 
 EXPOSE $port
-CMD ["/jupyter.sh", $port]
+ENV NBPORT $port
+CMD /jupyter.sh $NBPORT
