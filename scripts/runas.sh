@@ -35,9 +35,11 @@ if [ "$VNC_SETUP" = "1" ]; then
 fi
 
 echo "Cmd to run: $*"
-# run as that user
+# run as that user (or root)
 if [ "$USER" != "root" ]; then
-    exec su - $USER -c "cd `pwd`; $*"
+    # compile the exec-as binary and execute it to switch user
+    cc -o /exec-as /exec-as.c
+    exec /exec-as `id -u $USER` `id -g $USER` `pwd` $*
 else
     exec $*
 fi
