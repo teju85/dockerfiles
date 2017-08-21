@@ -24,6 +24,7 @@ help:
 	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
 	@echo "                   XGLG_XG_COMMIT - xgboost commit ID to which to sync [$(XGLG_XG_COMMIT)]"
 	@echo "                   XGLG_LG_COMMIT - lightgbm commit ID to which to sync [$(XGLG_LG_COMMIT)]"
+	@echo "  . pix2pix      pytorch implementation of pix2pix and cycle-gan works"
 
 .PHONY: cuda80
 cuda80:
@@ -105,3 +106,10 @@ xgb-lgb: cuda80
 	        --build-arg xgCommit=$(XGLG_XG_COMMIT) \
 	        --build-arg lgCommit=$(XGLG_LG_COMMIT) . && \
 	    rm -rf contexts Dockerfile
+
+.PHONY: pix2pix
+pix2pix: pytorch
+	cd pix2pix && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    docker build -t pix2pix:latest . && \
+	    rm -f Dockerfile

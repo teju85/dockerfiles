@@ -50,25 +50,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         cuda-nvrtc-dev-$CUDA_PKG_VERSION && \
     rm -rf /var/lib/apt/lists/*
 
-# opencl
-# TODO: install the correct OpenCL version for the CUDA version
-# install the dependencies, except for the driver (nvidia-375),
-# as the latter pulls lots of Xserver-related stuff
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        ocl-icd-libopencl1 libc6 && \
-    rm -rf /var/lib/apt/lists/*
-
-# install the OpenCL ICD without dependencies;
-# this actually requires removing dependencies manually
-RUN cd /tmp && apt-get update && \
-    apt-get download nvidia-opencl-icd-375 && \
-    dpkg-deb -R nvidia-opencl-icd-375*.deb nvidia-opencl-icd-375 && \
-    cd nvidia-opencl-icd-375/DEBIAN && \
-    cp control control.bak && \
-    sed -e 's/, nvidia-375[^,]*//' < control.bak > control && \
-    rm -f control.bak && \
-    cd ../.. && \
-    dpkg -b nvidia-opencl-icd-375 nvidia-opencl-icd-375.deb && \
-    dpkg -i nvidia-opencl-icd-375.deb
-
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs:${LIBRARY_PATH}
