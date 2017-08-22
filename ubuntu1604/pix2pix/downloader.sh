@@ -19,7 +19,7 @@ function download() {
         if [ ! -e "$TARGET_DIR" ]; then
             wget -N $URL -O $TAR_FILE
             mkdir -p $TARGET_DIR
-            tar -zxvf $TAR_FILE -C ./datasets/
+            tar -zxvf $TAR_FILE -C ./datasets/$TYPE
             rm $TAR_FILE
         fi
     elif [ "$TYPE" = "cycle-gan" ]; then
@@ -29,7 +29,7 @@ function download() {
         if [ ! -e "$TARGET_DIR" ]; then
             wget -N $URL -O $ZIP_FILE
             mkdir -p $TARGET_DIR
-            unzip $ZIP_FILE -d ./datasets/
+            unzip $ZIP_FILE -d ./datasets/$TYPE
             rm $ZIP_FILE
         fi
     else
