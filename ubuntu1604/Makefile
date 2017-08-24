@@ -8,23 +8,26 @@ help:
 	@echo "  . postgres     install latest version of postgres"
 	@echo "  . pytorch      gpu enabled pytorch (on top of pyml-env libs)"
 	@echo "                 Some flags to customize behavior:"
-	@echo "                   PT_PORT - Jupyter port to be exposed [8888]"
+	@echo "                   PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
 	@echo "  . tensorflow10 install tensorflow 1.0"
 	@echo "  . xgboost      install latest version of xgboost"
 	@echo "                 Some flags to customize behavior:"
-	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
+	@echo "                   XG_ARCH - cuda arch(s) to build for [$(XG_ARCH)]"
 	@echo "                   XG_COMMIT - commit ID to which to sync [$(XG_COMMIT)]"
 	@echo "  . xgb-dev      Starts vnc server with env for xgboost development"
 	@echo "                 Some flags to customize behavior:"
-	@echo "                   XGB_DEV_VNC_PORT - vnc port [5900]"
+	@echo "                   XGB_DEV_VNC_PORT - vnc port [$(XGB_DEV_VNC_PORT)]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 	@echo "  . nvcaffe      install nv-caffe and its dependencies"
 	@echo "  . xgb-lgb      xgboost and lightgbm benchmarking image"
 	@echo "                 Some flags to customize behavior:"
-	@echo "                   XG_ARCH - cuda arch(s) to build for [35;50;52;60;61]"
+	@echo "                   XG_ARCH - cuda arch(s) to build for [$(XG_ARCH)]"
 	@echo "                   XGLG_XG_COMMIT - xgboost commit ID to which to sync [$(XGLG_XG_COMMIT)]"
 	@echo "                   XGLG_LG_COMMIT - lightgbm commit ID to which to sync [$(XGLG_LG_COMMIT)]"
 	@echo "  . pix2pix      pytorch implementation of pix2pix and cycle-gan works"
+	@echo "  . mxnet        gpu enabled mxnet + keras (on top of pyml-env libs)"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   MX_PORT - Jupyter port to be exposed [$(MX_PORT)]"
 
 .PHONY: cuda80
 cuda80:
@@ -113,3 +116,13 @@ pix2pix: pytorch
 	    cpp -o Dockerfile Dockerfile.cpp && \
 	    docker build -t pix2pix:latest . && \
 	    rm -f Dockerfile
+
+MX_PORT ?= 8888
+.PHONY: mxnet
+mxnet: cudnn60
+	cd mxnet && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    cp -r ../../shared-contexts contexts && \
+	    docker build -t mxnet:keras \
+	        --build-arg port=$(MX_PORT) . && \
+	    rm -rf contexts Dockerfile

@@ -1,0 +1,6 @@
+
+ARG port=8888
+EXPOSE $port
+COPY contexts/jupyter.sh /jupyter.sh
+ENV NBPORT $port
+CMD /jupyter.sh
