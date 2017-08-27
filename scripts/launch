@@ -24,7 +24,8 @@ class Launcher:
             cmd = " ".join(arr)
         else:
             cmd = "/bin/bash"
-        return ["%s" % cmd]
+        # single quotes around to directly pass this command to container!
+        return ["'%s'" % cmd]
 
     def getPort(self, image):
         arr = self.get(image, "Config", "ExposedPorts")

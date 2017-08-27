@@ -28,6 +28,7 @@ help:
 	@echo "  . mxnet        gpu enabled mxnet + keras (on top of pyml-env libs)"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   MX_PORT - Jupyter port to be exposed [$(MX_PORT)]"
+	@echo "  . pybind11     install pybind11 env"
 
 .PHONY: cuda80
 cuda80:
@@ -126,3 +127,10 @@ mxnet: cudnn60
 	    docker build -t mxnet:keras \
 	        --build-arg port=$(MX_PORT) . && \
 	    rm -rf contexts Dockerfile
+
+.PHONY: pybind11
+pybind11: cudnn60
+	cd pybind11 && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    docker build -t pybind11:dev . && \
+	    rm -f Dockerfile

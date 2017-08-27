@@ -1,0 +1,9 @@
+Even though one can get away with a single source file for the cpu-side,
+that's not quite possible in the CUDA world!! As soon as a .cu file includes
+pybind11.h, nvcc throws up with the following errors:
+```
+include/pybind11/cast.h(837): error: alias template "pybind11::detail::type_caster_base<type>::cast_op_type" may not be used in the type-id of the alias-declaration
+```
+The only way I could solve this problem was to split the PYBIND11_MODULE
+definition inside a separate .cpp file. If anyone has a better solution,
+let me know.
