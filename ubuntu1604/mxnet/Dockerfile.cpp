@@ -26,4 +26,7 @@ RUN git clone "https://github.com/NVIDIA/keras" /keras && \\
     cd /keras && \\
     python setup.py install
 
+RUN cd /mxnet/python && \\
+    python setup.py install
+
 #include "../../reusables/jupyter"
