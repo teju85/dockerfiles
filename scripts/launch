@@ -49,7 +49,7 @@ class Launcher:
     def getDns(self, args):
         dns = []
         for d in args.dns:
-            dns.append("--dns %s" % dns)
+            dns.append("--dns %s" % d)
         return dns
 
     def getUser(self, args):

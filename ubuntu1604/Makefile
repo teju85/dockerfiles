@@ -97,8 +97,8 @@ kaldi: cudnn60
 nvcaffe: cudnn60
 	cd nvcaffe && docker build -t nvcaffe:latest .
 
-XGLG_XG_COMMIT ?= 0e06d1805d06fab063ee5f39563a6c6ad7510345
-XGLG_LG_COMMIT ?= 6c3f24489b66cd31cbda99553f03cf011e9e2d03
+XGLG_XG_COMMIT ?= 6be4e5709c5f4930163d2754d101ad5f703bf6c7
+XGLG_LG_COMMIT ?= 95f213bd85b6dad391659694d2605f95cdc2946e
 .PHONY: xgb-lgb
 xgb-lgb: cuda80
 	cd xgb-lgb && \
