@@ -28,6 +28,9 @@ help:
 	@echo "  . mxnet        gpu enabled mxnet + keras (on top of pyml-env libs)"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   MX_PORT - Jupyter port to be exposed [$(MX_PORT)]"
+	@echo "  . tf-keras     tensorflow + keras (on top of pyml-env libs)"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   TF_PORT - Jupyter port to be exposed [$(TF_PORT)]"
 	@echo "  . pybind11     install pybind11 env"
 
 .PHONY: cuda80
@@ -126,6 +129,16 @@ mxnet: cudnn60
 	    cp -r ../../shared-contexts contexts && \
 	    docker build -t mxnet:keras \
 	        --build-arg port=$(MX_PORT) . && \
+	    rm -rf contexts Dockerfile
+
+TF_PORT ?= 8888
+.PHONY: tf-keras
+tf-keras: cudnn60
+	cd tf-keras && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    cp -r ../../shared-contexts contexts && \
+	    docker build -t tensorflow:keras \
+	        --build-arg port=$(TF_PORT) . && \
 	    rm -rf contexts Dockerfile
 
 .PHONY: pybind11
