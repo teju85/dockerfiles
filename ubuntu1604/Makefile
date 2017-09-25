@@ -32,6 +32,9 @@ help:
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   TF_PORT - Jupyter port to be exposed [$(TF_PORT)]"
 	@echo "  . pybind11     install pybind11 env"
+	@echo "  . fairseq-py   intall pytorch version of conv NMT from faceboook."
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
 
 .PHONY: cuda80
 cuda80:
@@ -147,3 +150,13 @@ pybind11: cudnn60
 	    cpp -o Dockerfile Dockerfile.cpp && \
 	    docker build -t pybind11:dev . && \
 	    rm -f Dockerfile
+
+FS_PORT ?= 8888
+.PHONY: fairseq-py
+fairseq-py: cudnn60
+	cd fairseq-py && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    cp -r ../../shared-contexts contexts && \
+	    docker build -t fairseq-py:latest \
+	        --build-arg port=$(FS_PORT) . && \
+	    rm -rf contexts Dockerfile

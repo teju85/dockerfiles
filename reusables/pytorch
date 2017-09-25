@@ -1,0 +1,56 @@
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        build-essential \\
+        cmake \\
+        git \\
+        curl \\
+        ca-certificates \\
+        libjpeg-dev \\
+        libpng-dev \\
+        curl \\
+        wget && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+ENV PATH /opt/conda/bin:$PATH
+
+RUN curl -o /miniconda.sh -O "https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh" && \\
+    chmod +x /miniconda.sh && \\
+    /miniconda.sh -b -p /opt/conda && \\
+    rm /miniconda.sh && \\
+    git clone "https://github.com/pytorch/pytorch" /opt/pytorch
+
+RUN conda install \\
+        conda-build \\
+        cudnn \\
+        python=3.5.2 \\
+        gcc \\
+        ipython \\
+        jupyter \\
+        matplotlib \\
+        mkl \\
+        nccl \\
+        numpy \\
+        pandas \\
+        pyyaml \\
+        scikit-learn \\
+        scipy \\
+        urllib3 && \\
+    conda install -c soumith magma-cuda80 && \\
+    conda clean -ya
+
+RUN pip install cmake cffi
+
+// in case of a specific commit id to be used!
+#ifdef PT_COMMIT_ID
+RUN cd /opt/pytorch && \\
+    git reset --hard PT_COMMIT_ID && \\
+    git submodule update --init
+#endif
+
+RUN cd /opt/pytorch && \\
+    pip install -r requirements.txt && \\
+    TORCH_CUDA_ARCH_LIST="3.5 5.2 6.0 6.1+PTX" \\
+        TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \\
+        pip install -v .
