@@ -69,6 +69,8 @@ class Launcher:
         finalcmd += self.getVols(args)
         finalcmd += self.getUser(args)
         finalcmd += self.getDns(args)
+        if args.ipc is not None:
+            finalcmd += ["--ipc=%s" % args.ipc]
         finalcmd.append(args.image)
         finalcmd += self.getCmd(args)
         finalcmd = " ".join(finalcmd)
@@ -88,6 +90,8 @@ class Launcher:
                             help="Do not mount current dir as /work")
         parser.add_argument("-dns", default=[], action="append", type=str,
                             help="Pass DNS servers to be used inside container")
+        parser.add_argument("-ipc", default=None, type=str,
+                            help="how to use shared memory to share data between processes")
         parser.add_argument("image", help="Image to be launched")
         parser.add_argument("cmd", nargs=REMAINDER,
                             help="Command to run inside the container")
