@@ -24,6 +24,8 @@ help:
 	@echo "                   XG_ARCH - cuda arch(s) to build for [$(XG_ARCH)]"
 	@echo "                   XGLG_XG_COMMIT - xgboost commit ID to which to sync [$(XGLG_XG_COMMIT)]"
 	@echo "                   XGLG_LG_COMMIT - lightgbm commit ID to which to sync [$(XGLG_LG_COMMIT)]"
+	@echo "  . xgb-lgb-dk   Generate only the Dockerfile and its contexts"
+	@echo "                 Flags are same as that of target xgb-lgb"
 	@echo "  . pix2pix      pytorch implementation of pix2pix and cycle-gan works"
 	@echo "  . mxnet        gpu enabled mxnet + keras (on top of pyml-env libs)"
 	@echo "                 Some flags to customize behavior:"
@@ -107,15 +109,12 @@ XGLG_XG_COMMIT ?= 6be4e5709c5f4930163d2754d101ad5f703bf6c7
 XGLG_LG_COMMIT ?= 95f213bd85b6dad391659694d2605f95cdc2946e
 .PHONY: xgb-lgb
 xgb-lgb: cuda80
-	cd xgb-lgb && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
-	    rm -rf contexts && \
-	    cp -r ../../shared-contexts contexts && \
+	$(MAKE) -C xgb-lgb genContext && \
 	    docker build -t xgb-lgb:latest \
 	        --build-arg arch="$(XG_ARCH)" \
 	        --build-arg xgCommit=$(XGLG_XG_COMMIT) \
 	        --build-arg lgCommit=$(XGLG_LG_COMMIT) . && \
-	    rm -rf contexts Dockerfile
+	$(MAKE) -C xgb-lgb delContext
 
 .PHONY: pix2pix
 pix2pix: pytorch
@@ -160,3 +159,17 @@ fairseq-py: cudnn60
 	    docker build -t fairseq-py:latest \
 	        --build-arg port=$(FS_PORT) . && \
 	    rm -rf contexts Dockerfile
+
+
+# for the below 2 targets, the pwd has to be inside the directory containing Dockerfile.cpp!
+.PHONY: genContext
+genContext:
+	cpp -o Dockerfile Dockerfile.cpp && \
+	    grep -v '^#' Dockerfile > tmp && \
+	    mv tmp Dockerfile && \
+	    rm -rf contexts && \
+	    cp -r ../../shared-contexts contexts
+
+.PHONY: delContext
+delContext:
+	rm -rf contexts Dockerfile
