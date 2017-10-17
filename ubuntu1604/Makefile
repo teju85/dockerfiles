@@ -19,13 +19,12 @@ help:
 	@echo "                   XGB_DEV_VNC_PORT - vnc port [$(XGB_DEV_VNC_PORT)]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 	@echo "  . nvcaffe      install nv-caffe and its dependencies"
-	@echo "  . xgb-lgb      xgboost and lightgbm benchmarking image"
+	@echo "  . gbm          gbm benchmarking images"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XG_ARCH - cuda arch(s) to build for [$(XG_ARCH)]"
-	@echo "                   XGLG_XG_COMMIT - xgboost commit ID to which to sync [$(XGLG_XG_COMMIT)]"
-	@echo "                   XGLG_LG_COMMIT - lightgbm commit ID to which to sync [$(XGLG_LG_COMMIT)]"
-	@echo "  . xgb-lgb-dk   Generate only the Dockerfile and its contexts"
-	@echo "                 Flags are same as that of target xgb-lgb"
+	@echo "                   GBM_XG_COMMIT - xgboost commit ID to which to sync [$(GBM_XG_COMMIT)]"
+	@echo "                   GBM_LG_COMMIT - lightgbm commit ID to which to sync [$(GBM_LG_COMMIT)]"
+	@echo "                   GBM_CAT_COMMIT - catboost commit ID to which to sync [$(GBM_CAT_COMMIT)]"
 	@echo "  . pix2pix      pytorch implementation of pix2pix and cycle-gan works"
 	@echo "  . mxnet        gpu enabled mxnet + keras (on top of pyml-env libs)"
 	@echo "                 Some flags to customize behavior:"
@@ -36,6 +35,9 @@ help:
 	@echo "  . pybind11     install pybind11 env"
 	@echo "  . fairseq-py   intall pytorch version of conv NMT from faceboook."
 	@echo "                 Some flags to customize behavior:"
+	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
+	@echo "  . fairseq-py-dev intall dev env for pytorch version of conv NMT from faceboook."
+	@echo "                   Some flags to customize behavior:"
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
 
 .PHONY: cuda80
@@ -105,16 +107,19 @@ kaldi: cudnn60
 nvcaffe: cudnn60
 	cd nvcaffe && docker build -t nvcaffe:latest .
 
-XGLG_XG_COMMIT ?= 6be4e5709c5f4930163d2754d101ad5f703bf6c7
-XGLG_LG_COMMIT ?= 95f213bd85b6dad391659694d2605f95cdc2946e
-.PHONY: xgb-lgb
-xgb-lgb: cuda80
-	$(MAKE) -C xgb-lgb genContext && \
-	    docker build -t xgb-lgb:latest \
-	        --build-arg arch="$(XG_ARCH)" \
-	        --build-arg xgCommit=$(XGLG_XG_COMMIT) \
-	        --build-arg lgCommit=$(XGLG_LG_COMMIT) . && \
-	$(MAKE) -C xgb-lgb delContext
+GBM_XG_COMMIT ?= 6be4e5709c5f4930163d2754d101ad5f703bf6c7
+GBM_LG_COMMIT ?= 95f213bd85b6dad391659694d2605f95cdc2946e
+GBM_CAT_COMMIT ?= 8e4283c48b529314f5e9898b678032f2d6050483
+.PHONY: gbm
+gbm: cuda80
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t gbm:latest \
+	    --build-arg arch="$(XG_ARCH)" \
+	    --build-arg xgCommit=$(GBM_XG_COMMIT) \
+	    --build-arg lgCommit=$(GBM_LG_COMMIT) \
+	    --build-arg catCommit=$(GBM_CAT_COMMIT) . && \
+	make -f ../Makefile delContext
 
 .PHONY: pix2pix
 pix2pix: pytorch
@@ -153,12 +158,19 @@ pybind11: cudnn60
 FS_PORT ?= 8888
 .PHONY: fairseq-py
 fairseq-py: cudnn60
-	cd fairseq-py && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
-	    cp -r ../../shared-contexts contexts && \
-	    docker build -t fairseq-py:latest \
-	        --build-arg port=$(FS_PORT) . && \
-	    rm -rf contexts Dockerfile
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t fairseq-py:latest \
+	    --build-arg port=$(FS_PORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: fairseq-py-dev
+fairseq-py-dev: cudnn60
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t fairseq-py-dev:latest \
+	    --build-arg port=$(FS_PORT) . && \
+	make -f ../Makefile delContext
 
 
 # for the below 2 targets, the pwd has to be inside the directory containing Dockerfile.cpp!

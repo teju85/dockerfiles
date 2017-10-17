@@ -1,6 +1,7 @@
 #!/bin/bash
 # env-vars
 #  . UID  - uid of the user. Eg: $(id -u $USER)
+#  . PREPROC - abs-path to a pre-processing script which will be run before switching user
 
 USER=myuser
 
@@ -32,6 +33,11 @@ if [ "$VNC_SETUP" = "1" ]; then
     cp /.xsession $HOME/.xsession
     chown $USER $HOME/.vnc $HOME/.Xauthority $HOME/.Xresources $HOME/.xsession
     chown $HOME/.xinitrc
+fi
+
+if [ "$PREPROC" != "" ]; then
+    echo "Pre-processing script given: $PREPROC"
+    $PREPROC
 fi
 
 echo "Cmd to run: $*"

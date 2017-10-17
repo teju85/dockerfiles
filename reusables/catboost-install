@@ -1,0 +1,29 @@
+
+#include "pyml-env-2.7"
+
+ARG catCommit=8e4283c48b529314f5e9898b678032f2d6050483
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        python \\
+        python-dev && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+RUN pip install --upgrade-pip && \\
+    pip install --no-cache-dir \\
+        ipywidgets \\
+        numpy \\
+        six
+
+RUN git config --global http.sslVerify false && \\
+    git clone "https://github.com/catboost/catboost" && \\
+    cd catboost && \\
+    git reset --hard $catCommit
+
+ENV CAT_COMMIT_ID $catCommit
+
+RUN cd catboost/catboost/python-package/catboost && \\
+    ../../../ya make -r -DUSE_ARCADIA_PYTHON=no -DPYTHON_CONFIG=python2-config -DCUDA_ROOT=$(dirname $(dirname $(which nvcc)))
+
+ENV PYTHONPATH=$PYTHONPATH:/catboost/catboost/python-package

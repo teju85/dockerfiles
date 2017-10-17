@@ -68,6 +68,8 @@ class Launcher:
         finalcmd += self.getPort(args.image)
         finalcmd += self.getVols(args)
         finalcmd += self.getUser(args)
+        if args.preproc is not None:
+            finalcmd += ["-e PREPROC=%s" % args.preproc]
         finalcmd += self.getDns(args)
         if args.ipc is not None:
             finalcmd += ["--ipc=%s" % args.ipc]
@@ -92,6 +94,8 @@ class Launcher:
                             help="Pass DNS servers to be used inside container")
         parser.add_argument("-ipc", default=None, type=str,
                             help="how to use shared memory to share data between processes")
+        parser.add_argument("-preproc", default=None, type=str,
+                            help="Path to a pre-processing script to be run before switching user")
         parser.add_argument("image", help="Image to be launched")
         parser.add_argument("cmd", nargs=REMAINDER,
                             help="Command to run inside the container")
