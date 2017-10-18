@@ -39,6 +39,9 @@ help:
 	@echo "  . fairseq-py-dev intall dev env for pytorch version of conv NMT from faceboook."
 	@echo "                   Some flags to customize behavior:"
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
+	@echo "  . cuda80-dev   cuda v8.0 image suited mainly for development through VNC"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
 
 .PHONY: cuda80
 cuda80:
@@ -170,6 +173,15 @@ fairseq-py-dev: cudnn60
 	make -f ../Makefile genContext && \
 	docker build -t fairseq-py-dev:latest \
 	    --build-arg port=$(FS_PORT) . && \
+	make -f ../Makefile delContext
+
+CU_DEV_VNC_PORT ?= 5900
+.PHONY: cuda80-dev
+cuda80-dev:
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t cuda:8.0-dev \
+	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
 	make -f ../Makefile delContext
 
 

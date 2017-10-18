@@ -29,4 +29,6 @@ RUN sed -i "0,/port=-1/{s/port=-1/port=$port/}" /etc/xrdp/xrdp.ini && \\
 CMD ["/vncserver.sh"]
 
 // indicator that vncserver and its related dependencies are installed
+// this flag is checked by 'runas.sh' script to determine whether to setup
+// X related files or not
 ENV VNC_SETUP 1
