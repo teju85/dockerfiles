@@ -110,9 +110,9 @@ kaldi: cudnn60
 nvcaffe: cudnn60
 	cd nvcaffe && docker build -t nvcaffe:latest .
 
-GBM_XG_COMMIT ?= 6be4e5709c5f4930163d2754d101ad5f703bf6c7
-GBM_LG_COMMIT ?= 95f213bd85b6dad391659694d2605f95cdc2946e
-GBM_CAT_COMMIT ?= 8e4283c48b529314f5e9898b678032f2d6050483
+GBM_XG_COMMIT ?= 77ae4c870178be3c4dbe5331ec7966cec93fee33
+GBM_LG_COMMIT ?= 04d4811b4e6d51542bd2e2e23d0e608a9732ea30
+GBM_CAT_COMMIT ?= f28154d8b0d4ca8e4d1baed2260656ba1223a75d
 .PHONY: gbm
 gbm: cuda80
 	cd $@ && \

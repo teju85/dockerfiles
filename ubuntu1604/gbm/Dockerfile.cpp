@@ -1,6 +1,6 @@
 FROM cuda:8.0
 
-#define XGB_COMMIT 0e06d1805d06fab063ee5f39563a6c6ad7510345
+#define XGB_REPO "dmlc"
 #include "../../reusables/xgboost-install"
 #include "../../reusables/lightgbm-install"
 #include "../../reusables/catboost-install"

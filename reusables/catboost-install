@@ -10,7 +10,7 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN pip install --upgrade-pip && \\
+RUN pip install --upgrade pip && \\
     pip install --no-cache-dir \\
         ipywidgets \\
         numpy \\
@@ -24,6 +24,11 @@ RUN git config --global http.sslVerify false && \\
 ENV CAT_COMMIT_ID $catCommit
 
 RUN cd catboost/catboost/python-package/catboost && \\
-    ../../../ya make -r -DUSE_ARCADIA_PYTHON=no -DPYTHON_CONFIG=python2-config -DCUDA_ROOT=$(dirname $(dirname $(which nvcc)))
+    ../../../ya make \\
+        -r \\
+        -o ../../../ \\
+        -DUSE_ARCADIA_PYTHON=no \\
+        -DPYTHON_CONFIG=python2-config \\
+        -DCUDA_ROOT=$(dirname $(dirname $(which nvcc)))
 
 ENV PYTHONPATH=$PYTHONPATH:/catboost/catboost/python-package
