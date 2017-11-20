@@ -5,6 +5,7 @@ import string
 from argparse import ArgumentParser, REMAINDER
 import os
 
+
 class Launcher:
     def get(self, image, *args):
         output = subprocess.check_output("docker inspect %s" % image,
@@ -55,11 +56,15 @@ class Launcher:
     def getUser(self, args):
         out = []
         bindir = os.path.abspath(os.path.dirname(__file__))
-        if args.user:
+        if args.runas == "user":
             out.append("-e UID=%d" % os.getuid())
             out.append("-v %s/exec-as.c:/exec-as.c:ro" % bindir)
             out.append("-v %s/runas.sh:/runas.sh:ro" % bindir)
             out.append("--entrypoint=/runas.sh")
+        elif args.runas == "uid:gid":
+            uid = os.getuid()
+            gid = os.getgid()
+            out.append("-u %d:%d" % (uid, gid))
         return out
 
     def launch(self):
@@ -73,6 +78,8 @@ class Launcher:
         finalcmd += self.getDns(args)
         if args.ipc is not None:
             finalcmd += ["--ipc=%s" % args.ipc]
+        if args.security is not None:
+            finalcmd += ["--security-opt=\"%s\"" % args.security]
         finalcmd.append(args.image)
         finalcmd += self.getCmd(args)
         finalcmd = " ".join(finalcmd)
@@ -86,8 +93,14 @@ class Launcher:
         parser = ArgumentParser(description="Wrapper to launch as current user")
         parser.add_argument("-v", default=[], action="append", type=str,
                             help="Volumes to mount. Same syntax as docker run")
-        parser.add_argument("-user", action="store_true", default=False,
-                            help="Runs as current user, default is root")
+        parser.add_argument("-runas", choices=["user", "root", "uid:gid"],
+                            default="root", type=str,
+                            help="Run as specified. Default is root. Options: "
+                            "\n  user    - run as current user by switching user inside the container"
+                            "\n  root    - run as root (default)"
+                            "\n  uid:gid - pass the -u option to docker")
+        parser.add_argument("-security", type=str, default=None,
+                            help="Same as --security-opt option of docker")
         parser.add_argument("-nopwd", action="store_true", default=False,
                             help="Do not mount current dir as /work")
         parser.add_argument("-dns", default=[], action="append", type=str,
