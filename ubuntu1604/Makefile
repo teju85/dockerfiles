@@ -93,7 +93,7 @@ xgboost: cuda80
 
 XGB_DEV_VNC_PORT ?= 5900
 .PHONY: xgb-vnc
-xgb-dev: cuda80
+xgb-dev: cuda80-dev
 	cd xgb-dev && \
 	    cpp -o Dockerfile Dockerfile.cpp && \
 	    rm -rf contexts && \
@@ -177,7 +177,7 @@ fairseq-py-dev: cudnn60
 
 CU_DEV_VNC_PORT ?= 5900
 .PHONY: cuda80-dev
-cuda80-dev:
+cuda80-dev: cuda80
 	cd $@ && \
 	make -f ../Makefile genContext && \
 	docker build -t cuda:8.0-dev \

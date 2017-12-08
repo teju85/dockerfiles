@@ -9,7 +9,6 @@
 // After this, inside this container, the usual xgboost build and test
 // commands can be executed
 
-FROM cuda:8.0
+FROM cuda:8.0-dev
 
 #include "../../reusables/xgb-dev"
-#include "../../reusables/vnc"

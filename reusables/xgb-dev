@@ -3,8 +3,8 @@
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
-        git \\
         cmake \\
+        git \\
         make \\
         tar \\
         unzip \\
