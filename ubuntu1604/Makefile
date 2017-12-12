@@ -9,6 +9,10 @@ help:
 	@echo "  . cuda90-dev   cuda v9.0 image suited for development through VNC"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
+	@echo "  . cuda91       cuda v9.1 image"
+	@echo "  . cuda91-dev   cuda v9.1 image suited for development through VNC"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
 	@echo "  . cudnn51      install cudnn v5.1 (cuda v8.0)"
 	@echo "  . cudnn60      install cudnn v6.0 (cuda v8.0)"
 	@echo "  . gunrock      latest version of gunrock from github"
@@ -75,6 +79,21 @@ cuda90-dev:
 	cd $@ && \
 	make -f ../Makefile genContext && \
 	docker build -t cuda:9.0-dev \
+	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: cuda91
+cuda91:
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t cuda:9.1 . && \
+	make -f ../Makefile delContext
+
+.PHONY: cuda91-dev
+cuda91-dev:
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t cuda:9.1-dev \
 	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
 	make -f ../Makefile delContext
 
