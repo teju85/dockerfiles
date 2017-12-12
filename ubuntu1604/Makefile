@@ -2,8 +2,15 @@
 help:
 	@echo "make what? Available targets are:"
 	@echo "  . cuda80       cuda v8.0 image"
-	@echo "  . cudnn51      install cudnn v5.1"
-	@echo "  . cudnn60      install cudnn v6.0"
+	@echo "  . cuda80-dev   cuda v8.0 image suited for development through VNC"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
+	@echo "  . cuda90       cuda v9.0 image"
+	@echo "  . cuda90-dev   cuda v9.0 image suited for development through VNC"
+	@echo "                 Some flags to customize behavior:"
+	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
+	@echo "  . cudnn51      install cudnn v5.1 (cuda v8.0)"
+	@echo "  . cudnn60      install cudnn v6.0 (cuda v8.0)"
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
 	@echo "  . pytorch      gpu enabled pytorch (on top of pyml-env libs)"
@@ -22,9 +29,9 @@ help:
 	@echo "  . gbm          gbm benchmarking images"
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   XG_ARCH - cuda arch(s) to build for [$(XG_ARCH)]"
-	@echo "                   GBM_XG_COMMIT - xgboost commit ID to which to sync [$(GBM_XG_COMMIT)]"
-	@echo "                   GBM_LG_COMMIT - lightgbm commit ID to which to sync [$(GBM_LG_COMMIT)]"
-	@echo "                   GBM_CAT_COMMIT - catboost commit ID to which to sync [$(GBM_CAT_COMMIT)]"
+	@echo "                   GBM_XG_COMMIT - xgboost commit ID to sync to [$(GBM_XG_COMMIT)]"
+	@echo "                   GBM_LG_COMMIT - lightgbm commit ID to sync to [$(GBM_LG_COMMIT)]"
+	@echo "                   GBM_CAT_COMMIT - catboost commit ID to sync to [$(GBM_CAT_COMMIT)]"
 	@echo "  . pix2pix      pytorch implementation of pix2pix and cycle-gan works"
 	@echo "  . mxnet        gpu enabled mxnet + keras (on top of pyml-env libs)"
 	@echo "                 Some flags to customize behavior:"
@@ -39,13 +46,37 @@ help:
 	@echo "  . fairseq-py-dev intall dev env for pytorch version of conv NMT from faceboook."
 	@echo "                   Some flags to customize behavior:"
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
-	@echo "  . cuda80-dev   cuda v8.0 image suited mainly for development through VNC"
-	@echo "                 Some flags to customize behavior:"
-	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
 
 .PHONY: cuda80
 cuda80:
-	cd cuda80 && docker build -t cuda:8.0 .
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t cuda:8.0 . && \
+	make -f ../Makefile delContext
+
+CU_DEV_VNC_PORT ?= 5900
+.PHONY: cuda80-dev
+cuda80-dev:
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t cuda:8.0-dev \
+	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: cuda90
+cuda90:
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t cuda:9.0 . && \
+	make -f ../Makefile delContext
+
+.PHONY: cuda90-dev
+cuda90-dev:
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t cuda:9.0-dev \
+	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
+	make -f ../Makefile delContext
 
 .PHONY: cudnn51
 cudnn51: cuda80
@@ -173,15 +204,6 @@ fairseq-py-dev: cudnn60
 	make -f ../Makefile genContext && \
 	docker build -t fairseq-py-dev:latest \
 	    --build-arg port=$(FS_PORT) . && \
-	make -f ../Makefile delContext
-
-CU_DEV_VNC_PORT ?= 5900
-.PHONY: cuda80-dev
-cuda80-dev: cuda80
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t cuda:8.0-dev \
-	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
 	make -f ../Makefile delContext
 
 
