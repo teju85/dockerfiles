@@ -1,7 +1,6 @@
 #!/bin/bash
 # env-vars
 #  . UID  - uid of the user. Eg: $(id -u $USER)
-#  . PREPROC - abs-path to a pre-processing script which will be run before switching user
 
 USER=myuser
 
@@ -20,24 +19,6 @@ if [ "$UID" != "" ]; then
 else
     USER=root
     HOME=/$USER
-fi
-
-# vnc server related files
-# NOTE: NOTE: NOTE:
-# this assumes that the docker image would have been built using
-# the reusables/vnc docker commands!!
-if [ "$VNC_SETUP" = "1" ]; then
-    mkdir $HOME/.vnc
-    touch $HOME/.Xauthority $HOME/.Xresources
-    cp /.xinitrc $HOME/.xinitrc
-    cp /.xsession $HOME/.xsession
-    chown $USER $HOME/.vnc $HOME/.Xauthority $HOME/.Xresources $HOME/.xsession
-    chown $HOME/.xinitrc
-fi
-
-if [ "$PREPROC" != "" ]; then
-    echo "Pre-processing script given: $PREPROC"
-    $PREPROC
 fi
 
 echo "Cmd to run: $*"

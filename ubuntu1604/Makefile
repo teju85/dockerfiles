@@ -4,15 +4,15 @@ help:
 	@echo "  . cuda80       cuda v8.0 image"
 	@echo "  . cuda80-dev   cuda v8.0 image suited for development through VNC"
 	@echo "                 Some flags to customize behavior:"
-	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
+	@echo "                   VNC_PORT - vnc port [$(VNC_PORT)]"
 	@echo "  . cuda90       cuda v9.0 image"
 	@echo "  . cuda90-dev   cuda v9.0 image suited for development through VNC"
 	@echo "                 Some flags to customize behavior:"
-	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
+	@echo "                   VNC_PORT - vnc port [$(VNC_PORT)]"
 	@echo "  . cuda91       cuda v9.1 image"
 	@echo "  . cuda91-dev   cuda v9.1 image suited for development through VNC"
 	@echo "                 Some flags to customize behavior:"
-	@echo "                   CU_DEV_VNC_PORT - vnc port [$(CU_DEV_VNC_PORT)]"
+	@echo "                   VNC_PORT - vnc port [$(VNC_PORT)]"
 	@echo "  . cudnn51      install cudnn v5.1 (cuda v8.0)"
 	@echo "  . cudnn60      install cudnn v6.0 (cuda v8.0)"
 	@echo "  . gunrock      latest version of gunrock from github"
@@ -58,13 +58,13 @@ cuda80:
 	docker build -t cuda:8.0 . && \
 	make -f ../Makefile delContext
 
-CU_DEV_VNC_PORT ?= 5900
+VNC_PORT ?= 5900
 .PHONY: cuda80-dev
 cuda80-dev:
 	cd $@ && \
 	make -f ../Makefile genContext && \
 	docker build -t cuda:8.0-dev \
-	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
+	    --build-arg port=$(VNC_PORT) . && \
 	make -f ../Makefile delContext
 
 .PHONY: cuda90
@@ -79,7 +79,7 @@ cuda90-dev:
 	cd $@ && \
 	make -f ../Makefile genContext && \
 	docker build -t cuda:9.0-dev \
-	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
+	    --build-arg port=$(VNC_PORT) . && \
 	make -f ../Makefile delContext
 
 .PHONY: cuda91
@@ -94,7 +94,7 @@ cuda91-dev:
 	cd $@ && \
 	make -f ../Makefile genContext && \
 	docker build -t cuda:9.1-dev \
-	    --build-arg port=$(CU_DEV_VNC_PORT) . && \
+	    --build-arg port=$(VNC_PORT) . && \
 	make -f ../Makefile delContext
 
 .PHONY: cudnn51
@@ -230,7 +230,7 @@ fairseq-py-dev: cudnn60
 .PHONY: genContext
 genContext:
 	cpp -o Dockerfile Dockerfile.cpp && \
-	    grep -v '^#' Dockerfile > tmp && \
+	    grep -v -e '^#' -e '^# ' -e '^$$' Dockerfile > tmp && \
 	    mv tmp Dockerfile && \
 	    rm -rf contexts && \
 	    cp -r ../../shared-contexts contexts

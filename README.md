@@ -14,18 +14,7 @@ Just typing a 'make' with no targets will print usage info. Check it out
 to know other images which can be built using this flow.
 
 # Running containers on these images
-Use the 'scripts/launch' wrapper to do so. This wrapper has ability to:
-1. Run as current user
-2. Mount pwd as /work and set this as pwd in the container
-For example, in order to run the pytorch container as current user and inside
-it start a terminal:
-```bash
-$ ./scripts/launch -user pytorch:0.1.12 /bin/bash
-```
-The script will also print out the raw commandline it uses to launch such a
-container to the terminal. If need be, one can also directly use this command.
-
-Note: some of the ideas are inspired from ryanolson/luda (Thanks!).
+Refer to scripts/README.md.
 
 # Pre-reqs
 The main goal behind this setup is to have as minimal dependencies as possible.

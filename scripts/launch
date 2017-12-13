@@ -4,6 +4,7 @@ import subprocess
 import string
 from argparse import ArgumentParser, REMAINDER
 import os
+import socket
 
 
 class Launcher:
@@ -38,6 +39,29 @@ class Launcher:
             out.append("-p %s:%s" % (tmp, tmp))
         return out
 
+    def __getIP(self, rhost):
+        out = socket.getaddrinfo("sc-netapp61", 0)
+        return out[0][4][0]
+
+    def __getNFSinfo(self):
+        out = subprocess.check_output("df . | tail -n1 | awk '{print $1}'",
+                                      shell=True)
+        out = out.rstrip()
+        (rhost, vol) = out.split(":")
+        ip = self.__getIP(rhost)
+        return (ip, vol)
+
+    def getNFSmount(self, args):
+        cmd = []
+        if not args.nfsmount:
+            return cmd
+        (ip, vol) = self.__getNFSinfo()
+        volumeopt = "volume-opt=o=addr=%s,vers=4,hard,timeo=600,rsize=1048576,wsize=1048576,retrans=2" % ip
+        nfsopt = "volume-driver=local,dst=/work,volume-opt=type=nfs,volume-opt=device=:%s" % vol
+        cmd.append("--mount")
+        cmd.append("'type=volume,src=%s,%s,\"%s\"'" % (ip, nfsopt, volumeopt))
+        return cmd
+
     def getVols(self, args):
         vols = []
         for vol in args.v:
@@ -69,12 +93,14 @@ class Launcher:
 
     def launch(self):
         args = self.getParser().parse_args()
+        # Prohibit pwd-mounting if nfsmount is set!
+        if args.nfsmount:
+            args.nopwd = True
         finalcmd = ["nvidia-docker", "run", "-it", "--rm"]
         finalcmd += self.getPort(args.image)
         finalcmd += self.getVols(args)
+        finalcmd += self.getNFSmount(args)
         finalcmd += self.getUser(args)
-        if args.preproc is not None:
-            finalcmd += ["-e PREPROC=%s" % args.preproc]
         finalcmd += self.getDns(args)
         if args.ipc is not None:
             finalcmd += ["--ipc=%s" % args.ipc]
@@ -103,12 +129,12 @@ class Launcher:
                             help="Same as --security-opt option of docker")
         parser.add_argument("-nopwd", action="store_true", default=False,
                             help="Do not mount current dir as /work")
+        parser.add_argument("-nfsmount", action="store_true", default=False,
+                            help="Mount the nfs-root of current dir as /work. Implies -nopwd")
         parser.add_argument("-dns", default=[], action="append", type=str,
                             help="Pass DNS servers to be used inside container")
         parser.add_argument("-ipc", default=None, type=str,
                             help="how to use shared memory to share data between processes")
-        parser.add_argument("-preproc", default=None, type=str,
-                            help="Path to a pre-processing script to be run before switching user")
         parser.add_argument("image", help="Image to be launched")
         parser.add_argument("cmd", nargs=REMAINDER,
                             help="Command to run inside the container")
