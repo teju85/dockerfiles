@@ -50,6 +50,7 @@ help:
 	@echo "  . fairseq-py-dev intall dev env for pytorch version of conv NMT from faceboook."
 	@echo "                   Some flags to customize behavior:"
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
+	@echo "  . dbscan-dev   dbscan developmental image"
 
 .PHONY: cuda80
 cuda80:
@@ -95,6 +96,13 @@ cuda91-dev:
 	make -f ../Makefile genContext && \
 	docker build -t cuda:9.1-dev \
 	    --build-arg port=$(VNC_PORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: dbscan
+dbscan-dev: cuda90-dev
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t dbscan:dev . && \
 	make -f ../Makefile delContext
 
 .PHONY: cudnn51
