@@ -1,3 +1,3 @@
 FROM cuda:9.0-dev
 
-#include "../../reusables/build-essential"
+#include "../../reusables/cmake-build"

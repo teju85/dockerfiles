@@ -1,9 +1,14 @@
+#ifndef __BUILD_ESSENTIAL__
+#define __BUILD_ESSENTIAL__
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
         build-essential \\
-        cmake \\
         git \\
-        make && \\
+        make \\
+        tar \\
+        wget && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
+
+#endif // __BUILD_ESSENTIAL__
