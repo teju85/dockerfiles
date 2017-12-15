@@ -1,4 +1,4 @@
-FROM cuda:8.0
+FROM cuda:8.0-dev
 
 #define XGB_REPO "dmlc"
 #include "../../reusables/xgboost-install"

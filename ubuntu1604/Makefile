@@ -168,11 +168,11 @@ kaldi: cudnn60
 nvcaffe: cudnn60
 	cd nvcaffe && docker build -t nvcaffe:latest .
 
-GBM_XG_COMMIT ?= 77ae4c870178be3c4dbe5331ec7966cec93fee33
-GBM_LG_COMMIT ?= 04d4811b4e6d51542bd2e2e23d0e608a9732ea30
+GBM_XG_COMMIT ?= 4d36036fe6fdc30ba4d72c84f3957a39a29ab23f
+GBM_LG_COMMIT ?= 72b549561ff42239dffdcce231a46791ec59c35c
 GBM_CAT_COMMIT ?= f28154d8b0d4ca8e4d1baed2260656ba1223a75d
 .PHONY: gbm
-gbm: cuda80
+gbm: cuda80-dev
 	cd $@ && \
 	make -f ../Makefile genContext && \
 	docker build -t gbm:latest \

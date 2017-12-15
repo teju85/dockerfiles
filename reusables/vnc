@@ -23,7 +23,12 @@ COPY contexts/vncserver.sh /vncserver.sh
 COPY contexts/.xsession /.xsession
 
 RUN sed -i "0,/port=-1/{s/port=-1/port=$port/}" /etc/xrdp/xrdp.ini && \\
-    chmod +x /.xinitrc /.xsession /vncserver.sh
+    chmod +x /.xinitrc /.xsession /vncserver.sh && \\
+    mkdir /home/userdir && \\
+    chmod 0777 /home/userdir
+
+// a read-writeable dir that the user inside the container can use
+ENV HOME=/home/userdir
 
 CMD ["/vncserver.sh"]
 
