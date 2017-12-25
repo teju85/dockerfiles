@@ -15,6 +15,7 @@ help:
 	@echo "                   VNC_PORT - vnc port [$(VNC_PORT)]"
 	@echo "  . cudnn51      install cudnn v5.1 (cuda v8.0)"
 	@echo "  . cudnn60      install cudnn v6.0 (cuda v8.0)"
+	@echo "  . cudnn60      install cudnn v7.0 (cuda v9.0)"
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
 	@echo "  . pytorch      gpu enabled pytorch (on top of pyml-env libs)"
@@ -112,6 +113,10 @@ cudnn51: cuda80
 .PHONY: cudnn60
 cudnn60: cuda80
 	cd cudnn60 && docker build -t cudnn:6.0 .
+
+.PHONY: cudnn70
+cudnn70: cuda90-dev
+	cd cudnn70 && docker build -t cudnn:7.0 .
 
 .PHONY: gunrock
 gunrock: cuda80
