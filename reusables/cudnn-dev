@@ -1,0 +1,16 @@
+#ifndef __CUDNN_DEV__
+#define __CUDNN_DEV__
+
+#include "cudnn"
+
+RUN echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        libcudnn$CUDNN_VERSION_SHORT-dev=$CUDNN_VERSION-1+cuda$CUDA_VERSION_SHORT && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists && \\
+    ldconfig
+
+
+#endif // __CUDNN_DEV__

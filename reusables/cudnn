@@ -1,0 +1,26 @@
+#ifndef __CUDNN__
+#define __CUDNN__
+
+// shamelessly copied over from nvidia's dockerfiles on gitlab!
+RUN echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
+
+// define's expected
+// . __CUDNN_VERSION
+// . __CUDNN_VERSION_SHORT
+
+// env's assumed
+// . CUDA_VERSION_SHORT  (which anyways is already defined inside "cuda")
+
+ENV CUDNN_VERSION __CUDNN_VERSION
+ENV CUDNN_VERSION_SHORT  __CUDNN_VERSION_SHORT
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        libcudnn$CUDNN_VERSION_SHORT=$CUDNN_VERSION-1+cuda$CUDA_VERSION_SHORT && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists && \\
+    ldconfig
+
+
+#endif // __CUDNN__

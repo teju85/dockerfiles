@@ -1,21 +1,15 @@
 
 help:
 	@echo "make what? Available targets are:"
-	@echo "  . cuda80       cuda v8.0 image"
-	@echo "  . cuda80-dev   cuda v8.0 image suited for development through VNC"
-	@echo "                 Some flags to customize behavior:"
-	@echo "                   VNC_PORT - vnc port [$(VNC_PORT)]"
-	@echo "  . cuda90       cuda v9.0 image"
-	@echo "  . cuda90-dev   cuda v9.0 image suited for development through VNC"
-	@echo "                 Some flags to customize behavior:"
-	@echo "                   VNC_PORT - vnc port [$(VNC_PORT)]"
-	@echo "  . cuda91       cuda v9.1 image"
-	@echo "  . cuda91-dev   cuda v9.1 image suited for development through VNC"
-	@echo "                 Some flags to customize behavior:"
-	@echo "                   VNC_PORT - vnc port [$(VNC_PORT)]"
-	@echo "  . cudnn51      install cudnn v5.1 (cuda v8.0)"
-	@echo "  . cudnn60      install cudnn v6.0 (cuda v8.0)"
-	@echo "  . cudnn60      install cudnn v7.0 (cuda v9.0)"
+	@echo "  . cuda(80|90|91)     - cuda v8.0/v.9.0/v9.1 runtimes. These, in"
+	@echo "                         addition, come with 'runas' ability."
+	@echo "  . cuda(80|90|91)-dev - cuda v8.0/v.9.0/v9.1 devels. These, in"
+	@echo "                         addition, come with 'runas' ability."
+	@echo "  . cudnn(51|60|80_70|90_70)     - cudnn v5.1/v6.0/v7.0-with-v8.0/"
+	@echo "                                   v7.0-with-9.0 runtimes."
+	@echo "  . cudnn(51|60|80_70|90_70)-dev - cudnn v5.1/v6.0/v7.0-with-v8.0/"
+	@echo "                                    v7.0-with-9.0 devels."
+	@echo
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
 	@echo "  . pytorch      gpu enabled pytorch (on top of pyml-env libs)"
@@ -105,22 +99,72 @@ cuda91-dev:
 ## cuda env related targets end ##
 
 
-## cudnn env related targets begin ##
+## cudnn env related core targets begin ##
+.PHONY: cudnn
+cudnn: cuda$(__CUDA_MINIFIED)
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    -D__CUDNN_VERSION="$(__CUDNN)" \
+	    -D__CUDNN_VERSION_SHORT="$(__CUDNN_SHORT)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t cudnn:$(__SHORT)-$(__CUDNN) . && \
+	make -f ../Makefile delContext
+
+.PHONY: cudnn-dev
+cudnn-dev: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
+	    -D__CUDNN_VERSION="$(__CUDNN)" \
+	    -D__CUDNN_VERSION_SHORT="$(__CUDNN_SHORT)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t cudnn:$(__SHORT)-$(__CUDNN)-dev . && \
+	make -f ../Makefile delContext
+## cudnn env related core targets end ##
+
+
+## cudnn with v8.0 env related targets end ##
 .PHONY: cudnn51
-cudnn51: cuda80
-	cd cudnn51 && docker build -t cudnn:5.1 .
+cudnn51:
+	$(MAKE) __CUDNN="5.1.10" __CUDNN_SHORT="5" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn
 
 .PHONY: cudnn60
-cudnn60: cuda80
-	cd cudnn60 && docker build -t cudnn:6.0 .
+cudnn60:
+	$(MAKE) __CUDNN="6.0.21" __CUDNN_SHORT="6" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn
 
-.PHONY: cudnn70
-cudnn70: cuda90-dev
-	cd cudnn70 && docker build -t cudnn:7.0 .
-## cudnn env related targets end ##
+.PHONY: cudnn80_70
+cudnn80_70:
+	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn
+
+.PHONY: cudnn51-dev
+cudnn51-dev:
+	$(MAKE) __CUDNN="5.1.10" __CUDNN_SHORT="5" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn-dev
+
+.PHONY: cudnn60-dev
+cudnn60-dev:
+	$(MAKE) __CUDNN="6.0.21" __CUDNN_SHORT="6" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn-dev
+
+.PHONY: cudnn80_70-dev
+cudnn80_70-dev:
+	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn-dev
+## cudnn with v8.0 env related targets end ##
 
 
-.PHONY: dbscan
+## cudnn with v9.0 env related targets begin ##
+.PHONY: cudnn90_70
+cudnn90_70:
+	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED=90 cudnn
+
+.PHONY: cudnn90_70-dev
+cudnn90_70-dev:
+	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED=90 cudnn-dev
+## cudnn with v9.0 env related targets end ##
+
+
+.PHONY: dbscan-dev
 dbscan-dev: cuda90-dev
 	cd $@ && \
 	make -f ../Makefile genContext && \
