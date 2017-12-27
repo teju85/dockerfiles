@@ -1,0 +1,32 @@
+
+ARG sshport=22
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        openssh-server && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+EXPOSE $sshport
+
+COPY contexts/sshserver.sh /sshserver.sh
+
+RUN chmod +x /sshserver.sh && \\
+    mkdir -p /home/userdir && \\
+    chmod 0777 /home/userdir && \\
+    mkdir /var/run/sshd && \\
+    sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \\
+    echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config
+
+// SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+// a read-writeable dir that the user inside the container can use
+ENV HOME=/home/userdir
+
+CMD ["/sshserver.sh"]
+
+// indicator that sshserver and its related dependencies are installe
+ENV SSH_SETUP 1

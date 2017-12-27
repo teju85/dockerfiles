@@ -5,6 +5,7 @@ import string
 from argparse import ArgumentParser, REMAINDER
 import os
 import socket
+import getpass
 
 
 class Launcher:
@@ -35,8 +36,10 @@ class Launcher:
             return ""
         out = []
         for p in arr.keys():
-            tmp = string.replace(p, "/tcp", "")
-            out.append("-p %s:%s" % (tmp, tmp))
+            tmp = int(string.replace(p, "/tcp", ""))
+            # system ports?
+            tmp1 = tmp + 8192 if tmp < 2048 else tmp
+            out.append("-p %d:%d" % (tmp1, tmp))
         return out
 
     def __getIP(self, rhost):
@@ -73,7 +76,8 @@ class Launcher:
         vols = []
         for vol in args.v:
             vols.append("-v %s" % vol)
-        if not args.nopwd:
+        # Prohibit pwd-mounting if nfsmount is set!
+        if not args.nopwd and not args.nfsmount:
             vols.append("-v %s:/work:rw" % os.getcwd())
             vols.append("-w /work")
         return vols
@@ -88,21 +92,17 @@ class Launcher:
         out = []
         bindir = os.path.abspath(os.path.dirname(__file__))
         if args.runas == "user":
-            out.append("-e UID=%d" % os.getuid())
-            out.append("-v %s/exec-as.c:/exec-as.c:ro" % bindir)
-            out.append("-v %s/runas.sh:/runas.sh:ro" % bindir)
-            out.append("--entrypoint=/runas.sh")
-        elif args.runas == "uid:gid":
+            out.append("-e RUNAS_UID=%d" % os.getuid())
+            out.append("-e RUNAS_USER=%s" % getpass.getuser())
+        elif args.runas == "uid":
             uid = os.getuid()
             gid = os.getgid()
             out.append("-u %d:%d" % (uid, gid))
+            out.append("-e RUNAS_USER=%s" % getpass.getuser())
         return out
 
     def launch(self):
         args = self.getParser().parse_args()
-        # Prohibit pwd-mounting if nfsmount is set!
-        if args.nfsmount:
-            args.nopwd = True
         finalcmd = ["nvidia-docker", "run", "-it", "--rm"]
         finalcmd += self.getPort(args.image)
         finalcmd += self.getVols(args)
@@ -116,32 +116,34 @@ class Launcher:
         finalcmd.append(args.image)
         finalcmd += self.getCmd(args)
         finalcmd = " ".join(finalcmd)
+        print("Host IP Address: %s" % socket.gethostbyname(socket.getfqdn()))
         print(finalcmd)
         subprocess.check_call(finalcmd, shell=True)
         return
 
-    # override this method to define your custom parser
-    # it'll be better to call this method from the child class as well!
     def getParser(self):
         parser = ArgumentParser(description="Wrapper to launch as current user")
         parser.add_argument("-v", default=[], action="append", type=str,
                             help="Volumes to mount. Same syntax as docker run")
-        parser.add_argument("-runas", choices=["user", "root", "uid:gid"],
-                            default="root", type=str,
-                            help="Run as specified. Default is root. Options: "
-                            "\n  user    - run as current user by switching user inside the container"
-                            "\n  root    - run as root (default)"
-                            "\n  uid:gid - pass the -u option to docker")
+        parser.add_argument(
+            "-runas", choices=["user", "root", "uid"],
+            default="root", type=str,
+            help="Run as specified. Default is root. Options: "
+            " user [run as current user by switching user inside the container]"
+            " root [run as root, without any of these switching abilities]"
+            " uid  ['-u' option to docker. To run on non-privileged containers]")
         parser.add_argument("-security", type=str, default=None,
                             help="Same as --security-opt option of docker")
         parser.add_argument("-nopwd", action="store_true", default=False,
                             help="Do not mount current dir as /work")
-        parser.add_argument("-nfsmount", action="store_true", default=False,
-                            help="Mount the nfs-root of current dir as /work. Implies -nopwd")
+        parser.add_argument(
+            "-nfsmount", action="store_true", default=False,
+            help="Mount the nfs-root of current dir as /work. Implies -nopwd")
         parser.add_argument("-dns", default=[], action="append", type=str,
                             help="Pass DNS servers to be used inside container")
-        parser.add_argument("-ipc", default=None, type=str,
-                            help="how to use shared memory to share data between processes")
+        parser.add_argument(
+            "-ipc", default=None, type=str,
+            help="how to use shared memory between processes.")
         parser.add_argument("image", help="Image to be launched")
         parser.add_argument("cmd", nargs=REMAINDER,
                             help="Command to run inside the container")

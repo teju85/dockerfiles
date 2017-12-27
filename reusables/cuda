@@ -1,5 +1,7 @@
-// shamelessly copied over and modified from nvidia's dockerfiles on gitlab!
+#ifndef __CUDA__
+#define __CUDA__
 
+// shamelessly copied and modified from nvidia's dockerfiles on gitlab!
 LABEL maintainer "NVIDIA CORPORATION <cudatools@nvidia.com>"
 
 RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \\
@@ -47,3 +49,5 @@ LABEL com.nvidia.cuda.version="$CUDA_VERSION"
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=$CUDA_VERSION_SHORT"
+
+#endif // __CUDA__

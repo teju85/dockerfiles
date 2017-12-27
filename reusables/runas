@@ -1,0 +1,16 @@
+#ifndef __RUNAS__
+#define __RUNAS__
+
+#include "build-essential"
+
+/**
+ * This file contains a couple of utilities to provide ability for creating
+ * arbitrary users inside the container. Especially useful in the case of
+ * running inside the containers as "you"
+ * Refer to <root>/scripts/README.md on how this feature can be used.
+ */
+COPY contexts/runas /opt/runas
+RUN cc -o /opt/runas/exec-as /opt/runas/exec-as.c
+ENTRYPOINT ["/opt/runas/runas.sh"]
+
+#endif // __RUNAS__

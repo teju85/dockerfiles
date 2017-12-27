@@ -53,59 +53,59 @@ help:
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
 	@echo "  . dbscan-dev   dbscan developmental image"
 
-.PHONY: cuda80
-cuda80:
+
+## cuda env related targets begin ##
+.PHONY: cuda
+cuda:
 	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t cuda:8.0 . && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_FULL="$(__FULL)" \
+	    -D__CUDA_VERSION_PKG="$(__PKG)" \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t cuda:$(__SHORT) . && \
 	make -f ../Makefile delContext
 
-VNC_PORT ?= 5900
+.PHONY: cuda-dev
+cuda-dev:
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_FULL="$(__FULL)" \
+	    -D__CUDA_VERSION_PKG="$(__PKG)" \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t cuda:$(__SHORT)-dev . && \
+	make -f ../Makefile delContext
+
+.PHONY: cuda80
+cuda80:
+	$(MAKE) __FULL="8.0.61" __PKG="8-0=8.0.61-1" __SHORT="8.0" cuda
+
 .PHONY: cuda80-dev
 cuda80-dev:
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t cuda:8.0-dev \
-	    --build-arg port=$(VNC_PORT) . && \
-	make -f ../Makefile delContext
+	$(MAKE) __FULL="8.0.61" __PKG="8-0=8.0.61-1" __SHORT="8.0" cuda-dev
 
 .PHONY: cuda90
 cuda90:
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t cuda:9.0 . && \
-	make -f ../Makefile delContext
+	$(MAKE) __FULL="9.0.176" __PKG="9-0=9.0.176-1" __SHORT="9.0" cuda
 
 .PHONY: cuda90-dev
 cuda90-dev:
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t cuda:9.0-dev \
-	    --build-arg port=$(VNC_PORT) . && \
-	make -f ../Makefile delContext
+	$(MAKE) __FULL="9.0.176" __PKG="9-0=9.0.176-1" __SHORT="9.0" cuda-dev
 
 .PHONY: cuda91
 cuda91:
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t cuda:9.1 . && \
-	make -f ../Makefile delContext
+	$(MAKE) __FULL="9.1.85" __PKG="9-1=9.1.85-1" __SHORT="9.1" cuda
 
 .PHONY: cuda91-dev
 cuda91-dev:
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t cuda:9.1-dev \
-	    --build-arg port=$(VNC_PORT) . && \
-	make -f ../Makefile delContext
+	$(MAKE) __FULL="9.1.85" __PKG="9-1=9.1.85-1" __SHORT="9.1" cuda-dev
+## cuda env related targets end ##
 
-.PHONY: dbscan
-dbscan-dev: cuda90-dev
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t dbscan:dev . && \
-	make -f ../Makefile delContext
 
+## cudnn env related targets begin ##
 .PHONY: cudnn51
 cudnn51: cuda80
 	cd cudnn51 && docker build -t cudnn:5.1 .
@@ -117,6 +117,15 @@ cudnn60: cuda80
 .PHONY: cudnn70
 cudnn70: cuda90-dev
 	cd cudnn70 && docker build -t cudnn:7.0 .
+## cudnn env related targets end ##
+
+
+.PHONY: dbscan
+dbscan-dev: cuda90-dev
+	cd $@ && \
+	make -f ../Makefile genContext && \
+	docker build -t dbscan:dev . && \
+	make -f ../Makefile delContext
 
 .PHONY: gunrock
 gunrock: cuda80
@@ -239,14 +248,18 @@ fairseq-py-dev: cudnn60
 	make -f ../Makefile delContext
 
 
-# for the below 2 targets, the pwd has to be inside the directory containing Dockerfile.cpp!
+# for the below targets, the pwd has to be inside the directory containing Dockerfile.cpp!
 .PHONY: genContext
 genContext:
 	cpp -o Dockerfile Dockerfile.cpp && \
-	    grep -v -e '^#' -e '^# ' -e '^$$' Dockerfile > tmp && \
-	    mv tmp Dockerfile && \
-	    rm -rf contexts && \
-	    cp -r ../../shared-contexts contexts
+	make -f ../Makefile genContextOnly
+
+.PHONY: genContextOnly
+genContextOnly:
+	grep -v -e '^#' -e '^# ' -e '^$$' Dockerfile > tmp && \
+	mv tmp Dockerfile && \
+	rm -rf contexts && \
+	cp -r ../../shared-contexts contexts
 
 .PHONY: delContext
 delContext:

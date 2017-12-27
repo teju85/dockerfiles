@@ -1,3 +1,5 @@
+#ifndef __CUDA_DEV__
+#define __CUDA_DEV__
 
 #include "cuda"
 
@@ -15,9 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \\
         cuda-npp-dev-$CUDA_PKG_VERSION \\
         cuda-nvgraph-dev-$CUDA_PKG_VERSION \\
         cuda-nvml-dev-$CUDA_PKG_VERSION \\
-        cuda-nvrtc-dev-$CUDA_PKG_VERSION \\
-        cuda-visual-tools-$CUDA_PKG_VERSION && \\
+        cuda-nvrtc-dev-$CUDA_PKG_VERSION && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-#include "vnc"
+#endif // __CUDA_DEV__
