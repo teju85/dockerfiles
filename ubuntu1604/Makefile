@@ -164,16 +164,13 @@ cudnn90_70-dev:
 ## cudnn with v9.0 env related targets end ##
 
 
-.PHONY: dbscan-dev
-dbscan-dev: cuda90-dev
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t dbscan:dev . && \
-	make -f ../Makefile delContext
-
 .PHONY: gunrock
 gunrock: cuda80
 	cd gunrock && docker build -t gunrock:latest .
+
+.PHONY: kaldi
+kaldi: cudnn60
+	cd kaldi && docker build -t kaldi:latest .
 
 .PHONY: postgres
 postgres:
@@ -217,10 +214,6 @@ xgb-dev: cuda80-dev
 	    docker build -t xgb-dev:8.0 \
 	        --build-arg port=$(XGB_DEV_VNC_PORT) . && \
 	    rm -rf contexts Dockerfile
-
-.PHONY: kaldi
-kaldi: cudnn60
-	cd kaldi && docker build -t kaldi:latest .
 
 .PHONY: nvcaffe
 nvcaffe: cudnn60
