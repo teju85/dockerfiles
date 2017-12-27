@@ -1,4 +1,5 @@
-
+#ifndef __PERL__
+#define __PERL__
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
@@ -10,3 +11,5 @@ RUN apt-get update && \\
         wget && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
+
+#endif // __PERL__

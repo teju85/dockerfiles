@@ -1,3 +1,5 @@
+#ifndef __VNC__
+#define __VNC__
 
 ARG port=5900
 
@@ -36,3 +38,5 @@ CMD ["/vncserver.sh"]
 // this flag is checked by 'runas.sh' script to determine whether to setup
 // X related files or not
 ENV VNC_SETUP 1
+
+#endif // __VNC__

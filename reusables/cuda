@@ -12,10 +12,17 @@ RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efac
     echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \\
     echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
 
-// define's expected
-// . __CUDA_VERSION_FULL
-// . __CUDA_VERSION_PKG
-// . __CUDA_VERSION_SHORT
+#ifndef __CUDA_VERSION_FULL
+#error "Macro __CUDA_VERSION_FULL not defined! Eg format: 9.0.176"
+#endif
+
+#ifndef __CUDA_VERSION_PKG
+#error "Macro __CUDA_VERSION_PKG not defined! Eg format: 9-0=9.0.176-1"
+#endif
+
+#ifndef __CUDA_VERSION_SHORT
+#error "Macro __CUDA_VERSION_SHORT not defined! Eg format: 9.0"
+#endif
 
 ENV CUDA_VERSION __CUDA_VERSION_FULL
 ENV CUDA_PKG_VERSION __CUDA_VERSION_PKG

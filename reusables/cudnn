@@ -4,9 +4,13 @@
 // shamelessly copied over from nvidia's dockerfiles on gitlab!
 RUN echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
 
-// define's expected
-// . __CUDNN_VERSION
-// . __CUDNN_VERSION_SHORT
+#ifndef __CUDNN_VERSION
+#error "Macro __CUDNN_VERSION not defined! Eg format: 7.0.5.15"
+#endif
+
+#ifndef __CUDNN_VERSION_SHORT
+#error "Macro __CUDNN_VERSION_SHORT not defined! Eg format: 7"
+#endif
 
 // env's assumed
 // . CUDA_VERSION_SHORT  (which anyways is already defined inside "cuda")
