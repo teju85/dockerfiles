@@ -1,7 +1,10 @@
+#ifndef __SSH__
+#define __SSH__
 
-ARG sshport=22
+#include "runas"
 
 ENV DEBIAN_FRONTEND noninteractive
+EXPOSE 22
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
@@ -9,24 +12,17 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-EXPOSE $sshport
+COPY "icontexts/ssh" "/opt/ssh/"
 
-COPY contexts/sshserver.sh /sshserver.sh
+// Hook up the start script as a pre-switch command
+// That way '-runas user' launch option should also work
+ENV RUNAS_PRE_SWITCH_CMD "/opt/ssh/start.sh"
 
-RUN chmod +x /sshserver.sh && \\
-    mkdir -p /home/userdir && \\
-    chmod 0777 /home/userdir && \\
-    mkdir /var/run/sshd && \\
+// /etc/pam.d/sshd: SSH login fix. Otherwise user is kicked off after login
+RUN mkdir /var/run/sshd && \\
     sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \\
-    echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \\
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \\
+    echo "root:root" | chpasswd
 
-// SSH login fix. Otherwise user is kicked off after login
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-
-// a read-writeable dir that the user inside the container can use
-ENV HOME=/home/userdir
-
-CMD ["/sshserver.sh"]
-
-// indicator that sshserver and its related dependencies are installe
-ENV SSH_SETUP 1
+#endif // __SSH__
