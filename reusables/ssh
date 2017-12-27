@@ -12,7 +12,7 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-COPY "icontexts/ssh" "/opt/ssh/"
+COPY "contexts/ssh" "/opt/ssh/"
 
 // Hook up the start script as a pre-switch command
 // That way '-runas user' launch option should also work
