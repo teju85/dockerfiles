@@ -1,29 +1,34 @@
 
 #include "xgb-dev"
 
-ARG arch=35;50;52;60;61
+#define QUOTE(macro) #macro
+#define STR(macro) QUOTE(macro)
+
+#ifndef XGB_ARCH
+#define XGB_ARCH 35;50;52;60;61
+#endif
+#define XGB_ARCH_STR STR(XGB_ARCH)
+
 #ifndef XGB_COMMIT
 #define XGB_COMMIT 998ac6e27107af6d5e73022f1bcbbf5e5dd10d72
 #endif
-ARG xgCommit=XGB_COMMIT
 
 #ifndef XGB_REPO
-#define XGB_REPO "teju85"
+#define XGB_REPO teju85/xgboost
 #endif
-
-#define XGB_LINK "https://github.com/"XGB_REPO"/xgboost"
+#define XGB_LINK "https://github.com/"XGB_REPO
 
 RUN git config --global http.sslVerify false && \\
     git clone --recursive XGB_LINK && \\
     cd xgboost && \\
-    git reset --hard $xgCommit
+    git reset --hard XGB_COMMIT
 
-ENV XG_COMMIT_ID $xgCommit
+ENV XG_COMMIT_ID XGB_COMMIT
 
 RUN cd xgboost && \\
     mkdir build && \\
     cd build && \\
-    cmake .. -DGPU_COMPUTE_VER=$arch -DUSE_CUDA=ON && \\
+    cmake .. -DGPU_COMPUTE_VER=XGB_ARCH_STR -DUSE_CUDA=ON && \\
     make -j3 && \\
     cd ../python-package && \\
     python setup.py install

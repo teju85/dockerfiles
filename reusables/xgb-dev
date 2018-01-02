@@ -1,3 +1,5 @@
+#ifndef __XGB_DEV__
+#define __XGB_DEV__
 
 #include "pyml-env-2.7"
 
@@ -12,12 +14,4 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-// Not needed, since the default cmake is at version 3.5 already
-//RUN wget "https://cmake.org/files/v3.8/cmake-3.8.2.tar.gz" && \\
-//    tar xf cmake-3.8.2.tar.gz && \\
-//    cd cmake-3.8.2 && \\
-//    ./bootstrap && \\
-//    make && \\
-//    make install && \\
-//    cd .. && \\
-//    rm -rf cmake-3.8.2.tar.gz cmake-3.8.2
+#endif // __XGB_DEV__

@@ -1,3 +1,5 @@
+#ifndef __PYTORCH__
+#define __PYTORCH__
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
@@ -55,9 +57,10 @@ RUN cd /opt/pytorch && \\
     TORCH_CUDA_ARCH_LIST="3.5 5.2 6.0 6.1+PTX" \\
         TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \\
         CMAKE_PREFIX_PATH="$(dirname $(which conda))/../" \\
-        EXTRA_TORCH_FLAGS \\
         python setup.py install
 
 RUN git clone "https://github.com/pytorch/vision.git" /opt/vision && \\
         cd /opt/vision && \\
         python setup.py install
+
+#endif // __PYTORCH__

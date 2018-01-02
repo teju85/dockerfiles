@@ -1,36 +1,43 @@
 
 help:
 	@echo "make what? Available targets are:"
-	@echo "  . cuda(80|90|91)     - cuda v8.0/v.9.0/v9.1 runtimes. These, in"
-	@echo "                         addition, come with 'runas' ability."
-	@echo "  . cuda(80|90|91)-dev - cuda v8.0/v.9.0/v9.1 devels. These, in"
-	@echo "                         addition, come with 'runas' ability."
-	@echo "  . cudnn(51|60|80_70|90_70)     - cudnn v5.1/v6.0/v7.0-with-v8.0/"
-	@echo "                                   v7.0-with-9.0 runtimes."
-	@echo "  . cudnn(51|60|80_70|90_70)-dev - cudnn v5.1/v6.0/v7.0-with-v8.0/"
-	@echo "                                    v7.0-with-9.0 devels."
+	@echo "  cuda(80|90|91)"
+	@echo "    cuda v8.0/v.9.0/v9.1 runtimes. These, in addition, come"
+	@echo "    with 'runas' ability."
+	@echo "  cuda(80|90|91)-dev"
+	@echo "    cuda v8.0/v.9.0/v9.1 devels. These, in addition, come with"
+	@echo "    'runas' ability."
+	@echo "  cudnn(51|60|80_70|90_70)"
+	@echo "    cudnn v5.1/v6.0/v7.0-with-v8.0/v7.0-with-9.0 runtimes."
+	@echo "  cudnn(51|60|80_70|90_70)-dev"
+	@echo "    cudnn v5.1/v6.0/v7.0-with-v8.0/v7.0-with-9.0 devels."
+	@echo
+	@echo "  pytorch(60|80_70|90_70)"
+	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
+	@echo "    behavior:"
+	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
+	@echo
+	@echo "  xgboost(80|90|91)"
+	@echo "    install latest version of xgboost. Some flags to customize"
+	@echo "    behavior:"
+	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
+	@echo "    . XG_COMMIT - commit ID to sync. [$(XG_COMMIT)]"
+	@echo "    . XG_REPO   - repo to sync. [$(XG_REPO)]"
+	@echo "  xgb-dev(80|90|91)"
+	@echo "    install development env for xgboost. Assumes that user will"
+	@echo "    mount xgboost repo while launching container on this image."
+	@echo "  gbm(80|90|91)"
+	@echo "    gbm benchmarking images. Some flags to customize behavior:"
+	@echo "    . XG_ARCH        - cuda arch(s) to build. [$(XG_ARCH)]"
+	@echo "    . GBM_XG_COMMIT  - xgboost commit ID. [$(GBM_XG_COMMIT)]"
+	@echo "    . GBM_LG_COMMIT  - lightgbm commit ID. [$(GBM_LG_COMMIT)]"
+	@echo "    . GBM_CAT_COMMIT - catboost commit ID. [$(GBM_CAT_COMMIT)]"
 	@echo
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
-	@echo "  . pytorch      gpu enabled pytorch (on top of pyml-env libs)"
-	@echo "                 Some flags to customize behavior:"
-	@echo "                   PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
 	@echo "  . tensorflow10 install tensorflow 1.0"
-	@echo "  . xgboost      install latest version of xgboost"
-	@echo "                 Some flags to customize behavior:"
-	@echo "                   XG_ARCH - cuda arch(s) to build for [$(XG_ARCH)]"
-	@echo "                   XG_COMMIT - commit ID to which to sync [$(XG_COMMIT)]"
-	@echo "  . xgb-dev      Starts vnc server with env for xgboost development"
-	@echo "                 Some flags to customize behavior:"
-	@echo "                   XGB_DEV_VNC_PORT - vnc port [$(XGB_DEV_VNC_PORT)]"
 	@echo "  . kaldi        install kaldi framework (shared lib version)"
 	@echo "  . nvcaffe      install nv-caffe and its dependencies"
-	@echo "  . gbm          gbm benchmarking images"
-	@echo "                 Some flags to customize behavior:"
-	@echo "                   XG_ARCH - cuda arch(s) to build for [$(XG_ARCH)]"
-	@echo "                   GBM_XG_COMMIT - xgboost commit ID to sync to [$(GBM_XG_COMMIT)]"
-	@echo "                   GBM_LG_COMMIT - lightgbm commit ID to sync to [$(GBM_LG_COMMIT)]"
-	@echo "                   GBM_CAT_COMMIT - catboost commit ID to sync to [$(GBM_CAT_COMMIT)]"
 	@echo "  . pix2pix      pytorch implementation of pix2pix and cycle-gan works"
 	@echo "  . mxnet        gpu enabled mxnet + keras (on top of pyml-env libs)"
 	@echo "                 Some flags to customize behavior:"
@@ -45,7 +52,6 @@ help:
 	@echo "  . fairseq-py-dev intall dev env for pytorch version of conv NMT from faceboook."
 	@echo "                   Some flags to customize behavior:"
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
-	@echo "  . dbscan-dev   dbscan developmental image"
 
 
 ## cuda env related targets begin ##
@@ -129,39 +135,156 @@ cudnn-dev: cuda$(__CUDA_MINIFIED)-dev
 ## cudnn with v8.0 env related targets end ##
 .PHONY: cudnn51
 cudnn51:
-	$(MAKE) __CUDNN="5.1.10" __CUDNN_SHORT="5" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn
+	$(MAKE) __CUDNN="5.1.10" __CUDNN_SHORT="5" __SHORT="8.0" __CUDA_MINIFIED="80" cudnn
 
 .PHONY: cudnn60
 cudnn60:
-	$(MAKE) __CUDNN="6.0.21" __CUDNN_SHORT="6" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn
+	$(MAKE) __CUDNN="6.0.21" __CUDNN_SHORT="6" __SHORT="8.0" __CUDA_MINIFIED="80" cudnn
 
 .PHONY: cudnn80_70
 cudnn80_70:
-	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn
+	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="8.0" __CUDA_MINIFIED="80" cudnn
 
 .PHONY: cudnn51-dev
 cudnn51-dev:
-	$(MAKE) __CUDNN="5.1.10" __CUDNN_SHORT="5" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn-dev
+	$(MAKE) __CUDNN="5.1.10" __CUDNN_SHORT="5" __SHORT="8.0" __CUDA_MINIFIED="80" cudnn-dev
 
 .PHONY: cudnn60-dev
 cudnn60-dev:
-	$(MAKE) __CUDNN="6.0.21" __CUDNN_SHORT="6" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn-dev
+	$(MAKE) __CUDNN="6.0.21" __CUDNN_SHORT="6" __SHORT="8.0" __CUDA_MINIFIED="80" cudnn-dev
 
 .PHONY: cudnn80_70-dev
 cudnn80_70-dev:
-	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="8.0" __CUDA_MINIFIED=80 cudnn-dev
+	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="8.0" __CUDA_MINIFIED="80" cudnn-dev
 ## cudnn with v8.0 env related targets end ##
 
 
 ## cudnn with v9.0 env related targets begin ##
 .PHONY: cudnn90_70
 cudnn90_70:
-	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED=90 cudnn
+	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED="90" cudnn
 
 .PHONY: cudnn90_70-dev
 cudnn90_70-dev:
-	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED=90 cudnn-dev
+	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED="90" cudnn-dev
 ## cudnn with v9.0 env related targets end ##
+
+
+## pytorch env's start ##
+PT_PORT ?= 8888
+.PHONY: pytorch
+pytorch: cudnn$(__CUDNN_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t pytorch:latest-$(__CUDNN_MINIFIED) \
+	    --build-arg port=$(PT_PORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: pytorch60
+pytorch60:
+	$(MAKE) __CUDNN_MINIFIED="60" __CUDNN_TAG="8.0-6.0.21" pytorch
+
+.PHONY: pytorch80_70
+pytorch80_70:
+	$(MAKE) __CUDNN_MINIFIED="80_70" __CUDNN_TAG="8.0-7.0.5.15" pytorch
+
+.PHONY: pytorch90_70
+pytorch90_70:
+	$(MAKE) __CUDNN_MINIFIED="90_70" __CUDNN_TAG="9.0-7.0.5.15" pytorch
+## pytorch env's end ##
+
+
+## xgboost env's start ##
+XG_ARCH   ?= 35;50;52;60;61
+XG_COMMIT ?= 14c6392381c3b63996af4bd9bb13840dd20e78bf
+XG_REPO   ?= "dmlc/xgboost"
+.PHONY: xgboost
+xgboost: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    -DXGB_REPO="$(XG_REPO)" \
+	    -DXGB_ARCH="$(XG_ARCH)" \
+	    -DXGB_COMMIT="$(XG_COMMIT)" \
+	    Dockerfile.cpp && \
+	docker build -t xgboost:latest-$(__SHORT) . && \
+	rm -f Dockerfile
+
+.PHONY: xgb-dev
+xgb-dev: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    Dockerfile.cpp && \
+	docker build -t xgb:dev-$(__SHORT) . && \
+	rm -f Dockerfile
+
+.PHONY: xgboost80
+xgboost80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" xgboost
+
+.PHONY: xgboost90
+xgboost90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" xgboost
+
+.PHONY: xgboost91
+xgboost91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" xgboost
+
+.PHONY: xgb-dev80
+xgb-dev80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" xgb-dev
+
+.PHONY: xgb-dev90
+xgb-dev90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" xgb-dev
+
+.PHONY: xgb-dev91
+xgb-dev91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" xgb-dev
+## xgboost env's end ##
+
+
+## gbm env's start ##
+GBM_XG_COMMIT ?= 4d36036fe6fdc30ba4d72c84f3957a39a29ab23f
+GBM_LG_COMMIT ?= 72b549561ff42239dffdcce231a46791ec59c35c
+GBM_CAT_COMMIT ?= f28154d8b0d4ca8e4d1baed2260656ba1223a75d
+.PHONY: gbm
+gbm: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    -DXGB_ARCH="$(XG_ARCH)" \
+	    -DXGB_COMMIT="$(GBM_XG_COMMIT)" \
+	    -DLG_COMMIT="$(GBM_LG_COMMIT)" \
+	    -DCAT_COMMIT="$(GBM_CAT_COMMIT)" \
+	    Dockerfile.cpp && \
+	docker build -t gbm:latest-$(__SHORT) . && \
+	rm -f Dockerfile
+
+.PHONY: gbm80
+gbm80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" gbm
+
+.PHONY: gbm90
+gbm90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" gbm
+
+.PHONY: gbm91
+gbm91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" gbm
+## gbm env's end ##
+
+
+.PHONY: pix2pix
+pix2pix: pytorch90_70
+	cd pix2pix && \
+	    cpp -o Dockerfile Dockerfile.cpp && \
+	    docker build -t pix2pix:latest . && \
+	    rm -f Dockerfile
 
 
 .PHONY: gunrock
@@ -176,16 +299,6 @@ kaldi: cudnn60
 postgres:
 	cd postgres && docker build -t postgres:latest .
 
-PT_PORT ?= 8888
-.PHONY: pytorch
-pytorch: cudnn60
-	cd pytorch && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
-	    cp -r ../../shared-contexts contexts && \
-	    docker build -t pytorch:0.1.12 \
-	        --build-arg port=$(PT_PORT) . && \
-	    rm -rf contexts Dockerfile
-
 .PHONY: tensorflow10
 tensorflow10: cudnn51
 	cd tensorflow10 && \
@@ -193,52 +306,9 @@ tensorflow10: cudnn51
 	    docker build -t tensorflow:1.0 . && \
 	    rm -f Dockerfile
 
-XG_ARCH ?= 35;50;52;60;61
-XG_COMMIT ?= 998ac6e27107af6d5e73022f1bcbbf5e5dd10d72
-.PHONY: xgboost
-xgboost: cuda80
-	cd xgboost && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
-	    docker build -t xgboost:8.0 \
-	        --build-arg arch="$(XG_ARCH)" \
-	        --build-arg xgCommit=$(XG_COMMIT) . && \
-	    rm -f Dockerfile
-
-XGB_DEV_VNC_PORT ?= 5900
-.PHONY: xgb-vnc
-xgb-dev: cuda80-dev
-	cd xgb-dev && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
-	    rm -rf contexts && \
-	    cp -r ../../shared-contexts contexts && \
-	    docker build -t xgb-dev:8.0 \
-	        --build-arg port=$(XGB_DEV_VNC_PORT) . && \
-	    rm -rf contexts Dockerfile
-
 .PHONY: nvcaffe
 nvcaffe: cudnn60
 	cd nvcaffe && docker build -t nvcaffe:latest .
-
-GBM_XG_COMMIT ?= 4d36036fe6fdc30ba4d72c84f3957a39a29ab23f
-GBM_LG_COMMIT ?= 72b549561ff42239dffdcce231a46791ec59c35c
-GBM_CAT_COMMIT ?= f28154d8b0d4ca8e4d1baed2260656ba1223a75d
-.PHONY: gbm
-gbm: cuda80-dev
-	cd $@ && \
-	make -f ../Makefile genContext && \
-	docker build -t gbm:latest \
-	    --build-arg arch="$(XG_ARCH)" \
-	    --build-arg xgCommit=$(GBM_XG_COMMIT) \
-	    --build-arg lgCommit=$(GBM_LG_COMMIT) \
-	    --build-arg catCommit=$(GBM_CAT_COMMIT) . && \
-	make -f ../Makefile delContext
-
-.PHONY: pix2pix
-pix2pix: pytorch
-	cd pix2pix && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
-	    docker build -t pix2pix:latest . && \
-	    rm -f Dockerfile
 
 MX_PORT ?= 8888
 .PHONY: mxnet

@@ -1,7 +1,11 @@
+#ifndef __CATBOOST_INSTALL__
+#define __CATBOOST_INSTALL__
 
 #include "pyml-env-2.7"
 
-ARG catCommit=8e4283c48b529314f5e9898b678032f2d6050483
+#ifndef CAT_COMMIT
+#define CAT_COMMIT 8e4283c48b529314f5e9898b678032f2d6050483
+#endif
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
@@ -19,9 +23,9 @@ RUN pip install --upgrade pip && \\
 RUN git config --global http.sslVerify false && \\
     git clone "https://github.com/catboost/catboost" && \\
     cd catboost && \\
-    git reset --hard $catCommit
+    git reset --hard CAT_COMMIT
 
-ENV CAT_COMMIT_ID $catCommit
+ENV CAT_COMMIT_ID CAT_COMMIT
 
 RUN cd catboost/catboost/python-package/catboost && \\
     ../../../ya make \\
@@ -32,3 +36,5 @@ RUN cd catboost/catboost/python-package/catboost && \\
         -DCUDA_ROOT=$(dirname $(dirname $(which nvcc)))
 
 ENV PYTHONPATH=$PYTHONPATH:/catboost/catboost/python-package
+
+#endif // __CATBOOST_INSTALL__

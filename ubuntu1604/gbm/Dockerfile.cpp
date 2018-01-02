@@ -1,6 +1,13 @@
-FROM cuda:8.0-dev
 
-#define XGB_REPO "dmlc"
+#ifndef __CUDA_VERSION_SHORT
+#define "__CUDA_VERSION_SHORT is a mandatory define! Eg: 8.0"
+#endif
+
+#define BASE_TAG __CUDA_VERSION_SHORT"-dev"
+FROM cuda:BASE_TAG
+
+// always pick from dmlc (the main repo)
+#define XGB_REPO "dmlc/xgboost"
 #include "../../reusables/xgboost-install"
 #include "../../reusables/lightgbm-install"
 #include "../../reusables/catboost-install"

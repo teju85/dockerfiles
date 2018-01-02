@@ -1,6 +1,7 @@
 
-// define's expected
-// . __CUDA_VERSION_SHORT (cudnn version can be built with a specific sdk)
+#ifndef __CUDA_VERSION_SHORT
+#error "__CUDA_VERSION_SHORT is a mandatory define! Eg: 8.0"
+#endif
 
 FROM cuda:__CUDA_VERSION_SHORT
 
