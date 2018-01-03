@@ -210,8 +210,9 @@ xgboost: cuda$(__CUDA_MINIFIED)-dev
 	    -DXGB_ARCH="$(XG_ARCH)" \
 	    -DXGB_COMMIT="$(XG_COMMIT)" \
 	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
 	docker build -t xgboost:latest-$(__SHORT) . && \
-	rm -f Dockerfile
+	make -f ../Makefile delContext
 
 .PHONY: xgb-dev
 xgb-dev: cuda$(__CUDA_MINIFIED)-dev

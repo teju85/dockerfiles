@@ -3,8 +3,8 @@
 
 ARG port=8888
 EXPOSE $port
-COPY contexts/jupyter.sh /jupyter.sh
+COPY contexts/jupyter /opt/jupyter
 ENV NBPORT $port
-CMD /jupyter.sh
+CMD /opt/jupyter/jupyter.sh
 
 #endif // __JUPYTER
