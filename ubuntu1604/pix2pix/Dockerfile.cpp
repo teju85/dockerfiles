@@ -1,9 +1,11 @@
-FROM pytorch:0.1.12
 
+#ifndef __PYTORCH_VERSION_TAG
+#error "__PYTORCH_VERSION_TAG is a mandatory define! Eg: latest-90_70"
+#endif
 
-RUN git clone "https://github.com/pytorch/vision" && \\
-    cd vision && \\
-    python setup.py install
+#define BASE_TAG __PYTORCH_VERSION_TAG
+FROM pytorch:BASE_TAG
+
 
 RUN pip install --upgrade pip && \\
     pip install --no-cache-dir \\
@@ -18,6 +20,3 @@ RUN apt-get update && \\
 
 // for visdom
 EXPOSE 8097
-
-RUN git clone "https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix" "/pytorch-CycleGAN-and-pix2pix"
-WORKDIR "/pytorch-CycleGAN-and-pix2pix"

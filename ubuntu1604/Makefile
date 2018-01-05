@@ -54,6 +54,26 @@ help:
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
 
 
+## helper targets begin ##
+# for the below targets, the pwd has to be inside the directory containing Dockerfile.cpp!
+.PHONY: genContext
+genContext:
+	cpp -o Dockerfile Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly
+
+.PHONY: genContextOnly
+genContextOnly:
+	grep -v -e '^#' -e '^# ' -e '^$$' Dockerfile > tmp && \
+	mv tmp Dockerfile && \
+	rm -rf contexts && \
+	cp -r ../../shared-contexts contexts
+
+.PHONY: delContext
+delContext:
+	rm -rf contexts Dockerfile
+## help targets end ##
+
+
 ## cuda env related targets begin ##
 .PHONY: cuda
 cuda:
@@ -176,7 +196,7 @@ PT_PORT ?= 8888
 pytorch: cudnn$(__CUDNN_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
-	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)" \
+	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)-dev" \
 	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
 	docker build -t pytorch:latest-$(__CUDNN_MINIFIED) \
@@ -280,10 +300,22 @@ gbm91:
 ## gbm env's end ##
 
 
+
+.PHONY: postgres
+postgres:
+	cd postgres && docker build -t postgres:latest .
+
+
+
+## what targets follow hereafterwards are the ones which are built
+## using a specific version of the above base images!
+## (hence the parent image tags are being hard-coded!)
 .PHONY: pix2pix
 pix2pix: pytorch90_70
 	cd pix2pix && \
-	    cpp -o Dockerfile Dockerfile.cpp && \
+	    cpp -o Dockerfile \
+	        -D__PYTORCH_VERSION_TAG="latest-90_70" \
+	        Dockerfile.cpp && \
 	    docker build -t pix2pix:latest . && \
 	    rm -f Dockerfile
 
@@ -295,10 +327,6 @@ gunrock: cuda80
 .PHONY: kaldi
 kaldi: cudnn60
 	cd kaldi && docker build -t kaldi:latest .
-
-.PHONY: postgres
-postgres:
-	cd postgres && docker build -t postgres:latest .
 
 .PHONY: tensorflow10
 tensorflow10: cudnn51
@@ -354,21 +382,3 @@ fairseq-py-dev: cudnn60
 	docker build -t fairseq-py-dev:latest \
 	    --build-arg port=$(FS_PORT) . && \
 	make -f ../Makefile delContext
-
-
-# for the below targets, the pwd has to be inside the directory containing Dockerfile.cpp!
-.PHONY: genContext
-genContext:
-	cpp -o Dockerfile Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly
-
-.PHONY: genContextOnly
-genContextOnly:
-	grep -v -e '^#' -e '^# ' -e '^$$' Dockerfile > tmp && \
-	mv tmp Dockerfile && \
-	rm -rf contexts && \
-	cp -r ../../shared-contexts contexts
-
-.PHONY: delContext
-delContext:
-	rm -rf contexts Dockerfile
