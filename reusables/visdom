@@ -1,0 +1,13 @@
+#ifndef __VISDOM__
+#define __VISDOM__
+
+ARG visport=8097
+EXPOSE $visport
+COPY contexts/visdom /opt/visdom
+ENV VISPORT $visport
+CMD /opt/visdom/visdom.sh
+
+RUN pip install --no-cache-dir \\
+        visdom
+
+#endif // __VISDOM

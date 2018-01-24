@@ -33,6 +33,11 @@ help:
 	@echo "    . GBM_LG_COMMIT  - lightgbm commit ID. [$(GBM_LG_COMMIT)]"
 	@echo "    . GBM_CAT_COMMIT - catboost commit ID. [$(GBM_CAT_COMMIT)]"
 	@echo
+	@echo "  dsb-2018"
+	@echo "    Working environment for Data Science Bowl - 2018. Some flags"
+	@echo "    to customize behavior:"
+	@echo "    . VIS_PORT       - visdom server port. [$(VIS_PORT)]"
+	@echo
 	@echo "  . gunrock      latest version of gunrock from github"
 	@echo "  . postgres     install latest version of postgres"
 	@echo "  . tensorflow10 install tensorflow 1.0"
@@ -300,7 +305,6 @@ gbm91:
 ## gbm env's end ##
 
 
-
 .PHONY: postgres
 postgres:
 	cd postgres && docker build -t postgres:latest .
@@ -310,6 +314,19 @@ postgres:
 ## what targets follow hereafterwards are the ones which are built
 ## using a specific version of the above base images!
 ## (hence the parent image tags are being hard-coded!)
+
+VIS_PORT ?= 8097
+.PHONY: dsb-2018
+dsb-2018: pytorch90_70
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__PYTORCH_VERSION_TAG="latest-90_70" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t dsb:2018 \
+	    --build-arg visport=$(VIS_PORT) . && \
+	make -f ../Makefile delContext
+
 .PHONY: pix2pix
 pix2pix: pytorch90_70
 	cd pix2pix && \
