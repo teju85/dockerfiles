@@ -10,3 +10,12 @@ FROM pytorch:BASE_TAG
 
 RUN mkdir -p /opt/conda/lib/python3.5/site-packages/visdom/static && \\
     chmod -R 0777 /opt/conda/lib/python3.5/site-packages/visdom/static
+
+RUN pip install --no-cache-dir \\
+        scikit-image
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        unzip && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists

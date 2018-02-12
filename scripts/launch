@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import json
 import subprocess
-import string
 from argparse import ArgumentParser, REMAINDER
 import os
 import socket
@@ -36,7 +35,7 @@ class Launcher:
             return ""
         out = []
         for p in arr.keys():
-            tmp = int(string.replace(p, "/tcp", ""))
+            tmp = int(p.replace("/tcp", ""))
             # system ports?
             tmp1 = tmp + 8192 if tmp < 2048 else tmp
             out.append("-p %d:%d" % (tmp1, tmp))
