@@ -243,7 +243,7 @@ xgboost: cuda$(__CUDA_MINIFIED)-dev
 xgb-dev: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
 	    Dockerfile.cpp && \
 	docker build -t xgb:dev-$(__SHORT) . && \
 	rm -f Dockerfile

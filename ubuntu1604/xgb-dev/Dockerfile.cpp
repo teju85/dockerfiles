@@ -10,10 +10,9 @@
 // commands can be executed
 
 #ifndef __CUDA_VERSION_SHORT
-#define "__CUDA_VERSION_SHORT is a mandatory define! Eg: 8.0"
+#define "__CUDA_VERSION_SHORT is a mandatory define! Eg: 8.0-dev"
 #endif
 
-#define BASE_TAG __CUDA_VERSION_SHORT"-dev"
-FROM cuda:BASE_TAG
+FROM cuda:__CUDA_VERSION_SHORT
 
 #include "../../reusables/xgb-dev"
