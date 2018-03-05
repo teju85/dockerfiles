@@ -8,3 +8,4 @@ FROM cudnn:BASE_TAG
 
 #include "../../reusables/pytorch"
 #include "../../reusables/jupyter"
+#include "../../reusables/ssh"

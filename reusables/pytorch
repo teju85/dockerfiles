@@ -63,4 +63,7 @@ RUN git clone "https://github.com/pytorch/vision.git" /opt/vision && \\
         cd /opt/vision && \\
         python setup.py install
 
+// to reduce docker image size
+RUN rm -rf /opt/pytorch /opt/vision
+
 #endif // __PYTORCH__
