@@ -1,0 +1,14 @@
+#ifndef __CUPY2_DEV__
+#define __CUPY2_DEV__
+
+#include "pyml-env-2.7"
+
+RUN pip install --upgrade pip && \\
+    pip install --no-cache-dir \\
+        cython \\
+        fastrlock \\
+        mock \\
+        pytest \\
+        six
+
+#endif // __CUPY2_DEV__
