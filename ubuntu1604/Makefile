@@ -231,6 +231,7 @@ cupy2-dev: cudnn$(__CUDNN_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
 	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)-dev" \
+	    -D__NCCL_VERSION_TAG=$(__NCCL_TAG) \
 	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
 	docker build -t cupy2-dev:latest-$(__CUDNN_MINIFIED) \
@@ -239,15 +240,24 @@ cupy2-dev: cudnn$(__CUDNN_MINIFIED)-dev
 
 .PHONY: cupy2-dev60
 cupy2-dev60:
-	$(MAKE) __CUDNN_MINIFIED="60" __CUDNN_TAG="8.0-6.0.21" cupy2-dev
+	$(MAKE) __CUDNN_MINIFIED="60" \
+	        __CUDNN_TAG="8.0-6.0.21" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy2-dev
 
 .PHONY: cupy2-dev80_70
 cupy2-dev80_70:
-	$(MAKE) __CUDNN_MINIFIED="80_70" __CUDNN_TAG="8.0-7.0.5.15" cupy2-dev
+	$(MAKE) __CUDNN_MINIFIED="80_70" \
+	        __CUDNN_TAG="8.0-7.0.5.15" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy2-dev
 
 .PHONY: cupy2-dev90_70
 cupy2-dev90_70:
-	$(MAKE) __CUDNN_MINIFIED="90_70" __CUDNN_TAG="9.0-7.0.5.15" cupy2-dev
+	$(MAKE) __CUDNN_MINIFIED="90_70" \
+	        __CUDNN_TAG="9.0-7.0.5.15" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy2-dev
 ## cupy2-dev env's end ##
 
 
