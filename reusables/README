@@ -12,7 +12,7 @@ $ ls
 reusables Dockerfile.cpp
 $ cat Dockerfile.cpp
 FROM ubuntu:16.04
-#include "resuables/python-dev-2.7"
+#include "resuables/python-dev"
 $ cpp -o Dockerfile Dockerfile.cpp
 $ docker build -t myimage:mytag .
 ```

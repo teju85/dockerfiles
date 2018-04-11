@@ -1,7 +1,7 @@
-#ifndef __PYML_ENV_2_7__
-#define __PYML_ENV_2_7__
+#ifndef __PYML_ENV__
+#define __PYML_ENV__
 
-#include "python-dev-2.7"
+#include "python-dev"
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
@@ -12,8 +12,8 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN pip install --upgrade pip && \\
-    pip install --no-cache-dir \\
+RUN pip3 install --upgrade pip3 && \\
+    pip3 install --no-cache-dir \\
         h5py \\
         ipython[all] \\
         jupyter \\
@@ -31,4 +31,4 @@ RUN pip install --upgrade pip && \\
         tensorflow \\
         tqdm
 
-#endif // __PYML_ENV_2_7__
+#endif // __PYML_ENV__

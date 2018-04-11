@@ -1,7 +1,7 @@
-#ifndef __CUPY2_DEV__
-#define __CUPY2_DEV__
+#ifndef __CUPY_DEV__
+#define __CUPY_DEV__
 
-#include "pyml-env-2.7"
+#include "pyml-env"
 
 #ifndef __NCCL_VERSION_TAG
 #error "Macro __NCCL_VERSION_TAG not defined! Eg format: 2.1.15"
@@ -16,12 +16,12 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN pip install --upgrade pip && \\
-    pip install --no-cache-dir \\
+RUN pip3 install --upgrade pip3 && \\
+    pip3 install --no-cache-dir \\
         cython \\
         fastrlock \\
         mock \\
         pytest \\
         six
 
-#endif // __CUPY2_DEV__
+#endif // __CUPY_DEV__

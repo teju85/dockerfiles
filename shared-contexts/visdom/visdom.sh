@@ -9,5 +9,5 @@ if [ "$pid" != "" ]; then
     echo "  $pid"
 else
     echo "Starting visdom server..."
-    python -m visdom.server -port $port -logging_level $level &
+    python3 -m visdom.server -port $port -logging_level $level &
 fi

@@ -11,7 +11,8 @@ FROM pytorch:BASE_TAG
 RUN mkdir -p /opt/conda/lib/python3.5/site-packages/visdom/static && \\
     chmod -R 0777 /opt/conda/lib/python3.5/site-packages/visdom/static
 
-RUN pip install --no-cache-dir \\
+RUN pip3 install --upgrade pip3 && \\
+    pip3 install --no-cache-dir \\
         scikit-image
 
 RUN apt-get update && \\
