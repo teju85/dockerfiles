@@ -16,8 +16,7 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN pip3 install --upgrade pip3 && \\
-    pip3 install --no-cache-dir \\
+RUN pip3 install --no-cache-dir \\
         cython \\
         fastrlock \\
         mock \\

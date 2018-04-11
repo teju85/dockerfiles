@@ -6,5 +6,5 @@
 #define BASE_TAG __CUDNN_VERSION_TAG
 FROM cudnn:BASE_TAG
 
-#include "../../reusables/cupy2-dev"
+#include "../../reusables/cupy-dev"
 #include "../../reusables/ssh"
