@@ -1,0 +1,33 @@
+#ifndef __PYML_ENV_2_7__
+#define __PYML_ENV_2_7__
+
+#include "python-dev-2.7"
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        build-essential \\
+        libblas-dev \\
+        libbz2-dev \\
+        liblapack-dev && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+RUN pip install --no-cache-dir \\
+        h5py \\
+        ipython[all] \\
+        jupyter \\
+        keras \\
+        keras-resnet \\
+        matplotlib \\
+        nose \\
+        numpy \\
+        pandas \\
+        Pillow \\
+        Pillow-PIL \\
+        scikit-learn \\
+        scipy \\
+        sklearn \\
+        tensorflow \\
+        tqdm
+
+#endif // __PYML_ENV_2_7__

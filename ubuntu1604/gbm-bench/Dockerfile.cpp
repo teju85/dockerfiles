@@ -6,11 +6,11 @@
 #define BASE_TAG __CUDA_VERSION_SHORT"-dev"
 FROM cuda:BASE_TAG
 
+#include "../../reusables/lightgbm-install"
+#include "../../reusables/catboost-install"
 // always pick from dmlc (the main repo)
 #define XGB_REPO "dmlc/xgboost"
 #include "../../reusables/xgboost-install"
-#include "../../reusables/catboost-install"
-#include "../../reusables/lightgbm-install"
 
 // TODO:
 //  . install extra dependencies for the comparison library

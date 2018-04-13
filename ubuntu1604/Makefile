@@ -29,7 +29,7 @@ help:
 	@echo "  xgb-dev(80|90|91)"
 	@echo "    install development env for xgboost. Assumes that user will"
 	@echo "    mount xgboost repo while launching container on this image."
-	@echo "  gbm(80|90|91)"
+	@echo "  gbm-bench(80|90|91)"
 	@echo "    gbm benchmarking images. Some flags to customize behavior:"
 	@echo "    . XG_ARCH        - cuda arch(s) to build. [$(XG_ARCH)]"
 	@echo "    . GBM_XG_COMMIT  - xgboost commit ID. [$(GBM_XG_COMMIT)]"
@@ -313,35 +313,36 @@ xgb-dev91:
 ## xgboost env's end ##
 
 
-## gbm env's start ##
-GBM_XG_COMMIT  ?= f87802f00c087b96f74799bc3e2f60e490ccfdb7
-GBM_LG_COMMIT  ?= 9323758696f7cfb217cf9939d0bb97dc512008f3
-GBM_CAT_COMMIT ?= 81848d19d3469d9d5345120bb3c365298a4a9b38
-.PHONY: gbm
-gbm: cuda$(__CUDA_MINIFIED)-dev
+## gbm-bench env's start ##
+GBM_XG_COMMIT  ?= 230cb9b78782df54445ce582452170460ba01bfd
+GBM_LG_COMMIT  ?= 90ab5144d704f91a9424977d15089f60cf1d44b2
+##GBM_CAT_COMMIT ?= eb62bd8858efc23ab8f5a3cfac32ef2846e95e1e
+GBM_CAT_COMMIT ?= 3252a56f46cde09592299d3d6b3a2418fd7a543b
+.PHONY: gbm-bench
+gbm-bench: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
 	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
-	    -DXGB_ARCH="$(XG_ARCH)" \
+	    -DXGB_ARCH="$(__XG_ARCH)" \
 	    -DXGB_COMMIT="$(GBM_XG_COMMIT)" \
 	    -DLG_COMMIT="$(GBM_LG_COMMIT)" \
 	    -DCAT_COMMIT="$(GBM_CAT_COMMIT)" \
 	    Dockerfile.cpp && \
-	docker build -t gbm:latest-$(__SHORT) . && \
+	docker build -t gbm-bench:latest-$(__SHORT) . && \
 	rm -f Dockerfile
 
-.PHONY: gbm80
-gbm80:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" gbm
+.PHONY: gbm-bench80
+gbm-bench80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __XG_ARCH="35;50;52;60;61" gbm-bench
 
-.PHONY: gbm90
-gbm90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" gbm
+.PHONY: gbm-bench90
+gbm-bench90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __XG_ARCH="35;50;52;60;61;70" gbm-bench
 
 .PHONY: gbm91
-gbm91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" gbm
-## gbm env's end ##
+gbm-bench91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __XG_ARCH="35;50;52;60;61;70" gbm-bench
+## gbm-bench env's end ##
 
 
 .PHONY: postgres

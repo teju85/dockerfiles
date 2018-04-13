@@ -30,8 +30,8 @@ ENV CAT_COMMIT_ID CAT_COMMIT
 RUN cd catboost/catboost/python-package/catboost && \\
     ../../../ya make \\
         -r \\
-        -o ../../../ \\
         -DUSE_ARCADIA_PYTHON=no \\
+        -DUSE_SYSTEM_PYTHON=2.7 \\
         -DPYTHON_CONFIG=python2-config \\
         -DCUDA_ROOT=$(dirname $(dirname $(which nvcc)))
 

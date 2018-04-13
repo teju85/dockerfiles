@@ -1,0 +1,14 @@
+#ifndef __PYTHON_DEV_2_7__
+#define __PYTHON_DEV_2_7__
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        python \\
+        python-dev \\
+        python-pip \\
+        python-setuptools && \\
+    pip install --upgrade pip && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+#endif // __PYTHON_DEV_2_7__
