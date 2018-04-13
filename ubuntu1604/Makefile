@@ -316,8 +316,7 @@ xgb-dev91:
 ## gbm-bench env's start ##
 GBM_XG_COMMIT  ?= 230cb9b78782df54445ce582452170460ba01bfd
 GBM_LG_COMMIT  ?= 90ab5144d704f91a9424977d15089f60cf1d44b2
-##GBM_CAT_COMMIT ?= eb62bd8858efc23ab8f5a3cfac32ef2846e95e1e
-GBM_CAT_COMMIT ?= 3252a56f46cde09592299d3d6b3a2418fd7a543b
+GBM_CAT_COMMIT ?= a6d6a794773270311e55af09bfd175be9d5b0c0e
 .PHONY: gbm-bench
 gbm-bench: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
