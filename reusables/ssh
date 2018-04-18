@@ -5,6 +5,7 @@
 
 ENV DEBIAN_FRONTEND noninteractive
 EXPOSE 22
+EXPOSE 45555
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\

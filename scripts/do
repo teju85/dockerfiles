@@ -77,7 +77,8 @@ class rpull(Command):
     def addArgs(self):
         self._addArg("-r", help="Registry prefix for the image", type=str,
                      default="nvcr.io/nvidian_general/teju85-")
-        self._addArg("img", help="Name of the local image to be pulled", type=str)
+        self._addArg("img", help="Name of the local image to be pulled", type=str,
+                     nargs="*")
 
     def execute(self):
         for here in self.args.img:
