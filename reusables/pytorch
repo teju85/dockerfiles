@@ -52,6 +52,11 @@ RUN cd /opt/pytorch && \\
     git submodule update --init
 #endif
 
+RUN conda install \\
+        mkl-include \\
+        typing && \\
+    conda clean -ya
+
 RUN cd /opt/pytorch && \\
     pip install --no-cache-dir -r requirements.txt && \\
     TORCH_CUDA_ARCH_LIST="3.5 5.2 6.0 6.1+PTX" \\
