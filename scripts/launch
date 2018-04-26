@@ -115,7 +115,6 @@ class Launcher:
         finalcmd.append(args.image)
         finalcmd += self.getCmd(args)
         finalcmd = " ".join(finalcmd)
-        print("Host IP Address: %s" % socket.gethostbyname(socket.getfqdn()))
         print(finalcmd)
         subprocess.check_call(finalcmd, shell=True)
         return
