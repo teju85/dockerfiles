@@ -1,6 +1,13 @@
 #ifndef __PYTORCH__
 #define __PYTORCH__
 
+#include "common-utils.h"
+
+#ifndef PT_ARCH
+#define PT_ARCH 3.5 5.2 6.0 6.1+PTX
+#endif
+#define PT_ARCH_STR STR(PT_ARCH)
+
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
         build-essential \\
@@ -59,14 +66,14 @@ RUN conda install \\
 
 RUN cd /opt/pytorch && \\
     pip install --no-cache-dir -r requirements.txt && \\
-    TORCH_CUDA_ARCH_LIST="3.5 5.2 6.0 6.1+PTX" \\
+    TORCH_CUDA_ARCH_LIST=PT_ARCH_STR \\
         TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \\
         CMAKE_PREFIX_PATH="$(dirname $(which conda))/../" \\
-        python setup.py install
+        pip install -v .
 
 RUN git clone "https://github.com/pytorch/vision.git" /opt/vision && \\
         cd /opt/vision && \\
-        python setup.py install
+        pip install -v .
 
 // to reduce docker image size
 RUN rm -rf /opt/pytorch /opt/vision

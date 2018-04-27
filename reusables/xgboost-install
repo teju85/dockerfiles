@@ -1,8 +1,8 @@
+#ifndef __XGBOOST_INSTALL__
+#define __XGBOOST_INSTALL__
 
 #include "xgb-dev"
-
-#define QUOTE(macro) #macro
-#define STR(macro) QUOTE(macro)
+#include "common-utils.h"
 
 #ifndef XGB_ARCH
 #define XGB_ARCH 35;50;52;60;61
@@ -32,3 +32,5 @@ RUN cd xgboost && \\
     make -j3 && \\
     cd ../python-package && \\
     python setup.py install
+
+#endif // __XGBOOST_INSTALL__

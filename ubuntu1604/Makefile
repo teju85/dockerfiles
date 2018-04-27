@@ -16,6 +16,7 @@ help:
 	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
 	@echo "    behavior:"
 	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
+	@echo "    . PT_ARCH - cuda arch(s) to build. [$(PT_ARCH)]"
 	@echo
 	@echo "  cupy-dev(60|80_70|90_70|90_71)"
 	@echo "    cupy on python3 (with pyml-env)."
@@ -219,11 +220,13 @@ cudnn91_71-dev:
 
 ## pytorch env's start ##
 PT_PORT ?= 8888
+PT_ARCH ?= "3.5 5.2 6.0 6.1+PTX"
 .PHONY: pytorch
 pytorch: cudnn$(__CUDNN_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
 	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)-dev" \
+	    -DPT_ARCH="$(PT_ARCH)" \
 	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
 	docker build -t pytorch:latest-$(__CUDNN_MINIFIED) \
@@ -240,15 +243,15 @@ pytorch80_70:
 
 .PHONY: pytorch90_70
 pytorch90_70:
-	$(MAKE) __CUDNN_MINIFIED="90_70" __CUDNN_TAG="9.0-7.0.5.15" pytorch
+	$(MAKE) __CUDNN_MINIFIED="90_70" __CUDNN_TAG="9.0-7.0.5.15" PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" pytorch
 
 .PHONY: pytorch90_71
 pytorch90_71:
-	$(MAKE) __CUDNN_MINIFIED="90_71" __CUDNN_TAG="9.0-7.1.3.16" pytorch
+	$(MAKE) __CUDNN_MINIFIED="90_71" __CUDNN_TAG="9.0-7.1.3.16" PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" pytorch
 
 .PHONY: pytorch91_71
 pytorch91_71:
-	$(MAKE) __CUDNN_MINIFIED="91_71" __CUDNN_TAG="9.1-7.1.3.16" pytorch
+	$(MAKE) __CUDNN_MINIFIED="91_71" __CUDNN_TAG="9.1-7.1.3.16" PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" pytorch
 ## pytorch env's end ##
 
 
