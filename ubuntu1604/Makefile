@@ -7,17 +7,17 @@ help:
 	@echo "  cuda(80|90|91)-dev"
 	@echo "    cuda v8.0/v.9.0/v9.1 devels. These, in addition, come with"
 	@echo "    'runas' ability."
-	@echo "  cudnn(51|60|80_70|90_70|91_71)"
+	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71)"
 	@echo "    cudnn v5.1/v6.0/v7.0-with-v8.0/v7.0-with-9.0 runtimes."
-	@echo "  cudnn(51|60|80_70|90_70|91_71)-dev"
+	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71)-dev"
 	@echo "    cudnn v5.1/v6.0/v7.0-with-v8.0/v7.0-with-9.0 devels."
 	@echo
-	@echo "  pytorch(60|80_70|90_70|91_71)"
+	@echo "  pytorch(60|80_70|90_70|90_71|91_71)"
 	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
 	@echo "    behavior:"
 	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
 	@echo
-	@echo "  cupy-dev(60|80_70|90_70)"
+	@echo "  cupy-dev(60|80_70|90_70|90_71)"
 	@echo "    cupy on python3 (with pyml-env)."
 	@echo
 	@echo "  xgboost(80|90|91)"
@@ -195,6 +195,14 @@ cudnn90_70:
 .PHONY: cudnn90_70-dev
 cudnn90_70-dev:
 	$(MAKE) __CUDNN="7.0.5.15" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED="90" cudnn-dev
+
+.PHONY: cudnn90_71
+cudnn90_71:
+	$(MAKE) __CUDNN="7.1.3.16" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED="90" cudnn
+
+.PHONY: cudnn90_71-dev
+cudnn90_71-dev:
+	$(MAKE) __CUDNN="7.1.3.16" __CUDNN_SHORT="7" __SHORT="9.0" __CUDA_MINIFIED="90" cudnn-dev
 ## cudnn with v9.0 env related targets end ##
 
 
@@ -234,6 +242,10 @@ pytorch80_70:
 pytorch90_70:
 	$(MAKE) __CUDNN_MINIFIED="90_70" __CUDNN_TAG="9.0-7.0.5.15" pytorch
 
+.PHONY: pytorch90_71
+pytorch90_71:
+	$(MAKE) __CUDNN_MINIFIED="90_71" __CUDNN_TAG="9.0-7.1.3.16" pytorch
+
 .PHONY: pytorch91_71
 pytorch91_71:
 	$(MAKE) __CUDNN_MINIFIED="91_71" __CUDNN_TAG="9.1-7.1.3.16" pytorch
@@ -271,6 +283,13 @@ cupy-dev80_70:
 cupy-dev90_70:
 	$(MAKE) __CUDNN_MINIFIED="90_70" \
 	        __CUDNN_TAG="9.0-7.0.5.15" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy-dev
+
+.PHONY: cupy-dev90_71
+cupy-dev90_71:
+	$(MAKE) __CUDNN_MINIFIED="90_71" \
+	        __CUDNN_TAG="9.0-7.1.3.16" \
 	        __NCCL_TAG="2.1.15" \
 	    cupy-dev
 
