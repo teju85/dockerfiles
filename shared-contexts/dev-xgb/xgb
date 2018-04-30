@@ -20,7 +20,7 @@ function find_first() {
 
 function rebuild() {
     make -j && \
-    cd python-package && \
+    cd ../python-package && \
     python setup.py install --user
 }
 
