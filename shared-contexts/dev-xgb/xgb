@@ -26,15 +26,19 @@ function rebuild() {
 
 function clean() {
     cd .. && \
-        make clean
+        rm -rf build
 }
 
 function build-cpu() {
+    rm -rf ../gtest && \
+    cp -r /opt/googletest/googletest/build/gtest .. && \
     cmake .. -DGOOGLE_TEST=ON && \
         rebuild
 }
 
 function build-gpu() {
+    rm -rf ../gtest && \
+    cp -r /opt/googletest/googletest/build/gtest .. && \
     cmake .. -DUSE_CUDA=ON -DUSE_NCCL=ON -DGOOGLE_TEST=ON && \
         rebuild
 }
@@ -74,6 +78,7 @@ function precommit() {
 
 # go to the root of xgboost repo
 root=`find_first .git`
+root="$root/.."
 # execute command(s) passed by the user
 while [ "$1" != "" ]; do
     case "$1" in

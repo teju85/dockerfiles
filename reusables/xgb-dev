@@ -14,6 +14,17 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
+// https://groups.google.com/forum/#!topic/googletestframework/Zo7_HOv1MJ0
+RUN git clone "https://github.com/google/googletest" /opt/googletest && \\
+    cd /opt/googletest/googletest && \\
+    mkdir build && \\
+    cd build && \\
+    cmake .. && \\
+    make -j && \\
+    mkdir -p gtest/include gtest/lib && \\
+    cp -r ../include/gtest gtest/include && \\
+    cp lib* gtest/lib
+
 COPY contexts/dev-xgb /opt/dev-xgb
 RUN chmod a+x /opt/dev-xgb/xgb
 ENV PATH=/opt/dev-xgb:$PATH
