@@ -328,8 +328,9 @@ xgb-dev: cuda$(__CUDA_MINIFIED)-dev
 	cpp -o Dockerfile \
 	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
 	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
 	docker build -t xgb:dev-$(__SHORT) . && \
-	rm -f Dockerfile
+	make -f ../Makefile delContext
 
 .PHONY: xgboost80
 xgboost80:

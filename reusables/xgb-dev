@@ -14,4 +14,8 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
+COPY contexts/dev-xgb /opt/dev-xgb
+
+ENV PATH=/opt/dev-xgb:$PATH
+
 #endif // __XGB_DEV__
