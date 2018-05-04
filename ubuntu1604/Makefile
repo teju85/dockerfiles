@@ -372,8 +372,9 @@ gbm-bench: cuda$(__CUDA_MINIFIED)-dev
 	    -DLG_COMMIT="$(GBM_LG_COMMIT)" \
 	    -DCAT_COMMIT="$(GBM_CAT_COMMIT)" \
 	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
 	docker build -t gbm-bench:latest-$(__SHORT) . && \
-	rm -f Dockerfile
+	make -f ../Makefile delContext
 
 .PHONY: gbm-bench80
 gbm-bench80:
