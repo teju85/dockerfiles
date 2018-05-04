@@ -28,7 +28,7 @@ ENV XG_COMMIT_ID XGB_COMMIT
 RUN cd xgboost && \\
     mkdir build && \\
     cd build && \\
-    cmake .. -DGPU_COMPUTE_VER=XGB_ARCH_STR -DUSE_CUDA=ON && \\
+    cmake .. -DGPU_COMPUTE_VER=XGB_ARCH_STR -DUSE_CUDA=ON -DUSE_NCCL=ON && \\
     make -j3 && \\
     cd ../python-package && \\
     python setup.py install
