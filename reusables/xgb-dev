@@ -25,6 +25,10 @@ RUN git clone "https://github.com/google/googletest" /opt/googletest && \\
     cp -r ../include/gtest gtest/include && \\
     cp lib* gtest/lib
 
+RUN pip install --no-cache-dir \\
+        cpplint \\
+        pylint
+
 COPY contexts/dev-xgb /opt/dev-xgb
 RUN chmod a+x /opt/dev-xgb/xgb
 ENV PATH=/opt/dev-xgb:$PATH

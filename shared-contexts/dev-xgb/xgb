@@ -45,12 +45,16 @@ function build-gpu() {
 
 function cpu-test() {
     build-cpu && \
-        ./testxgboost
+        pushd .. && \
+        ./testxgboost && \
+        popd
 }
 
 function gpu-test() {
     build-gpu && \
-        ./testxgboost
+        pushd .. && \
+        ./testxgboost && \
+        popd
 }
 
 function precommit() {
@@ -64,7 +68,7 @@ function precommit() {
         cpu-test && \
         clean && \
         gpu-test && \
-        pushd tests/python-gpu && \
+        pushd ../tests/python-gpu && \
         python -m unittest test_gpu_prediction test_gpu_updaters test_monotonic_constraints && \
         popd
     if [ "$?" == "0" ]; then
