@@ -73,8 +73,8 @@ RUN cd /opt/pytorch && \\
         pip install -v .
 
 RUN git clone "https://github.com/pytorch/vision.git" /opt/vision && \\
-        cd /opt/vision && \\
-        pip install -v .
+    cd /opt/vision && \\
+    pip install -v .
 
 // to reduce docker image size
 RUN rm -rf /opt/pytorch /opt/vision
