@@ -12,6 +12,9 @@ help:
 	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71)-dev"
 	@echo "    cudnn v5.1/v6.0/v7.0-with-v8.0/v7.0-with-9.0 devels."
 	@echo
+	@echo "  py-h2o4gpu-dev(80|90|91)"
+	@echo "    python wrapper around h2o4gpu dev environment."
+	@echo
 	@echo "  pytorch(60|80_70|90_70|90_71|91_71)"
 	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
 	@echo "    behavior:"
@@ -216,6 +219,31 @@ cudnn91_71:
 cudnn91_71-dev:
 	$(MAKE) __CUDNN="7.1.3.16" __CUDNN_SHORT="7" __SHORT="9.1" __CUDA_MINIFIED="91" cudnn-dev
 ## cudnn with v9.1 env related targets end ##
+
+
+## py-h2o4gpu-dev env's start ##
+.PHONY: py-h2o4gpu-dev
+py-h2o4gpu-dev: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t py-h2o4gpu-dev:latest-$(__CUDA_MINIFIED) . && \
+	make -f ../Makefile delContext
+
+.PHONY: py-h2o4gpu-dev80
+py-h2o4gpu-dev80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" py-h2o4gpu-dev
+
+.PHONY: py-h2o4gpu-dev90
+py-h2o4gpu-dev90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" py-h2o4gpu-dev
+
+.PHONY: py-h2o4gpu-dev91
+py-h2o4gpu-dev91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" py-h2o4gpu-dev
+## py-h2o4gpu-dev env's end ##
 
 
 ## pytorch env's start ##
