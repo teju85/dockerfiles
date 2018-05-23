@@ -26,6 +26,7 @@ RUN apt-get update && \\
         make \\
         net-tools \\
         pbzip2 \\
+        python-setuptools \\
         python-software-properties \\
         python3-dateutil \\
         python3-magic \\
@@ -93,3 +94,4 @@ RUN pip3 install --no-cache-dir \\
         yapf
 
 #include "../../reusables/jupyter"
+#include "../../reusables/ssh"
