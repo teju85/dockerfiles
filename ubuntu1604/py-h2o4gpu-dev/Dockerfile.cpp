@@ -26,13 +26,16 @@ RUN apt-get update && \\
         make \\
         net-tools \\
         pbzip2 \\
-        python-setuptools \\
-        python-software-properties \\
+        python3 \\
+        python3-dev \\
+        python3-software-properties \\
         python3-dateutil \\
         python3-magic \\
+        python3-pip \\
         software-properties-common \\
         swig \\
         tk-dev \\
+        virtualenv \\
         wget \\
         xz-utils \\
         zip \\
@@ -43,55 +46,10 @@ RUN apt-get update && \\
     dpkg -i s3cmd_2.0.0-1_all.deb && \\
     curl -sL "https://deb.nodesource.com/setup_7.x" | bash -
 
-#include "../../reusables/pyml-env"
-RUN pip3 install --no-cache-dir \\
-        apipkg \\
-        attrs \\
-        awscli \\
-        cmake \\
-        coverage \\
-        Cython \\
-        execnet \\
-        feather-format \\
-        future \\
-        h2o \\
-        ipykernel \\
-        ipython \\
-        ipython-genutils \\
-        ipywidgets \\
-        jupyter \\
-        jupyter-client \\
-        jupyter-console \\
-        jupyter-core \\
-        llvmlite \\
-        matplotlib \\
-        nbconvert \\
-        nbformat \\
-        notebook \\
-        numba \\
-        numpy \\
-        pandas \\
-        pillow \\
-        pluggy \\
-        psutil \\
-        py \\
-        pylint \\
-        pytest \\
-        pytest-forked \\
-        pytest-xdist \\
-        pytest-cov \\
-        python-dateutil \\
-        pytz \\
-        scikit-learn \\
-        scipy \\
-        seaborn \\
-        six \\
-        sklearn \\
-        sphinx \\
-        sphinx_rtd_theme \\
-        tabulate \\
-        wheel \\
-        yapf
+RUN virtualenv --python=python3.5 /opt/.venv && \\
+    chmod 0777 -R /opt/.venv && \\
+    . /opt/.venv/bin/activate && \\
+    pip install setuptools --no-cache-dir
 
 #include "../../reusables/jupyter"
 #include "../../reusables/ssh"
