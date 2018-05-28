@@ -49,7 +49,8 @@ RUN apt-get update && \\
 RUN virtualenv --python=python3.5 /opt/.venv && \\
     chmod 0777 -R /opt/.venv && \\
     . /opt/.venv/bin/activate && \\
-    pip install setuptools --no-cache-dir
+    pip install --no-cache-dir setuptools
 
+#include "../../reusables/pyml-env"
 #include "../../reusables/jupyter"
 #include "../../reusables/ssh"
