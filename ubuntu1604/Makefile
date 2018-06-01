@@ -21,19 +21,19 @@ help:
 	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
 	@echo "    . PT_ARCH - cuda arch(s) to build. [$(PT_ARCH)]"
 	@echo
-	@echo "  cupy-dev(60|80_70|90_70|90_71)"
+	@echo "  cupy-dev(60|80_70|90_70|90_71|91_71|92_71)"
 	@echo "    cupy on python3 (with pyml-env)."
 	@echo
-	@echo "  xgboost(80|90|91)"
+	@echo "  xgboost(80|90|91|92)"
 	@echo "    install latest version of xgboost. Some flags to customize"
 	@echo "    behavior:"
 	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
 	@echo "    . XG_COMMIT - commit ID to sync. [$(XG_COMMIT)]"
 	@echo "    . XG_REPO   - repo to sync. [$(XG_REPO)]"
-	@echo "  xgb-dev(80|90|91)"
+	@echo "  xgb-dev(80|90|91|92)"
 	@echo "    install development env for xgboost. Assumes that user will"
 	@echo "    mount xgboost repo while launching container on this image."
-	@echo "  gbm-bench(80|90|91)"
+	@echo "  gbm-bench(80|90|91|92)"
 	@echo "    gbm benchmarking images. Some flags to customize behavior:"
 	@echo "    . XG_ARCH        - cuda arch(s) to build. [$(XG_ARCH)]"
 	@echo "    . GBM_XG_COMMIT  - xgboost commit ID. [$(GBM_XG_COMMIT)]"
@@ -357,6 +357,13 @@ cupy-dev91_71:
 	        __CUDNN_TAG="9.1-7.1.3.16" \
 	        __NCCL_TAG="2.1.15" \
 	    cupy-dev
+
+.PHONY: cupy-dev92_71
+cupy-dev92_71:
+	$(MAKE) __CUDNN_MINIFIED="92_71" \
+	        __CUDNN_TAG="9.2-7.1.4.18" \
+	        __NCCL_TAG="2.2.12" \
+	    cupy-dev
 ## cupy-dev env's end ##
 
 
@@ -399,6 +406,10 @@ xgboost90:
 xgboost91:
 	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" xgboost
 
+.PHONY: xgboost92
+xgboost92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" xgboost
+
 .PHONY: xgb-dev80
 xgb-dev80:
 	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" xgb-dev
@@ -410,6 +421,10 @@ xgb-dev90:
 .PHONY: xgb-dev91
 xgb-dev91:
 	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" xgb-dev
+
+.PHONY: xgb-dev92
+xgb-dev92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" xgb-dev
 ## xgboost env's end ##
 
 
@@ -439,9 +454,13 @@ gbm-bench80:
 gbm-bench90:
 	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __XG_ARCH="35;50;52;60;61;70" gbm-bench
 
-.PHONY: gbm91
+.PHONY: gbm-bench91
 gbm-bench91:
 	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __XG_ARCH="35;50;52;60;61;70" gbm-bench
+
+.PHONY: gbm-bench92
+gbm-bench92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __XG_ARCH="35;50;52;60;61;70" gbm-bench
 ## gbm-bench env's end ##
 
 
