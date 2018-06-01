@@ -12,10 +12,10 @@ help:
 	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71)-dev"
 	@echo "    cudnn dev images."
 	@echo
-	@echo "  py-h2o4gpu-dev(80|90|91)"
+	@echo "  py-h2o4gpu-dev(80|90|91|92)"
 	@echo "    python wrapper around h2o4gpu dev environment."
 	@echo
-	@echo "  pytorch(60|80_70|90_70|90_71|91_71)"
+	@echo "  pytorch(60|80_70|90_70|90_71|91_71|92_71)"
 	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
 	@echo "    behavior:"
 	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
@@ -262,12 +262,16 @@ py-h2o4gpu-dev90:
 .PHONY: py-h2o4gpu-dev91
 py-h2o4gpu-dev91:
 	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" py-h2o4gpu-dev
+
+.PHONY: py-h2o4gpu-dev92
+py-h2o4gpu-dev92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" py-h2o4gpu-dev
 ## py-h2o4gpu-dev env's end ##
 
 
 ## pytorch env's start ##
 PT_PORT ?= 8888
-PT_ARCH ?= "3.5 5.2 6.0 6.1+PTX"
+PT_ARCH ?= "3.5 5.2 6.0 6.1 7.0+PTX"
 .PHONY: pytorch
 pytorch: cudnn$(__CUDNN_MINIFIED)-dev
 	cd $@ && \
@@ -282,23 +286,27 @@ pytorch: cudnn$(__CUDNN_MINIFIED)-dev
 
 .PHONY: pytorch60
 pytorch60:
-	$(MAKE) __CUDNN_MINIFIED="60" __CUDNN_TAG="8.0-6.0.21" pytorch
+	$(MAKE) __CUDNN_MINIFIED="60" __CUDNN_TAG="8.0-6.0.21" PT_ARCH="3.5 5.2 6.0 6.1+PTX" pytorch
 
 .PHONY: pytorch80_70
 pytorch80_70:
-	$(MAKE) __CUDNN_MINIFIED="80_70" __CUDNN_TAG="8.0-7.0.5.15" pytorch
+	$(MAKE) __CUDNN_MINIFIED="80_70" __CUDNN_TAG="8.0-7.0.5.15" PT_ARCH="3.5 5.2 6.0 6.1+PTX" pytorch
 
 .PHONY: pytorch90_70
 pytorch90_70:
-	$(MAKE) __CUDNN_MINIFIED="90_70" __CUDNN_TAG="9.0-7.0.5.15" PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" pytorch
+	$(MAKE) __CUDNN_MINIFIED="90_70" __CUDNN_TAG="9.0-7.0.5.15" pytorch
 
 .PHONY: pytorch90_71
 pytorch90_71:
-	$(MAKE) __CUDNN_MINIFIED="90_71" __CUDNN_TAG="9.0-7.1.3.16" PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" pytorch
+	$(MAKE) __CUDNN_MINIFIED="90_71" __CUDNN_TAG="9.0-7.1.3.16" pytorch
 
 .PHONY: pytorch91_71
 pytorch91_71:
-	$(MAKE) __CUDNN_MINIFIED="91_71" __CUDNN_TAG="9.1-7.1.3.16" PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" pytorch
+	$(MAKE) __CUDNN_MINIFIED="91_71" __CUDNN_TAG="9.1-7.1.3.16" pytorch
+
+.PHONY: pytorch92_71
+pytorch92_71:
+	$(MAKE) __CUDNN_MINIFIED="92_71" __CUDNN_TAG="9.2-7.1.4.18" pytorch
 ## pytorch env's end ##
 
 
