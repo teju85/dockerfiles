@@ -1,16 +1,16 @@
 
 help:
 	@echo "make what? Available targets are:"
-	@echo "  cuda(80|90|91)"
-	@echo "    cuda v8.0/v.9.0/v9.1 runtimes. These, in addition, come"
+	@echo "  cuda(80|90|91|92)"
+	@echo "    cuda v8.0/9.[012] runtimes. These, in addition, come"
 	@echo "    with 'runas' ability."
-	@echo "  cuda(80|90|91)-dev"
-	@echo "    cuda v8.0/v.9.0/v9.1 devels. These, in addition, come with"
+	@echo "  cuda(80|90|91|92)-dev"
+	@echo "    cuda v8.0/9.[012] devels. These, in addition, come with"
 	@echo "    'runas' ability."
-	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71)"
-	@echo "    cudnn v5.1/v6.0/v7.0-with-v8.0/v7.0-with-9.0 runtimes."
-	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71)-dev"
-	@echo "    cudnn v5.1/v6.0/v7.0-with-v8.0/v7.0-with-9.0 devels."
+	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71)"
+	@echo "    cudnn runtimes."
+	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71)-dev"
+	@echo "    cudnn dev images."
 	@echo
 	@echo "  py-h2o4gpu-dev(80|90|91)"
 	@echo "    python wrapper around h2o4gpu dev environment."
@@ -134,6 +134,14 @@ cuda91:
 .PHONY: cuda91-dev
 cuda91-dev:
 	$(MAKE) __FULL="9.1.85" __PKG="9-1=9.1.85-1" __SHORT="9.1" cuda-dev
+
+.PHONY: cuda92
+cuda92:
+	$(MAKE) __FULL="9.2.88" __PKG="9-2=9.2.88-1" __SHORT="9.2" cuda
+
+.PHONY: cuda92-dev
+cuda92-dev:
+	$(MAKE) __FULL="9.2.88" __PKG="9-2=9.2.88-1" __SHORT="9.2" cuda-dev
 ## cuda env related targets end ##
 
 
@@ -219,6 +227,17 @@ cudnn91_71:
 cudnn91_71-dev:
 	$(MAKE) __CUDNN="7.1.3.16" __CUDNN_SHORT="7" __SHORT="9.1" __CUDA_MINIFIED="91" cudnn-dev
 ## cudnn with v9.1 env related targets end ##
+
+
+## cudnn with v9.2 env related targets begin ##
+.PHONY: cudnn92_71
+cudnn92_71:
+	$(MAKE) __CUDNN="7.1.4.18" __CUDNN_SHORT="7" __SHORT="9.2" __CUDA_MINIFIED="92" cudnn
+
+.PHONY: cudnn92_71-dev
+cudnn92_71-dev:
+	$(MAKE) __CUDNN="7.1.4.18" __CUDNN_SHORT="7" __SHORT="9.2" __CUDA_MINIFIED="92" cudnn-dev
+## cudnn with v9.2 env related targets end ##
 
 
 ## py-h2o4gpu-dev env's start ##
