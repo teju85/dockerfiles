@@ -2,19 +2,7 @@
 #define __CUPY_DEV__
 
 #include "pyml-env"
-
-#ifndef __NCCL_VERSION_TAG
-#error "Macro __NCCL_VERSION_TAG not defined! Eg format: 2.1.15"
-#endif
-
-ENV NCCL_VERSION __NCCL_VERSION_TAG
-
-RUN apt-get update && \\
-    apt-get install -y --no-install-recommends \\
-        libnccl2=$NCCL_VERSION-1+cuda$CUDA_VERSION_SHORT \\
-        libnccl-dev=$NCCL_VERSION-1+cuda$CUDA_VERSION_SHORT && \\
-    rm -rf /var/lib/apt/lists && \\
-    mkdir /var/lib/apt/lists
+#include "nccl"
 
 RUN pip3 install --no-cache-dir \\
         cython \\

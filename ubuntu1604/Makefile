@@ -19,7 +19,6 @@ help:
 	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
 	@echo "    behavior:"
 	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
-	@echo "    . PT_ARCH - cuda arch(s) to build. [$(PT_ARCH)]"
 	@echo
 	@echo "  cupy-dev(60|80_70|90_70|90_71|91_71|92_71)"
 	@echo "    cupy on python3 (with pyml-env)."
@@ -271,13 +270,14 @@ py-h2o4gpu-dev92:
 
 ## pytorch env's start ##
 PT_PORT ?= 8888
-PT_ARCH ?= "3.5 5.2 6.0 6.1 7.0+PTX"
 .PHONY: pytorch
 pytorch: cudnn$(__CUDNN_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
 	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)-dev" \
+	    -D__NCCL_VERSION_TAG=$(__NCCL_TAG) \
 	    -DPT_ARCH="$(PT_ARCH)" \
+	    -D__MAGMA="$(__MAGMA)" \
 	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
 	docker build -t pytorch:latest-$(__CUDNN_MINIFIED) \
@@ -286,27 +286,63 @@ pytorch: cudnn$(__CUDNN_MINIFIED)-dev
 
 .PHONY: pytorch60
 pytorch60:
-	$(MAKE) __CUDNN_MINIFIED="60" __CUDNN_TAG="8.0-6.0.21" PT_ARCH="3.5 5.2 6.0 6.1+PTX" pytorch
+	$(MAKE) \
+	    __MAGMA="magma-cuda80" \
+	    __CUDNN_MINIFIED="60" \
+	    __CUDNN_TAG="8.0-6.0.21" \
+	    PT_ARCH="3.5 5.2 6.0 6.1+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
 
 .PHONY: pytorch80_70
 pytorch80_70:
-	$(MAKE) __CUDNN_MINIFIED="80_70" __CUDNN_TAG="8.0-7.0.5.15" PT_ARCH="3.5 5.2 6.0 6.1+PTX" pytorch
+	$(MAKE) \
+	    __MAGMA="magma-cuda80" \
+	    __CUDNN_MINIFIED="80_70" \
+	    __CUDNN_TAG="8.0-7.0.5.15" \
+	    PT_ARCH="3.5 5.2 6.0 6.1+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
 
 .PHONY: pytorch90_70
 pytorch90_70:
-	$(MAKE) __CUDNN_MINIFIED="90_70" __CUDNN_TAG="9.0-7.0.5.15" pytorch
+	$(MAKE) \
+	    __MAGMA="magma-cuda90" \
+	    __CUDNN_MINIFIED="90_70" \
+	    __CUDNN_TAG="9.0-7.0.5.15" \
+	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
 
 .PHONY: pytorch90_71
 pytorch90_71:
-	$(MAKE) __CUDNN_MINIFIED="90_71" __CUDNN_TAG="9.0-7.1.3.16" pytorch
+	$(MAKE) \
+	    __MAGMA="magma-cuda90" \
+	    __CUDNN_MINIFIED="90_71" \
+	    __CUDNN_TAG="9.0-7.1.3.16" \
+	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
 
 .PHONY: pytorch91_71
 pytorch91_71:
-	$(MAKE) __CUDNN_MINIFIED="91_71" __CUDNN_TAG="9.1-7.1.3.16" pytorch
+	$(MAKE) \
+	    __MAGMA="magma-cuda90" \
+	    __CUDNN_MINIFIED="91_71" \
+	    __CUDNN_TAG="9.1-7.1.3.16" \
+	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
 
 .PHONY: pytorch92_71
 pytorch92_71:
-	$(MAKE) __CUDNN_MINIFIED="92_71" __CUDNN_TAG="9.2-7.1.4.18" pytorch
+	$(MAKE) \
+	    __MAGMA="magma-cuda90" \
+	    __CUDNN_MINIFIED="92_71" \
+	    __CUDNN_TAG="9.2-7.1.4.18" \
+	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
+	    __NCCL_TAG="2.2.12" \
+	    pytorch
 ## pytorch env's end ##
 
 

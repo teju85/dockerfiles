@@ -8,6 +8,10 @@
 #endif
 #define PT_ARCH_STR STR(PT_ARCH)
 
+#ifndef __MAGMA
+#define __MAGMA magma-cuda80
+#endif
+
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
         build-essential \\
@@ -23,7 +27,7 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN curl -o /miniconda.sh -O "https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh" && \\
+RUN curl -o /miniconda.sh -O "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" && \\
     chmod +x /miniconda.sh && \\
     /miniconda.sh -b -p /opt/conda && \\
     rm /miniconda.sh
@@ -31,25 +35,14 @@ RUN curl -o /miniconda.sh -O "https://repo.continuum.io/miniconda/Miniconda3-4.2
 ENV PATH /opt/conda/bin:$PATH
 
 RUN conda install \\
-        conda-build \\
-        cudnn \\
-        python=3.5.2 \\
-        gcc \\
-        ipython \\
-        jupyter \\
-        matplotlib \\
-        mkl \\
-        nccl \\
-        numpy \\
-        pandas \\
-        pyyaml \\
-        scikit-learn \\
-        scipy \\
-        urllib3 && \\
-    conda install -c soumith magma-cuda80 && \\
-    conda clean -ya && \\
-    pip install --no-cache-dir cffi \\
-        cmake
+    ipython \\
+    mkl \\
+    mkl-include \\
+    numpy \\
+    pyyaml \\
+    scipy && \\
+    conda install -c pytorch __MAGMA && \\
+    conda clean -ya
 
 RUN git clone --recursive "https://github.com/pytorch/pytorch" /opt/pytorch
 
@@ -60,13 +53,10 @@ RUN cd /opt/pytorch && \\
     git submodule update --init
 #endif
 
-RUN conda install \\
-        mkl-include \\
-        typing && \\
-    conda clean -ya
+ENV LD_LIBRARY_PATH "/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+ENV LIBRARY_PATH "/usr/lib/x86_64-linux-gnu:$LIBRARY_PATH"
 
 RUN cd /opt/pytorch && \\
-    pip install --no-cache-dir -r requirements.txt && \\
     TORCH_CUDA_ARCH_LIST=PT_ARCH_STR \\
         TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \\
         CMAKE_PREFIX_PATH="$(dirname $(which conda))/../" \\
