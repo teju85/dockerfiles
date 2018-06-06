@@ -9,7 +9,8 @@ cp /opt/faiss/makefile.inc makefile.inc && \
     make demos -j && \
     make -C gpu -j && \
     make -C gpu/tests demo_ivfpq_indexing_gpu && \
-    make py
+    make -C python && \
+    make -C python _swigfaiss_gpu.so
 
 if [ ! -d sift1M ]; then
     wget ftp://ftp.irisa.fr/local/texmex/corpus/sift.tar.gz && \

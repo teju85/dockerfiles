@@ -18,14 +18,14 @@ CXXFLAGS     = -fPIC -fopenmp -m64 -Wno-sign-compare -O3 -Wall -Wextra
 CXXFLAGS    += -I$(includedir) $(CUDACFLAGS)
 CPUFLAGS     = -mavx -msse4 -mpopcnt
 LDFLAGS      = -fPIC -fopenmp
-LIBS         = -lblas -L/usr/lib/openblas-base -llapack
+LIBS         = -lgomp -lblas -L/usr/lib/openblas-base -llapack
 PYTHONCFLAGS = -I/usr/include/python2.7 -I/usr/include/x86_64-linux-gnu/python2.7 -I/usr/lib/python2.7/dist-packages/numpy/core/include
 PYTHONLIB    = -lpython
 
 CUDAROOT     = /usr/local/cuda
 NVCC         = $(CUDAROOT)/bin/nvcc
 NVCCLDFLAGS  = -L$(CUDAROOT)/lib64
-NVCCLIBS     = -lcudart -lcublas -lcuda
+NVCCLIBS     = -lcudart -lcublas -lcuda $(LIBS)
 CUDACFLAGS   = -I$(CUDAROOT)/include
 NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 	       -Xcompiler -fPIC \

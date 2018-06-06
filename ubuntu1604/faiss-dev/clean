@@ -1,7 +1,6 @@
 
-export PYTHONPATH=$PYTHONPATH:`pwd`/python:`pwd`
-export prefix=`pwd`/bin
-cp /opt/faiss/makefile.inc makefile.inc && \
+make -C python clean && \
     make -C gpu/tests clean && \
     make -C gpu clean && \
+    make -C tests clean && \
     make clean
