@@ -39,6 +39,9 @@ help:
 	@echo "    . GBM_LG_COMMIT  - lightgbm commit ID. [$(GBM_LG_COMMIT)]"
 	@echo "    . GBM_CAT_COMMIT - catboost commit ID. [$(GBM_CAT_COMMIT)]"
 	@echo
+	@echo "  faiss-dev"
+	@echo "    FAISS development environment"
+	@echo
 	@echo "  dsb-2018"
 	@echo "    Working environment for Data Science Bowl - 2018. Some flags"
 	@echo "    to customize behavior:"
@@ -509,6 +512,14 @@ postgres:
 ## what targets follow hereafterwards are the ones which are built
 ## using a specific version of the above base images!
 ## (hence the parent image tags are being hard-coded!)
+
+.PHONY: faiss-dev
+faiss-dev: cuda91-dev
+	cd $@ && \
+	cpp -o Dockerfile Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t faiss:dev . && \
+	make -f ../Makefile delContext
 
 VIS_PORT ?= 8097
 .PHONY: dsb-2018

@@ -1,0 +1,19 @@
+
+export PYTHONPATH=$PYTHONPATH:`pwd`/python:`pwd`
+export prefix=`pwd`/bin
+cp /opt/faiss/makefile.inc makefile.inc && \
+    make -j all && \
+    make install && \
+    make misc/test_blas -j && \
+    ./misc/test_blas && \
+    make demos -j && \
+    make -C gpu -j && \
+    make -C gpu/tests demo_ivfpq_indexing_gpu && \
+    make py
+
+if [ ! -d sift1M ]; then
+    wget ftp://ftp.irisa.fr/local/texmex/corpus/sift.tar.gz && \
+        tar xf sift.tar.gz && \
+        mv sift sift1M && \
+        rm -f sift.tar.gz
+fi
