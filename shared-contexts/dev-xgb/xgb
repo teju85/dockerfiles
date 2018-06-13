@@ -19,6 +19,7 @@ function find_first() {
 }
 
 function rebuild() {
+    echo "rebuild: PWD: " `pwd`
     make -j && \
         cd ../python-package && \
         python setup.py install --user
@@ -26,10 +27,13 @@ function rebuild() {
 
 function clean() {
     cd .. && \
-        rm -rf build
+        rm -rf build && \
+        mkdir build && \
+        cd build
 }
 
 function build-cpu() {
+    echo "build-cpu: PWD: " `pwd`
     rm -rf ../gtest && \
         cp -r /opt/googletest/googletest/build/gtest .. && \
         cmake .. -DGOOGLE_TEST=ON -DGTEST_ROOT=`pwd`/../gtest && \
@@ -37,6 +41,7 @@ function build-cpu() {
 }
 
 function build-gpu() {
+    echo "build-gpu: PWD: " `pwd`
     rm -rf ../gtest && \
         cp -r /opt/googletest/googletest/build/gtest .. && \
         cmake .. -DUSE_CUDA=ON \
@@ -46,13 +51,13 @@ function build-gpu() {
         rebuild
 }
 
-function cpu-test() {
+function test-cpu() {
     pushd .. && \
         ./testxgboost && \
         popd
 }
 
-function gpu-test() {
+function test-gpu() {
     pushd .. && \
         ./testxgboost && \
         popd
@@ -67,18 +72,17 @@ function py-test() {
 }
 
 function precommit() {
-    cd .. && \
+    pushd .. && \
         rm -rf doc/Doxygen && \
         python dmlc-core/scripts/lint.py xgboost all include src plugin && \
         doxygen doc/Doxyfile && \
+        popd && \
         clean && \
-        make -j XGB_PLUGINS=plugin/example/plugin.mk check && \
+        build-cpu && \
+        test-cpu && \
         clean && \
-        cpu-build && \
-        cpu-test && \
-        clean && \
-        gpu-build && \
-        gpu-test && \
+        build-gpu && \
+        test-gpu && \
         py-test
     if [ "$?" == "0" ]; then
         echo "pre-commit checks: SUCCESS"
@@ -95,7 +99,7 @@ root="$root/.."
 # execute command(s) passed by the user
 while [ "$1" != "" ]; do
     case "$1" in
-        "build-cpu"|"build-gpu"|"clean"|"cpu-test"|"gpu-test"|"precommit"|"rebuild")
+        "build-cpu"|"build-gpu"|"clean"|"test-cpu"|"test-gpu"|"precommit"|"rebuild")
             if [ "$root" = "/" ] || [ ! -d "$root" ]; then
                 echo "Error: Invalid root of xgboost folder!"
                 exit 1
@@ -103,11 +107,10 @@ while [ "$1" != "" ]; do
             build="$root/build"
             mkdir -p $build
             cd $build
-            echo "PWD: " `pwd`
             $1
             shift;;
         "help"|"h")
-            echo "USAGE: xgb [build-cpu|build-gpu|clean|cpu-test|gpu-test|precommit|rebuild|py-test]"
+            echo "USAGE: xgb [build-cpu|build-gpu|clean|test-cpu|test-gpu|precommit|rebuild|py-test]"
             exit 0;;
         *)
             echo "Error: Bad arg passed! '$1'"
