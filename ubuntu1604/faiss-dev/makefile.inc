@@ -22,21 +22,20 @@ LIBS         = -lgomp -lblas -L/usr/lib/openblas-base -llapack
 PYTHONCFLAGS = -I/usr/include/python2.7 -I/usr/include/x86_64-linux-gnu/python2.7 -I/usr/lib/python2.7/dist-packages/numpy/core/include
 PYTHONLIB    = -lpython
 
+ARCHS       ?= 35 50 52 60 61 70
 CUDAROOT     = /usr/local/cuda
 NVCC         = $(CUDAROOT)/bin/nvcc
 NVCCLDFLAGS  = -L$(CUDAROOT)/lib64
 NVCCLIBS     = -lcudart -lcublas -lcuda $(LIBS)
 CUDACFLAGS   = -I$(CUDAROOT)/include
+GENCODES     = $(foreach var,$(ARCHS),-gencode arch=compute_$(var),code=sm_$(VAR))
 NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 	       -Xcompiler -fPIC \
 	       -Xcudafe --diag_suppress=unrecognized_attribute \
-	       -gencode arch=compute_35,code="compute_35" \
-	       -gencode arch=compute_52,code="compute_52" \
-	       -gencode arch=compute_60,code="compute_60" \
-	       -gencode arch=compute_61,code="compute_61" \
-	       -gencode arch=compute_70,code="compute_70" \
+	       $(GENCODES) \
 	       -lineinfo \
-	       -ccbin $(CXX) -DFAISS_USE_FLOAT16
+	       -ccbin $(CXX) \
+	       -DFAISS_USE_FLOAT16
 
 OS = $(shell uname -s)
 

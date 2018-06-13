@@ -20,8 +20,8 @@ function find_first() {
 
 function rebuild() {
     make -j && \
-    cd ../python-package && \
-    python setup.py install --user
+        cd ../python-package && \
+        python setup.py install --user
 }
 
 function clean() {
@@ -31,29 +31,38 @@ function clean() {
 
 function build-cpu() {
     rm -rf ../gtest && \
-    cp -r /opt/googletest/googletest/build/gtest .. && \
-    cmake .. -DGOOGLE_TEST=ON && \
+        cp -r /opt/googletest/googletest/build/gtest .. && \
+        cmake .. -DGOOGLE_TEST=ON -DGTEST_ROOT=`pwd`/../gtest && \
         rebuild
 }
 
 function build-gpu() {
     rm -rf ../gtest && \
-    cp -r /opt/googletest/googletest/build/gtest .. && \
-    cmake .. -DUSE_CUDA=ON -DUSE_NCCL=ON -DGOOGLE_TEST=ON && \
+        cp -r /opt/googletest/googletest/build/gtest .. && \
+        cmake .. -DUSE_CUDA=ON \
+              -DUSE_NCCL=ON \
+              -DGOOGLE_TEST=ON \
+              -DGTEST_ROOT=`pwd`/../gtest && \
         rebuild
 }
 
 function cpu-test() {
-    build-cpu && \
-        pushd .. && \
+    pushd .. && \
         ./testxgboost && \
         popd
 }
 
 function gpu-test() {
-    build-gpu && \
-        pushd .. && \
+    pushd .. && \
         ./testxgboost && \
+        popd
+}
+
+function py-test() {
+    pushd ../tests/python-gpu && \
+        python -m unittest test_gpu_prediction \
+               test_gpu_updaters \
+               test_monotonic_constraints && \
         popd
 }
 
@@ -65,12 +74,12 @@ function precommit() {
         clean && \
         make -j XGB_PLUGINS=plugin/example/plugin.mk check && \
         clean && \
+        cpu-build && \
         cpu-test && \
         clean && \
+        gpu-build && \
         gpu-test && \
-        pushd ../tests/python-gpu && \
-        python -m unittest test_gpu_prediction test_gpu_updaters test_monotonic_constraints && \
-        popd
+        py-test
     if [ "$?" == "0" ]; then
         echo "pre-commit checks: SUCCESS"
         return 0
@@ -92,14 +101,13 @@ while [ "$1" != "" ]; do
                 exit 1
             fi
             build="$root/build"
-            if [ ! -d "$build" ]; then
-                mkdir $build
-            fi
+            mkdir -p $build
             cd $build
+            echo "PWD: " `pwd`
             $1
             shift;;
         "help"|"h")
-            echo "USAGE: xgb [build-cpu|build-gpu|clean|cpu-test|gpu-test|precommit|rebuild]"
+            echo "USAGE: xgb [build-cpu|build-gpu|clean|cpu-test|gpu-test|precommit|rebuild|py-test]"
             exit 0;;
         *)
             echo "Error: Bad arg passed! '$1'"
