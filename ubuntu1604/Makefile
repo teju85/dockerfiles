@@ -32,6 +32,8 @@ help:
 	@echo "  xgb-dev(80|90|91|92)"
 	@echo "    install development env for xgboost. Assumes that user will"
 	@echo "    mount xgboost repo while launching container on this image."
+	@echo "  xgb-dev(80|90|91|92)(-nccl2)"
+	@echo "    same as above, but with NCCL2 binaries installed."
 	@echo "  gbm-bench(80|90|91|92)"
 	@echo "    gbm benchmarking images. Some flags to customize behavior:"
 	@echo "    . XG_ARCH        - cuda arch(s) to build. [$(XG_ARCH)]"
@@ -433,6 +435,17 @@ xgb-dev: cuda$(__CUDA_MINIFIED)-dev
 	docker build -t xgb:dev-$(__SHORT) . && \
 	make -f ../Makefile delContext
 
+.PHONY: xgb-dev-nccl2
+xgb-dev-nccl2: cuda$(__CUDA_MINIFIED)-dev
+	cd xgb-dev && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
+	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t xgb:dev-$(__SHORT)-nccl2 . && \
+	make -f ../Makefile delContext
+
 .PHONY: xgboost80
 xgboost80:
 	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" xgboost
@@ -464,6 +477,22 @@ xgb-dev91:
 .PHONY: xgb-dev92
 xgb-dev92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" xgb-dev
+
+.PHONY: xgb-dev80-nccl2
+xgb-dev80-nccl2:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __NCCL_TAG="2.2.13" xgb-dev-nccl2
+
+.PHONY: xgb-dev90-nccl2
+xgb-dev90-nccl2:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" xgb-dev-nccl2
+
+.PHONY: xgb-dev91-nccl2
+xgb-dev91-nccl2:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" xgb-dev-nccl2
+
+.PHONY: xgb-dev92-nccl2
+xgb-dev92-nccl2:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgb-dev-nccl2
 ## xgboost env's end ##
 
 
