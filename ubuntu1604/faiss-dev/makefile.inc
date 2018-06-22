@@ -28,7 +28,7 @@ NVCC         = $(CUDAROOT)/bin/nvcc
 NVCCLDFLAGS  = -L$(CUDAROOT)/lib64
 NVCCLIBS     = -lcudart -lcublas -lcuda $(LIBS)
 CUDACFLAGS   = -I$(CUDAROOT)/include
-GENCODES     = $(foreach var,$(ARCHS),-gencode arch=compute_$(var),code=sm_$(VAR))
+GENCODES     = $(foreach var,$(ARCHS),-gencode arch=compute_$(var),code=sm_$(var))
 NVCCFLAGS    = -I $(CUDAROOT)/targets/x86_64-linux/include/ \
 	       -Xcompiler -fPIC \
 	       -Xcudafe --diag_suppress=unrecognized_attribute \
