@@ -36,9 +36,6 @@ COPY contexts/dev-xgb /opt/dev-xgb
 RUN chmod a+x /opt/dev-xgb/xgb
 ENV PATH=/opt/dev-xgb:$PATH
 
-// install nccl2, if only user asked for it
-#ifdef __NCCL_VERSION_TAG
 #include "nccl"
-#endif
 
 #endif // __XGB_DEV__

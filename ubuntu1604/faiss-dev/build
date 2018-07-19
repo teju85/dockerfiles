@@ -8,7 +8,7 @@ cp /opt/faiss/makefile.inc makefile.inc && \
     ./misc/test_blas && \
     make demos -j && \
     make -C gpu -j && \
-    make -C gpu/tests demo_ivfpq_indexing_gpu && \
+    make -C gpu/test demo_ivfpq_indexing_gpu && \
     make -C python && \
     make -C python _swigfaiss_gpu.so
 

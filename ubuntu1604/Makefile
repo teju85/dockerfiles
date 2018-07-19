@@ -32,8 +32,6 @@ help:
 	@echo "  xgb-dev(80|90|91|92)"
 	@echo "    install development env for xgboost. Assumes that user will"
 	@echo "    mount xgboost repo while launching container on this image."
-	@echo "  xgb-dev(80|90|91|92)(-nccl2)"
-	@echo "    same as above, but with NCCL2 binaries installed."
 	@echo "  gbm-bench(80|90|91|92)"
 	@echo "    gbm benchmarking images. Some flags to customize behavior:"
 	@echo "    . XG_ARCH        - cuda arch(s) to build. [$(XG_ARCH)]"
@@ -41,8 +39,9 @@ help:
 	@echo "    . GBM_LG_COMMIT  - lightgbm commit ID. [$(GBM_LG_COMMIT)]"
 	@echo "    . GBM_CAT_COMMIT - catboost commit ID. [$(GBM_CAT_COMMIT)]"
 	@echo
-	@echo "  faiss-dev"
-	@echo "    FAISS development environment"
+	@echo "  faiss-dev(90|91|92)"
+	@echo "    FAISS development environment. Assumes that user will mount"
+	@echo "    faiss repo while launching container on this image."
 	@echo
 	@echo "  dsb-2018"
 	@echo "    Working environment for Data Science Bowl - 2018. Some flags"
@@ -409,16 +408,17 @@ cupy-dev92_71:
 
 
 ## xgboost env's start ##
-XG_ARCH   ?= 35;50;52;60;61
-XG_COMMIT ?= 14c6392381c3b63996af4bd9bb13840dd20e78bf
+__XG_ARCH ?= 35;50;52;60;61;70
+XG_COMMIT ?= c004cea788748c293e2f9e5c9bd7469ff7e2c613
 XG_REPO   ?= "dmlc/xgboost"
 .PHONY: xgboost
 xgboost: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
 	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
 	    -DXGB_REPO="$(XG_REPO)" \
-	    -DXGB_ARCH="$(XG_ARCH)" \
+	    -DXGB_ARCH="$(__XG_ARCH)" \
 	    -DXGB_COMMIT="$(XG_COMMIT)" \
 	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
@@ -430,81 +430,57 @@ xgb-dev: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
 	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
+	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
 	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
 	docker build -t xgb:dev-$(__SHORT) . && \
 	make -f ../Makefile delContext
 
-.PHONY: xgb-dev-nccl2
-xgb-dev-nccl2: cuda$(__CUDA_MINIFIED)-dev
-	cd xgb-dev && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
-	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t xgb:dev-$(__SHORT)-nccl2 . && \
-	make -f ../Makefile delContext
-
 .PHONY: xgboost80
 xgboost80:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" xgboost
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __NCCL_TAG="2.2.13" __XG_ARCH="35;50;52;60;61" xgboost
 
 .PHONY: xgboost90
 xgboost90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" xgboost
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" xgboost
 
 .PHONY: xgboost91
 xgboost91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" xgboost
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" xgboost
 
 .PHONY: xgboost92
 xgboost92:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" xgboost
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgboost
 
 .PHONY: xgb-dev80
 xgb-dev80:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" xgb-dev
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __NCCL_TAG="2.2.13" __XG_ARCH="35;50;52;60;61" xgb-dev
 
 .PHONY: xgb-dev90
 xgb-dev90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" xgb-dev
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" xgb-dev
 
 .PHONY: xgb-dev91
 xgb-dev91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" xgb-dev
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" xgb-dev
 
 .PHONY: xgb-dev92
 xgb-dev92:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" xgb-dev
-
-.PHONY: xgb-dev80-nccl2
-xgb-dev80-nccl2:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __NCCL_TAG="2.2.13" xgb-dev-nccl2
-
-.PHONY: xgb-dev90-nccl2
-xgb-dev90-nccl2:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" xgb-dev-nccl2
-
-.PHONY: xgb-dev91-nccl2
-xgb-dev91-nccl2:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" xgb-dev-nccl2
-
-.PHONY: xgb-dev92-nccl2
-xgb-dev92-nccl2:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgb-dev-nccl2
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgb-dev
 ## xgboost env's end ##
 
 
 ## gbm-bench env's start ##
-GBM_XG_COMMIT  ?= 230cb9b78782df54445ce582452170460ba01bfd
-GBM_LG_COMMIT  ?= 90ab5144d704f91a9424977d15089f60cf1d44b2
-GBM_CAT_COMMIT ?= a6d6a794773270311e55af09bfd175be9d5b0c0e
+GBM_XG_COMMIT  ?= c004cea788748c293e2f9e5c9bd7469ff7e2c613
+GBM_LG_COMMIT  ?= c6cdea75a3f7732a13c21c760c1bf221441a5c79
+GBM_CAT_COMMIT ?= 37936c513c63e3bf0227b5cd828cee9341f0a365
+__XG_ARCH=35;50;52;60;61;70
 .PHONY: gbm-bench
 gbm-bench: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
 	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
 	    -DXGB_ARCH="$(__XG_ARCH)" \
 	    -DXGB_COMMIT="$(GBM_XG_COMMIT)" \
 	    -DLG_COMMIT="$(GBM_LG_COMMIT)" \
@@ -516,20 +492,45 @@ gbm-bench: cuda$(__CUDA_MINIFIED)-dev
 
 .PHONY: gbm-bench80
 gbm-bench80:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __XG_ARCH="35;50;52;60;61" gbm-bench
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __XG_ARCH="35;50;52;60;61" __NCCL_TAG="2.2.13" gbm-bench
 
 .PHONY: gbm-bench90
 gbm-bench90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __XG_ARCH="35;50;52;60;61;70" gbm-bench
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" gbm-bench
 
 .PHONY: gbm-bench91
 gbm-bench91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __XG_ARCH="35;50;52;60;61;70" gbm-bench
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" gbm-bench
 
 .PHONY: gbm-bench92
 gbm-bench92:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __XG_ARCH="35;50;52;60;61;70" gbm-bench
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" gbm-bench
 ## gbm-bench env's end ##
+
+
+## faiss env's start ##
+.PHONY: faiss-dev
+faiss-dev: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t faiss:dev-$(__SHORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: faiss-dev90
+faiss-dev90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" faiss-dev
+
+.PHONY: faiss-dev91
+faiss-dev91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" faiss-dev
+
+.PHONY: faiss-dev92
+faiss-dev92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" faiss-dev
+## faiss env's start ##
 
 
 .PHONY: postgres
@@ -541,14 +542,6 @@ postgres:
 ## what targets follow hereafterwards are the ones which are built
 ## using a specific version of the above base images!
 ## (hence the parent image tags are being hard-coded!)
-
-.PHONY: faiss-dev
-faiss-dev: cuda91-dev
-	cd $@ && \
-	cpp -o Dockerfile Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t faiss:dev . && \
-	make -f ../Makefile delContext
 
 VIS_PORT ?= 8097
 .PHONY: dsb-2018
