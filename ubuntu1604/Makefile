@@ -43,6 +43,9 @@ help:
 	@echo "    FAISS development environment. Assumes that user will mount"
 	@echo "    faiss repo while launching container on this image."
 	@echo
+	@echo "  ml-dev"
+	@echo "    ML development environment (over above cuda v9.2)"
+	@echo
 	@echo "  dsb-2018"
 	@echo "    Working environment for Data Science Bowl - 2018. Some flags"
 	@echo "    to customize behavior:"
@@ -538,10 +541,19 @@ postgres:
 	cd postgres && docker build -t postgres:latest .
 
 
-
 ## what targets follow hereafterwards are the ones which are built
 ## using a specific version of the above base images!
 ## (hence the parent image tags are being hard-coded!)
+
+.PHONY: ml-dev
+ml-dev: cuda92-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="9.2" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t ml:dev . && \
+	make -f ../Makefile delContext
 
 VIS_PORT ?= 8097
 .PHONY: dsb-2018
