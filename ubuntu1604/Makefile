@@ -32,6 +32,9 @@ help:
 	@echo "  xgb-dev(80|90|91|92)"
 	@echo "    install development env for xgboost. Assumes that user will"
 	@echo "    mount xgboost repo while launching container on this image."
+	@echo "  dask-xgboost(80|90|91|92)"
+	@echo "    install latest version of dask over xgboost."
+	@echo
 	@echo "  gbm-bench(80|90|91|92)"
 	@echo "    gbm benchmarking images. Some flags to customize behavior:"
 	@echo "    . XG_ARCH        - cuda arch(s) to build. [$(XG_ARCH)]"
@@ -428,17 +431,6 @@ xgboost: cuda$(__CUDA_MINIFIED)-dev
 	docker build -t xgboost:latest-$(__SHORT) . && \
 	make -f ../Makefile delContext
 
-.PHONY: xgb-dev
-xgb-dev: cuda$(__CUDA_MINIFIED)-dev
-	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
-	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t xgb:dev-$(__SHORT) . && \
-	make -f ../Makefile delContext
-
 .PHONY: xgboost80
 xgboost80:
 	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __NCCL_TAG="2.2.13" __XG_ARCH="35;50;52;60;61" xgboost
@@ -455,6 +447,17 @@ xgboost91:
 xgboost92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgboost
 
+.PHONY: xgb-dev
+xgb-dev: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
+	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t xgb:dev-$(__SHORT) . && \
+	make -f ../Makefile delContext
+
 .PHONY: xgb-dev80
 xgb-dev80:
 	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __NCCL_TAG="2.2.13" __XG_ARCH="35;50;52;60;61" xgb-dev
@@ -470,6 +473,32 @@ xgb-dev91:
 .PHONY: xgb-dev92
 xgb-dev92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgb-dev
+
+.PHONY: dask-xgboost
+dask-xgboost: xgboost$(__CUDA_MINIFIED)
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="latest-$(__SHORT)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t dask-xgboost:$(__SHORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: dask-xgboost80
+dask-xgboost80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" dask-xgboost
+
+.PHONY: dask-xgboost90
+dask-xgboost90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" dask-xgboost
+
+.PHONY: dask-xgboost91
+dask-xgboost91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" dask-xgboost
+
+.PHONY: dask-xgboost92
+dask-xgboost92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" dask-xgboost
 ## xgboost env's end ##
 
 

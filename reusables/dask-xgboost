@@ -1,0 +1,10 @@
+#ifndef __DASK_XGBOOST__
+#define __DASK_XGBOOST__
+
+#include "dask"
+
+RUN git clone "https://github.com/dask/dask-xgboost" && \\
+    cd dask-xgboost && \\
+    python setup.py install
+
+#endif // __DASK_XGBOOST__
