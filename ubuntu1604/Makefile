@@ -473,6 +473,35 @@ xgb-dev91:
 .PHONY: xgb-dev92
 xgb-dev92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgb-dev
+## xgboost env's end ##
+
+
+## dask-xgboost env's start ##
+.PHONY: dask-xgb-dev
+dask-xgb-dev: xgb-dev$(__CUDA_MINIFIED)
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="dev-$(__SHORT)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t dask-xgb:dev-$(__SHORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: dask-xgb-dev80
+dask-xgb-dev80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" dask-xgb-dev
+
+.PHONY: dask-xgb-dev90
+dask-xgb-dev90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" dask-xgb-dev
+
+.PHONY: dask-xgb-dev91
+dask-xgb-dev91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" dask-xgb-dev
+
+.PHONY: dask-xgb-dev92
+dask-xgb-dev92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" dask-xgb-dev
 
 .PHONY: dask-xgboost
 dask-xgboost: xgboost$(__CUDA_MINIFIED)
@@ -499,7 +528,7 @@ dask-xgboost91:
 .PHONY: dask-xgboost92
 dask-xgboost92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" dask-xgboost
-## xgboost env's end ##
+## dask-xgboost env's end ##
 
 
 ## gbm-bench env's start ##

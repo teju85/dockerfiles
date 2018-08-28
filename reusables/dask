@@ -4,10 +4,10 @@
 // for the dask interactive dashboard
 EXPOSE 8787
 
+RUN pip install bokeh
+
 RUN git clone "https://github.com/dask/dask.git" && \\
     cd dask && \\
     python setup.py install
-
-RUN pip install bokeh
 
 #endif // __DASK__
