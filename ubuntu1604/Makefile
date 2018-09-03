@@ -29,9 +29,6 @@ help:
 	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
 	@echo "    . XG_COMMIT - commit ID to sync. [$(XG_COMMIT)]"
 	@echo "    . XG_REPO   - repo to sync. [$(XG_REPO)]"
-	@echo "  xgb-dev(80|90|91|92)"
-	@echo "    install development env for xgboost. Assumes that user will"
-	@echo "    mount xgboost repo while launching container on this image."
 	@echo "  dask-xgboost(80|90|91|92)"
 	@echo "    install latest version of dask over xgboost."
 	@echo
@@ -446,63 +443,10 @@ xgboost91:
 .PHONY: xgboost92
 xgboost92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgboost
-
-.PHONY: xgb-dev
-xgb-dev: cuda$(__CUDA_MINIFIED)-dev
-	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
-	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t xgb:dev-$(__SHORT) . && \
-	make -f ../Makefile delContext
-
-.PHONY: xgb-dev80
-xgb-dev80:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __NCCL_TAG="2.2.13" __XG_ARCH="35;50;52;60;61" xgb-dev
-
-.PHONY: xgb-dev90
-xgb-dev90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" xgb-dev
-
-.PHONY: xgb-dev91
-xgb-dev91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" xgb-dev
-
-.PHONY: xgb-dev92
-xgb-dev92:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgb-dev
 ## xgboost env's end ##
 
 
 ## dask-xgboost env's start ##
-.PHONY: dask-xgb-dev
-dask-xgb-dev: xgb-dev$(__CUDA_MINIFIED)
-	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="dev-$(__SHORT)" \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t dask-xgb:dev-$(__SHORT) . && \
-	make -f ../Makefile delContext
-
-.PHONY: dask-xgb-dev80
-dask-xgb-dev80:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" dask-xgb-dev
-
-.PHONY: dask-xgb-dev90
-dask-xgb-dev90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" dask-xgb-dev
-
-.PHONY: dask-xgb-dev91
-dask-xgb-dev91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" dask-xgb-dev
-
-.PHONY: dask-xgb-dev92
-dask-xgb-dev92:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" dask-xgb-dev
-
 .PHONY: dask-xgboost
 dask-xgboost: xgboost$(__CUDA_MINIFIED)
 	cd $@ && \
