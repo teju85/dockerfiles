@@ -43,6 +43,9 @@ help:
 	@echo "    FAISS development environment. Assumes that user will mount"
 	@echo "    faiss repo while launching container on this image."
 	@echo
+	@echo "  nccl-bench"
+	@echo "    A dev container for benchmarking nccl performance. (@cuda v9.2)"
+	@echo
 	@echo "  ml-dev"
 	@echo "    ML development environment (over above cuda v9.2)"
 	@echo
@@ -67,7 +70,7 @@ help:
 	@echo "  . fairseq-py   intall pytorch version of conv NMT from faceboook."
 	@echo "                 Some flags to customize behavior:"
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
-	@echo "  . fairseq-py-dev intall dev env for pytorch version of conv NMT from faceboook."
+	@echo "  . fairseq-py-dev intall dev env for pytorch version of conv NMT from FB."
 	@echo "                   Some flags to customize behavior:"
 	@echo "                   FS_PORT - Jupyter port to be exposed [$(FS_PORT)]"
 
@@ -546,6 +549,17 @@ postgres:
 ## what targets follow hereafterwards are the ones which are built
 ## using a specific version of the above base images!
 ## (hence the parent image tags are being hard-coded!)
+
+.PHONY: nccl-bench
+nccl-bench: cuda92-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="9.2" \
+	    -D__NCCL_VERSION_TAG="2.2.13" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t nccl:bench . && \
+	make -f ../Makefile delContext
 
 .PHONY: ml-dev
 ml-dev: cuda92-dev
