@@ -6,4 +6,5 @@
 FROM xgboost:__CUDA_VERSION_SHORT
 
 #include "../../reusables/dask-xgboost"
+#include "../../reusables/libgdf"
 #include "../../reusables/ssh"
