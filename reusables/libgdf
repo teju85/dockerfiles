@@ -11,9 +11,14 @@ RUN pip install cffi
 
 RUN git clone --recursive "https://github.com/gpuopenanalytics/libgdf.git" /opt/libgdf && \\
     cd /opt/libgdf && \\
-    mkdir build && \\
-    cd build && \\
-    cmake .. -DHASH_JOIN=ON && \\
+    mkdir build
+
+RUN cd /opt/libgdf && \\
+    sed -e 's/master/release-1.8.1/' < cmake/Templates/GoogleTest.CMakeLists.txt.cmake > ttt && \\
+    mv ttt cmake/Templates/GoogleTest.CMakeLists.txt.cmake
+
+RUN cd /opt/libgdf/build && \\
+    cmake .. && \\
     make -j install && \\
     make copy_python && \\
     python setup.py install

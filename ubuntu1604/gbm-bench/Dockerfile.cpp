@@ -11,6 +11,8 @@ FROM cuda:BASE_TAG
 // always pick from dmlc (the main repo)
 #define XGB_REPO "dmlc/xgboost"
 #include "../../reusables/xgboost-install"
+#include "../../reusables/dask-xgboost"
+#include "../../reusables/libgdf"
 
 // TODO:
 //  . install extra dependencies for the comparison library
