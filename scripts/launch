@@ -5,9 +5,13 @@ from argparse import ArgumentParser, REMAINDER
 import os
 import socket
 import getpass
+import sys
 
 
 class Launcher:
+    def __init__(self):
+        self.args = self.parseArgs()
+
     def get(self, image, *args):
         output = subprocess.check_output("docker inspect %s" % image,
                                          shell=True)
@@ -100,8 +104,20 @@ class Launcher:
             out.append("-e RUNAS_USER=%s" % getpass.getuser())
         return out
 
+    def pull(self):
+        args = self.args
+        if not args.rpull:
+            return
+        exe = os.path.join(os.path.dirname(sys.argv[0]), "do")
+        repo = "-r %s" % args.repo if args.repo else ""
+        image = args.image
+        cmd = "%s rpull %s %s" % (exe, repo, image)
+        print(cmd)
+        subprocess.check_call(cmd, shell=True)
+        return
+
     def launch(self):
-        args = self.getParser().parse_args()
+        args = self.args
         finalcmd = ["nvidia-docker", "run", "-it", "--rm"]
         finalcmd += self.getPort(args.image)
         finalcmd += self.getVols(args)
@@ -120,7 +136,7 @@ class Launcher:
         subprocess.check_call(finalcmd, shell=True)
         return
 
-    def getParser(self):
+    def parseArgs(self):
         parser = ArgumentParser(description="Wrapper to launch as current user")
         parser.add_argument("-v", default=[], action="append", type=str,
                             help="Volumes to mount. Same syntax as docker run")
@@ -143,10 +159,16 @@ class Launcher:
         parser.add_argument(
             "-ipc", default=None, type=str,
             help="how to use shared memory between processes.")
+        parser.add_argument("-rpull", action="store_true", default=False,
+                            help="Pull the image first from a remote registry.")
+        parser.add_argument("-repo", default=None, type=str,
+                            help="Remote registry prefix to pull this image from")
         parser.add_argument("image", help="Image to be launched")
         parser.add_argument("cmd", nargs=REMAINDER,
                             help="Command to run inside the container")
-        return parser
+        return parser.parse_args()
 
 if __name__ == "__main__":
-    Launcher().launch()
+    la = Launcher()
+    la.pull()
+    la.launch()
