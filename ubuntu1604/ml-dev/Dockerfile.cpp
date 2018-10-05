@@ -3,6 +3,7 @@ FROM cuda:9.2-dev
 #include "../../reusables/cmake-build"
 #include "../../reusables/ssh"
 #include "../../reusables/python-dev-2.7"
+#include "../../reusables/llvm"
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\

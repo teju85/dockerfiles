@@ -43,6 +43,9 @@ help:
 	@echo "    FAISS development environment. Assumes that user will mount"
 	@echo "    faiss repo while launching container on this image."
 	@echo
+	@echo "  llvm(80|90|91|92)"
+	@echo "    LLVM et.al development container along with SDK"
+	@echo
 	@echo "  nccl-bench"
 	@echo "    A dev container for benchmarking nccl performance. (@cuda v9.2)"
 	@echo
@@ -514,6 +517,35 @@ gbm-bench91:
 gbm-bench92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" gbm-bench
 ## gbm-bench env's end ##
+
+
+## llvm env's start ##
+.PHONY: llvm
+llvm: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t llvm:latest-$(__SHORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: llvm80
+llvm80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" llvm
+
+.PHONY: llvm90
+llvm90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" llvm
+
+.PHONY: llvm91
+llvm91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" llvm
+
+.PHONY: llvm92
+llvm92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" llvm
+## llvm env's end ##
 
 
 ## faiss env's start ##

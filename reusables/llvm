@@ -1,0 +1,38 @@
+
+#ifndef __LLVM__
+#define __LLVM__
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        build-essential \\
+        ca-certificates \\
+        cmake \\
+        git \\
+        make \\
+        python \\
+        zlib1g-dev && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+RUN mkdir -p /opt/compiler && \\
+    cd /opt/compiler && \\
+    git clone "http://llvm.org/git/llvm" && \\
+    cd llvm/tools && \\
+    git clone "http://llvm.org/git/clang" && \\
+    cd clang/tools && \\
+    git clone "http://llvm.org/git/clang-tools-extra" extra && \\
+    mkdir -p /opt/compiler/build && \\
+    cd /opt/compiler/build && \\
+    cmake -G "Unix Makefiles" \\
+        -DLLVM_TARGETS_TO_BUILD="X86;NVPTX" \\
+        -DCMAKE_BUILD_TYPE=Release \\
+        ../llvm && \\
+    make -j8 && \\
+    make install && \\
+    cd / && \\
+    rm -rf /opt/compiler
+
+ENV PATH=/usr/local/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+#endif // __LLVM__
