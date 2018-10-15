@@ -1,0 +1,8 @@
+export PYTHONPATH=$PYTHONPATH:`pwd`/python:`pwd`
+if [ ! -d sift1M ]; then
+    wget ftp://ftp.irisa.fr/local/texmex/corpus/sift.tar.gz && \
+        tar xf sift.tar.gz && \
+        mv sift sift1M && \
+        rm -f sift.tar.gz
+fi
+python /opt/faiss/sift1m.py
