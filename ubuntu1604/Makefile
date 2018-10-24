@@ -1,11 +1,11 @@
 
 help:
 	@echo "make what? Available targets are:"
-	@echo "  cuda(80|90|91|92)"
-	@echo "    cuda v8.0/9.[012] runtimes. These, in addition, come"
+	@echo "  cuda(80|90|91|92|100)"
+	@echo "    cuda v8.0/9.[012]/10.0 runtimes. These, in addition, come"
 	@echo "    with 'runas' ability."
-	@echo "  cuda(80|90|91|92)-dev"
-	@echo "    cuda v8.0/9.[012] devels. These, in addition, come with"
+	@echo "  cuda(80|90|91|92|100)-dev"
+	@echo "    cuda v8.0/9.[012]/10.0 devels. These, in addition, come with"
 	@echo "    'runas' ability."
 	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71)"
 	@echo "    cudnn runtimes."

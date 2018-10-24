@@ -3,17 +3,18 @@
 
 #include "cuda"
 
-
-RUN apt-get update
-
 RUN if [ "$CUDA_VERSION_SHORT" = "9.2" ]; then \\
+        apt-get update && \\
         apt-get install -y --no-install-recommends \\
             cuda-compiler-$CUDA_PKG_VERSION \\
             cuda-cupti-$CUDA_PKG_VERSION \\
-            cuda-nvcc-$CUDA_PKG_VERSION; \\
+            cuda-nvcc-$CUDA_PKG_VERSION && \\
+        rm -rf /var/lib/apt/lists && \\
+        mkdir /var/lib/apt/lists; \\
     fi
 
-RUN apt-get install -y --no-install-recommends --allow-downgrades \\
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends --allow-downgrades \\
         cuda-command-line-tools-$CUDA_PKG_VERSION \\
         cuda-core-$CUDA_PKG_VERSION \\
         cuda-cublas-dev-$CUDA_PKG_VERSION \\
@@ -30,5 +31,21 @@ RUN apt-get install -y --no-install-recommends --allow-downgrades \\
         cuda-nvrtc-dev-$CUDA_PKG_VERSION && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
+
+RUN if [ "$CUDA_VERSION_SHORT" != "8.0" ] && [ "$CUDA_VERSION_SHORT" != "9.0" ]; then \\
+        apt-get update && \\
+        apt-get install -y --no-install-recommends \\
+            cuda-nsight-$CUDA_PKG_VERSION && \\
+        rm -rf /var/lib/apt/lists && \\
+        mkdir /var/lib/apt/lists; \\
+    fi
+
+RUN if [ "$CUDA_VERSION_SHORT" = "10.0" ]; then \\
+        apt-get update && \\
+        apt-get install -y --no-install-recommends \\
+            cuda-nsight-compute-$CUDA_PKG_VERSION && \\
+        rm -rf /var/lib/apt/lists && \\
+        mkdir /var/lib/apt/lists; \\
+    fi
 
 #endif // __CUDA_DEV__
