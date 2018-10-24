@@ -154,6 +154,14 @@ cuda92:
 .PHONY: cuda92-dev
 cuda92-dev:
 	$(MAKE) __FULL="9.2.88" __PKG="9-2=9.2.88-1" __SHORT="9.2" cuda-dev
+
+.PHONY: cuda100
+cuda100:
+	$(MAKE) __FULL="10.0.130" __PKG="10-0=10.0.130-1" __SHORT="10.0" cuda
+
+.PHONY: cuda100-dev
+cuda100-dev:
+	$(MAKE) __FULL="10.0.130" __PKG="10-0=10.0.130-1" __SHORT="10.0" cuda-dev
 ## cuda env related targets end ##
 
 
