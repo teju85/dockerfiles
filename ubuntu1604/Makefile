@@ -7,9 +7,9 @@ help:
 	@echo "  cuda(80|90|91|92|100)-dev"
 	@echo "    cuda v8.0/9.[012]/10.0 devels. These, in addition, come with"
 	@echo "    'runas' ability."
-	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71)"
+	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71|100_73)"
 	@echo "    cudnn runtimes."
-	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71)-dev"
+	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71|100_73)-dev"
 	@echo "    cudnn dev images."
 	@echo
 	@echo "  py-h2o4gpu-dev(80|90|91|92)"
@@ -257,6 +257,17 @@ cudnn92_71:
 .PHONY: cudnn92_71-dev
 cudnn92_71-dev:
 	$(MAKE) __CUDNN="7.1.4.18" __CUDNN_SHORT="7" __SHORT="9.2" __CUDA_MINIFIED="92" cudnn-dev
+## cudnn with v9.2 env related targets end ##
+
+
+## cudnn with v10.0 env related targets begin ##
+.PHONY: cudnn100_73
+cudnn100_73:
+	$(MAKE) __CUDNN="7.3.1.20" __CUDNN_SHORT="7" __SHORT="10.0" __CUDA_MINIFIED="100" cudnn
+
+.PHONY: cudnn100_73-dev
+cudnn100_73-dev:
+	$(MAKE) __CUDNN="7.3.1.20" __CUDNN_SHORT="7" __SHORT="10.0" __CUDA_MINIFIED="100" cudnn-dev
 ## cudnn with v9.2 env related targets end ##
 
 
