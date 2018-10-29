@@ -17,7 +17,8 @@ RUN apt-get update && \\
     mkdir /var/lib/apt/lists
 
 // https://groups.google.com/forum/#!topic/googletestframework/Zo7_HOv1MJ0
-RUN git clone "https://github.com/google/googletest" /opt/googletest && \\
+// build issue with googletest master!
+RUN git clone -b release-1.8.1 "https://github.com/google/googletest" /opt/googletest && \\
     cd /opt/googletest/googletest && \\
     mkdir build && \\
     cd build && \\
