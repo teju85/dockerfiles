@@ -12,6 +12,7 @@ FROM cuda:BASE_TAG
 #define XGB_REPO "dmlc/xgboost"
 #include "../../reusables/xgboost-install"
 #include "../../reusables/dask-xgboost"
+#include "../../reusables/cmake-build"
 #include "../../reusables/libgdf"
 
 // TODO:

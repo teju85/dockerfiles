@@ -3,14 +3,26 @@
 
 #include "build-essential"
 
-// need cmake >= v3.8
-RUN wget --no-check-certificate "https://cmake.org/files/v3.8/cmake-3.8.2.tar.gz" && \\
-    tar xf cmake-3.8.2.tar.gz && \\
-    cd cmake-3.8.2 && \\
-    ./bootstrap && \\
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        curl \\
+        libcurl4-openssl-dev \\
+        zlib1g-dev && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+ENV CMAKE_SHORT_VERSION 3.12
+ENV CMAKE_LONG_VERSION  3.12.3
+
+// somehow I'm unable to get the cmake-provided curl library support https protocol!
+RUN wget --no-check-certificate \\
+        "https://cmake.org/files/v${CMAKE_SHORT_VERSION}/cmake-${CMAKE_LONG_VERSION}.tar.gz" && \\
+    tar xf cmake-${CMAKE_LONG_VERSION}.tar.gz && \\
+    cd cmake-${CMAKE_LONG_VERSION} && \\
+    ./bootstrap --system-curl && \\
     make -j && \\
     make install && \\
     cd .. && \\
-    rm -rf cmake-3.8.2.tar.gz cmake-3.8.2
+    rm -rf cmake-${CMAKE_LONG_VERSION}.tar.gz cmake-${CMAKE_LONG_VERSION}
 
 #endif // __CMAKE_BUILD__

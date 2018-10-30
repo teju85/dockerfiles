@@ -1,4 +1,4 @@
-#ifndef ___LIBGDF__
+#ifndef __LIBGDF__
 #define __LIBGDF__
 
 RUN apt-get update && \\
@@ -7,29 +7,22 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN pip install cffi
+RUN pip install \\
+        cffi \\
+        llvmlite
 
-RUN git clone --recursive "https://github.com/gpuopenanalytics/libgdf.git" /opt/libgdf && \\
-    cd /opt/libgdf && \\
-    mkdir build
-
-RUN cd /opt/libgdf && \\
-    sed -e 's/master/release-1.8.1/' < cmake/Templates/GoogleTest.CMakeLists.txt.cmake > ttt && \\
-    mv ttt cmake/Templates/GoogleTest.CMakeLists.txt.cmake
-
-RUN cd /opt/libgdf/build && \\
+RUN git clone --recursive "https://github.com/rapidsai/cudf" /opt/cudf && \\
+    cd /opt/cudf/libgdf && \\
+    mkdir build && \\
+    cd build && \\
     cmake .. && \\
     make -j install && \\
     make copy_python && \\
+    python setup.py install && \\
+    cd ../.. && \\
     python setup.py install
 
-RUN pip install llvmlite
-
-RUN git clone "https://github.com/gpuopenanalytics/pygdf.git" /opt/pygdf && \\
-    cd /opt/pygdf && \\
-    python setup.py install
-
-RUN git clone "https://github.com/gpuopenanalytics/dask_gdf" /opt/dask_gdf && \\
+RUN git clone "https://github.com/rapidsai/dask_gdf" /opt/dask_gdf && \\
     cd /opt/dask_gdf && \\
     python setup.py install
 
