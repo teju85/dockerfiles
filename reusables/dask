@@ -1,6 +1,8 @@
 #ifndef __DASK__
 #define __DASK__
 
+// for dask scheduler
+EXPOSE 8786
 // for the dask interactive dashboard
 EXPOSE 8787
 
