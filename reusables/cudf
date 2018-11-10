@@ -1,0 +1,42 @@
+#ifndef __CUDF__
+#define __CUDF__
+
+#include "conda-ml-env"
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        libboost-all-dev && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+RUN conda install \\
+        cffi \\
+        llvmlite \\
+        numba \\
+        pyarrow && \\
+    conda clean -ya
+
+#include "cmake-build"
+
+// NVStrings integration is not working right now!
+#ifndef CUDF_COMMIT
+#define CUDF_COMMIT 6207520aa8
+#endif
+
+RUN git clone --recursive "https://github.com/rapidsai/cudf" /opt/cudf && \\
+    cd /opt/cudf && \\
+    git reset --hard CUDF_COMMIT && \\
+    mkdir -p libgdf/build && \\
+    cd libgdf/build && \\
+    cmake .. -DHASH_JOIN=ON && \\
+    make -j install && \\
+    make copy_python && \\
+    python setup.py install && \\
+    cd ../.. && \\
+    python setup.py install
+
+RUN git clone "https://github.com/rapidsai/dask-cudf" /opt/dask-cudf && \\
+    cd /opt/dask-cudf && \\
+    python setup.py install
+
+#endif // __CUDF__

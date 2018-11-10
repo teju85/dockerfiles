@@ -1,6 +1,7 @@
 
 help:
 	@echo "make what? Available targets are:"
+	@echo "Frequently used images (thus, maintained/updated regularly)"
 	@echo "  cuda(80|90|91|92|100)"
 	@echo "    cuda v8.0/9.[012]/10.0 runtimes. These, in addition, come"
 	@echo "    with 'runas' ability."
@@ -12,16 +13,10 @@ help:
 	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71|100_73)-dev"
 	@echo "    cudnn dev images."
 	@echo
-	@echo "  py-h2o4gpu-dev(80|90|91|92)"
-	@echo "    python wrapper around h2o4gpu dev environment."
-	@echo
 	@echo "  pytorch(60|80_70|90_70|90_71|91_71|92_71)"
 	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
 	@echo "    behavior:"
 	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
-	@echo
-	@echo "  cupy-dev(60|80_70|90_70|90_71|91_71|92_71)"
-	@echo "    cupy on python3 (with pyml-env)."
 	@echo
 	@echo "  xgboost(80|90|91|92)"
 	@echo "    install latest version of xgboost. Some flags to customize"
@@ -32,6 +27,11 @@ help:
 	@echo "  dask-xgboost(80|90|91|92)"
 	@echo "    install latest version of dask over xgboost."
 	@echo
+	@echo "  rapids(90|91|92)"
+	@echo "    install latest version of rapids. Some flags to customize"
+	@echo "    behavior:"
+	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
+	@echo
 	@echo "  gbm-bench(80|90|91|92)"
 	@echo "    gbm benchmarking images. Some flags to customize behavior:"
 	@echo "    . XG_ARCH        - cuda arch(s) to build. [$(XG_ARCH)]"
@@ -39,18 +39,26 @@ help:
 	@echo "    . GBM_LG_COMMIT  - lightgbm commit ID. [$(GBM_LG_COMMIT)]"
 	@echo "    . GBM_CAT_COMMIT - catboost commit ID. [$(GBM_CAT_COMMIT)]"
 	@echo
-	@echo "  faiss-dev(90|91|92)"
-	@echo "    FAISS development environment. Assumes that user will mount"
-	@echo "    faiss repo while launching container on this image."
+	@echo "  ml-dev"
+	@echo "    ML development environment (over and above cuda v10.0)"
 	@echo
-	@echo "  llvm(80|90|91|92)"
-	@echo "    LLVM et.al development container along with SDK"
+	@echo "Old Images (looked at only when needed!):"
 	@echo
 	@echo "  nccl-bench"
 	@echo "    A dev container for benchmarking nccl performance. (@cuda v9.2)"
 	@echo
-	@echo "  ml-dev"
-	@echo "    ML development environment (over above cuda v9.2)"
+	@echo "  llvm(80|90|91|92)"
+	@echo "    LLVM et.al development container along with SDK"
+	@echo
+	@echo "  py-h2o4gpu-dev(80|90|91|92)"
+	@echo "    python wrapper around h2o4gpu dev environment."
+	@echo
+	@echo "  faiss-dev(90|91|92)"
+	@echo "    FAISS development environment. Assumes that user will mount"
+	@echo "    faiss repo while launching container on this image."
+	@echo
+	@echo "  cupy-dev(60|80_70|90_70|90_71|91_71|92_71)"
+	@echo "    cupy on python3 (with pyml-env)."
 	@echo
 	@echo "  dsb-2018"
 	@echo "    Working environment for Data Science Bowl - 2018. Some flags"
@@ -271,35 +279,6 @@ cudnn100_73-dev:
 ## cudnn with v9.2 env related targets end ##
 
 
-## py-h2o4gpu-dev env's start ##
-.PHONY: py-h2o4gpu-dev
-py-h2o4gpu-dev: cuda$(__CUDA_MINIFIED)-dev
-	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t py-h2o4gpu-dev:latest-$(__CUDA_MINIFIED) . && \
-	make -f ../Makefile delContext
-
-.PHONY: py-h2o4gpu-dev80
-py-h2o4gpu-dev80:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" py-h2o4gpu-dev
-
-.PHONY: py-h2o4gpu-dev90
-py-h2o4gpu-dev90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" py-h2o4gpu-dev
-
-.PHONY: py-h2o4gpu-dev91
-py-h2o4gpu-dev91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" py-h2o4gpu-dev
-
-.PHONY: py-h2o4gpu-dev92
-py-h2o4gpu-dev92:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" py-h2o4gpu-dev
-## py-h2o4gpu-dev env's end ##
-
-
 ## pytorch env's start ##
 PT_PORT ?= 8888
 .PHONY: pytorch
@@ -378,63 +357,6 @@ pytorch92_71:
 ## pytorch env's end ##
 
 
-## cupy-dev env's start ##
-.PHONY: cupy-dev
-cupy-dev: cudnn$(__CUDNN_MINIFIED)-dev
-	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)-dev" \
-	    -D__NCCL_VERSION_TAG=$(__NCCL_TAG) \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t cupy-dev:latest-$(__CUDNN_MINIFIED) \
-	    --build-arg port=$(PT_PORT) . && \
-	make -f ../Makefile delContext
-
-.PHONY: cupy-dev60
-cupy-dev60:
-	$(MAKE) __CUDNN_MINIFIED="60" \
-	        __CUDNN_TAG="8.0-6.0.21" \
-	        __NCCL_TAG="2.1.15" \
-	    cupy-dev
-
-.PHONY: cupy-dev80_70
-cupy-dev80_70:
-	$(MAKE) __CUDNN_MINIFIED="80_70" \
-	        __CUDNN_TAG="8.0-7.0.5.15" \
-	        __NCCL_TAG="2.1.15" \
-	    cupy-dev
-
-.PHONY: cupy-dev90_70
-cupy-dev90_70:
-	$(MAKE) __CUDNN_MINIFIED="90_70" \
-	        __CUDNN_TAG="9.0-7.0.5.15" \
-	        __NCCL_TAG="2.1.15" \
-	    cupy-dev
-
-.PHONY: cupy-dev90_71
-cupy-dev90_71:
-	$(MAKE) __CUDNN_MINIFIED="90_71" \
-	        __CUDNN_TAG="9.0-7.1.3.16" \
-	        __NCCL_TAG="2.1.15" \
-	    cupy-dev
-
-.PHONY: cupy-dev91_71
-cupy-dev91_71:
-	$(MAKE) __CUDNN_MINIFIED="91_71" \
-	        __CUDNN_TAG="9.1-7.1.3.16" \
-	        __NCCL_TAG="2.1.15" \
-	    cupy-dev
-
-.PHONY: cupy-dev92_71
-cupy-dev92_71:
-	$(MAKE) __CUDNN_MINIFIED="92_71" \
-	        __CUDNN_TAG="9.2-7.1.4.18" \
-	        __NCCL_TAG="2.2.12" \
-	    cupy-dev
-## cupy-dev env's end ##
-
-
 ## xgboost env's start ##
 __XG_ARCH ?= 35;50;52;60;61;70
 XG_COMMIT ?= c004cea788748c293e2f9e5c9bd7469ff7e2c613
@@ -500,11 +422,37 @@ dask-xgboost92:
 ## dask-xgboost env's end ##
 
 
+## rapids env's start ##
+.PHONY: rapids
+rapids: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
+	    -DXGB_ARCH="$(__XG_ARCH)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t rapids:latest-$(__SHORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: rapids90
+rapids90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" rapids
+
+.PHONY: rapids91
+rapids91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" rapids
+
+.PHONY: rapids92
+rapids92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" rapids
+## rapids env's end ##
+
+
 ## gbm-bench env's start ##
 GBM_XG_COMMIT  ?= c004cea788748c293e2f9e5c9bd7469ff7e2c613
 GBM_LG_COMMIT  ?= c6cdea75a3f7732a13c21c760c1bf221441a5c79
 GBM_CAT_COMMIT ?= 37936c513c63e3bf0227b5cd828cee9341f0a365
-__XG_ARCH=35;50;52;60;61;70
 .PHONY: gbm-bench
 gbm-bench: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
@@ -536,6 +484,20 @@ gbm-bench91:
 gbm-bench92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" gbm-bench
 ## gbm-bench env's end ##
+
+
+.PHONY: ml-dev
+ml-dev: cuda100-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="10.0" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t ml:dev . && \
+	make -f ../Makefile delContext
+
+
+### Old Images (fixed/updated only when required!)
 
 
 ## llvm env's start ##
@@ -596,11 +558,6 @@ faiss-dev92:
 postgres:
 	cd postgres && docker build -t postgres:latest .
 
-
-## what targets follow hereafterwards are the ones which are built
-## using a specific version of the above base images!
-## (hence the parent image tags are being hard-coded!)
-
 .PHONY: nccl-bench
 nccl-bench: cuda92-dev
 	cd $@ && \
@@ -610,16 +567,6 @@ nccl-bench: cuda92-dev
 	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
 	docker build -t nccl:bench . && \
-	make -f ../Makefile delContext
-
-.PHONY: ml-dev
-ml-dev: cuda92-dev
-	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="9.2" \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t ml:dev . && \
 	make -f ../Makefile delContext
 
 VIS_PORT ?= 8097
@@ -706,3 +653,89 @@ fairseq-py-dev: cudnn60
 	docker build -t fairseq-py-dev:latest \
 	    --build-arg port=$(FS_PORT) . && \
 	make -f ../Makefile delContext
+
+
+## py-h2o4gpu-dev env's start ##
+.PHONY: py-h2o4gpu-dev
+py-h2o4gpu-dev: cuda$(__CUDA_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)-dev" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t py-h2o4gpu-dev:latest-$(__CUDA_MINIFIED) . && \
+	make -f ../Makefile delContext
+
+.PHONY: py-h2o4gpu-dev80
+py-h2o4gpu-dev80:
+	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" py-h2o4gpu-dev
+
+.PHONY: py-h2o4gpu-dev90
+py-h2o4gpu-dev90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" py-h2o4gpu-dev
+
+.PHONY: py-h2o4gpu-dev91
+py-h2o4gpu-dev91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" py-h2o4gpu-dev
+
+.PHONY: py-h2o4gpu-dev92
+py-h2o4gpu-dev92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" py-h2o4gpu-dev
+## py-h2o4gpu-dev env's end ##
+
+
+## cupy-dev env's start ##
+.PHONY: cupy-dev
+cupy-dev: cudnn$(__CUDNN_MINIFIED)-dev
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)-dev" \
+	    -D__NCCL_VERSION_TAG=$(__NCCL_TAG) \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t cupy-dev:latest-$(__CUDNN_MINIFIED) \
+	    --build-arg port=$(PT_PORT) . && \
+	make -f ../Makefile delContext
+
+.PHONY: cupy-dev60
+cupy-dev60:
+	$(MAKE) __CUDNN_MINIFIED="60" \
+	        __CUDNN_TAG="8.0-6.0.21" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy-dev
+
+.PHONY: cupy-dev80_70
+cupy-dev80_70:
+	$(MAKE) __CUDNN_MINIFIED="80_70" \
+	        __CUDNN_TAG="8.0-7.0.5.15" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy-dev
+
+.PHONY: cupy-dev90_70
+cupy-dev90_70:
+	$(MAKE) __CUDNN_MINIFIED="90_70" \
+	        __CUDNN_TAG="9.0-7.0.5.15" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy-dev
+
+.PHONY: cupy-dev90_71
+cupy-dev90_71:
+	$(MAKE) __CUDNN_MINIFIED="90_71" \
+	        __CUDNN_TAG="9.0-7.1.3.16" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy-dev
+
+.PHONY: cupy-dev91_71
+cupy-dev91_71:
+	$(MAKE) __CUDNN_MINIFIED="91_71" \
+	        __CUDNN_TAG="9.1-7.1.3.16" \
+	        __NCCL_TAG="2.1.15" \
+	    cupy-dev
+
+.PHONY: cupy-dev92_71
+cupy-dev92_71:
+	$(MAKE) __CUDNN_MINIFIED="92_71" \
+	        __CUDNN_TAG="9.2-7.1.4.18" \
+	        __NCCL_TAG="2.2.12" \
+	    cupy-dev
+## cupy-dev env's end ##

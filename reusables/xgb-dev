@@ -1,7 +1,7 @@
 #ifndef __XGB_DEV__
 #define __XGB_DEV__
 
-#include "pyml-env-2.7"
+#include "conda-ml-env"
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
@@ -28,10 +28,14 @@ RUN git clone -b release-1.8.1 "https://github.com/google/googletest" /opt/googl
     cp -r ../include/gtest gtest/include && \\
     cp lib* gtest/lib
 
-RUN pip install --no-cache-dir \\
-        cpplint \\
+RUN conda install -c auto \\
+        cpplint && \\
+    conda clean -ya
+
+RUN conda install \\
         pydot \\
-        pylint
+        pylint && \\
+    conda clean -ya
 
 COPY contexts/dev-xgb /opt/dev-xgb
 RUN chmod a+x /opt/dev-xgb/xgb

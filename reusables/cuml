@@ -1,0 +1,22 @@
+#ifndef __CUML__
+#define __CUML__
+
+#include "cudf"
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        zlib1g-dev && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+#include "cmake-build"
+
+RUN conda install \\
+        Cython && \\
+    conda clean -ya
+
+RUN git clone --recursive "https://github.com/rapidsai/cuml" /opt/cuml && \\
+    cd /opt/cuml && \\
+    python setup.py install
+
+#endif // __CUML__

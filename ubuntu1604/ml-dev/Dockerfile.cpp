@@ -1,8 +1,8 @@
-FROM cuda:9.2-dev
+FROM cuda:10.0-dev
 
 #include "../../reusables/cmake-build"
 #include "../../reusables/ssh"
-#include "../../reusables/python-dev-2.7"
+#include "../../reusables/conda-ml-env"
 #include "../../reusables/llvm"
 
 RUN apt-get update && \\

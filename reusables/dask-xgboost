@@ -3,8 +3,18 @@
 
 #include "dask"
 
-RUN git clone "https://github.com/dask/dask-xgboost" && \\
-    cd dask-xgboost && \\
+#ifndef DXGB_COMMIT
+#define DXGB_COMMIT HEAD
+#endif
+
+#ifndef DXGB_REPO
+#define DXGB_REPO dask/dask-xgboost
+#endif
+#define DXGB_LINK "https://github.com/"DXGB_REPO
+
+RUN git clone DXGB_LINK /opt/dask-xgboost && \\
+    cd /opt/dask-xgboost && \\
+    git reset --hard DXGB_COMMIT && \\
     python setup.py install
 
 #endif // __DASK_XGBOOST__

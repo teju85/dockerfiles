@@ -13,7 +13,7 @@ FROM cuda:BASE_TAG
 #include "../../reusables/xgboost-install"
 #include "../../reusables/dask-xgboost"
 #include "../../reusables/cmake-build"
-#include "../../reusables/libgdf"
+#include "../../reusables/cudf"
 
 // TODO:
 //  . install extra dependencies for the comparison library

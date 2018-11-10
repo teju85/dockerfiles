@@ -1,0 +1,14 @@
+#ifndef __RAPIDS__
+#define __RAPIDS__
+
+#define XGB_REPO rapidsai/xgboost
+#define XGB_COMMIT HEAD
+#define DXGB_REPO rapidsai/dask-xgboost
+
+#include "conda-ml-env"
+#include "xgboost-install"
+#include "dask-xgboost"
+#include "cudf"
+#include "cuml"
+
+#endif  // __RAPIDS__

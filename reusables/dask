@@ -6,7 +6,9 @@ EXPOSE 8786
 // for the dask interactive dashboard
 EXPOSE 8787
 
-RUN pip install bokeh
+RUN conda install \\
+        bokeh && \\
+    conda clean -ya
 
 RUN git clone "https://github.com/dask/dask.git" && \\
     cd dask && \\

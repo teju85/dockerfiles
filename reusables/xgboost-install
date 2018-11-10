@@ -10,7 +10,7 @@
 #define XGB_ARCH_STR STR(XGB_ARCH)
 
 #ifndef XGB_COMMIT
-#define XGB_COMMIT 998ac6e27107af6d5e73022f1bcbbf5e5dd10d72
+#define XGB_COMMIT HEAD
 #endif
 
 #ifndef XGB_REPO
@@ -18,18 +18,16 @@
 #endif
 #define XGB_LINK "https://github.com/"XGB_REPO
 
-RUN git config --global http.sslVerify false && \\
-    git clone --recursive XGB_LINK && \\
-    cd xgboost && \\
-    git reset --hard XGB_COMMIT
-
 ENV XG_COMMIT_ID XGB_COMMIT
 
-RUN cd xgboost && \\
+RUN git config --global http.sslVerify false && \\
+    git clone --recursive XGB_LINK /opt/xgboost && \\
+    cd /opt/xgboost && \\
+    git reset --hard XGB_COMMIT && \\
     mkdir build && \\
     cd build && \\
     cmake .. -DGPU_COMPUTE_VER=XGB_ARCH_STR -DUSE_CUDA=ON -DUSE_NCCL=ON && \\
-    make -j3 && \\
+    make -j4 && \\
     cd ../python-package && \\
     python setup.py install
 
