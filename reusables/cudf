@@ -1,3 +1,4 @@
+
 #ifndef __CUDF__
 #define __CUDF__
 
@@ -13,6 +14,7 @@ RUN conda install \\
         cffi \\
         llvmlite \\
         numba \\
+        pandas=0.20.3 \\
         pyarrow && \\
     conda clean -ya
 
@@ -23,7 +25,7 @@ RUN conda install \\
 #define CUDF_COMMIT 6207520aa8
 #endif
 
-RUN git clone --recursive "https://github.com/rapidsai/cudf" /opt/cudf && \\
+RUN git clone --recursive -b v0.2.0 "https://github.com/rapidsai/cudf" /opt/cudf && \\
     cd /opt/cudf && \\
     git reset --hard CUDF_COMMIT && \\
     mkdir -p libgdf/build && \\
