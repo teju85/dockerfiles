@@ -28,9 +28,10 @@ RUN git clone -b release-1.8.1 "https://github.com/google/googletest" /opt/googl
     cp -r ../include/gtest gtest/include && \\
     cp lib* gtest/lib
 
-RUN conda install -c auto \\
-        cpplint && \\
-    conda clean -ya
+// FIXME! cpplint install command seems to mess up the python version!!!
+// RUN conda install \\
+//         cpplint && \\
+//     conda clean -ya
 
 RUN conda install \\
         pydot \\

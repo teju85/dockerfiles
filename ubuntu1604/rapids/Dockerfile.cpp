@@ -9,3 +9,5 @@ FROM cuda:BASE_TAG
 #include "../../reusables/rapids"
 #include "../../reusables/jupyter"
 #include "../../reusables/ssh"
+
+RUN conda install cudatoolkit && conda clean -ya
