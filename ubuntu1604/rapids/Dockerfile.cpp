@@ -9,11 +9,3 @@ FROM cuda:BASE_TAG
 #include "../../reusables/rapids"
 #include "../../reusables/jupyter"
 #include "../../reusables/ssh"
-
-RUN conda install cudatoolkit && conda clean -ya
-
-RUN apt-get update && \\
-    apt-get install -y --no-install-recommends \\
-        libpthread-stubs0-dev && \\
-    rm -rf /var/lib/apt/lists && \\
-    mkdir /var/lib/apt/lists

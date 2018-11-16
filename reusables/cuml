@@ -5,13 +5,13 @@
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
+        libpthread-stubs0-dev \\
         zlib1g-dev && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-#include "cmake-build"
-
 RUN conda install \\
+        cmake \\
         Cython && \\
     conda clean -ya
 

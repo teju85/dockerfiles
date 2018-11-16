@@ -10,27 +10,30 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN conda install \\
+RUN conda install -c numba -c conda-forge -c rapidsai -c defaults \\
         cffi \\
+        cmake \\
         llvmlite \\
         numba \\
+        nvstrings \\
         pandas=0.20.3 \\
         pyarrow && \\
     conda clean -ya
 
-#include "cmake-build"
-
 // NVStrings integration is not working right now!
 #ifndef CUDF_COMMIT
-#define CUDF_COMMIT 6207520aa8
+#define CUDF_COMMIT HEAD
 #endif
+
+ENV NUMBAPRO_NVVM=/usr/local/cuda/nvvm/lib64/libnvvm.so
+ENV NUMBAPRO_LIBDEVICE=/usr/local/cuda/nvvm/libdevice/
 
 RUN git clone --recursive -b v0.2.0 "https://github.com/rapidsai/cudf" /opt/cudf && \\
     cd /opt/cudf && \\
     git reset --hard CUDF_COMMIT && \\
     mkdir -p libgdf/build && \\
     cd libgdf/build && \\
-    cmake .. -DHASH_JOIN=ON && \\
+    cmake .. -DHASH_JOIN=ON -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \\
     make -j install && \\
     make copy_python && \\
     python setup.py install && \\
