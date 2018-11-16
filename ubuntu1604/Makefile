@@ -18,7 +18,7 @@ help:
 	@echo "    behavior:"
 	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
 	@echo
-	@echo "  xgboost(80|90|91|92)"
+	@echo "  xgboost(80|90|91|92|100)"
 	@echo "    install latest version of xgboost. Some flags to customize"
 	@echo "    behavior:"
 	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
@@ -390,6 +390,10 @@ xgboost91:
 .PHONY: xgboost92
 xgboost92:
 	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgboost
+
+.PHONY: xgboost100
+xgboost100:
+	$(MAKE) __CUDA_MINIFIED="100" __SHORT="10.0" __NCCL_TAG="2.3.7" xgboost
 ## xgboost env's end ##
 
 
