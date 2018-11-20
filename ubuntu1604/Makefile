@@ -103,6 +103,14 @@ genContextOnly:
 .PHONY: delContext
 delContext:
 	rm -rf contexts Dockerfile
+
+NSIGHT_FILE ?=
+.PHONY: genNsightSystems
+genNsightSystems:
+	if [ "$(NSIGHT_FILE)" != "" ] && [ -r "$(NSIGHT_FILE)" ]; then \
+	    mkdir -p contexts; \
+	    cp "$(NSIGHT_FILE)" contexts/nsight-systems.run; \
+	fi
 ## help targets end ##
 
 
@@ -361,39 +369,78 @@ pytorch92_71:
 __XG_ARCH ?= 35;50;52;60;61;70
 XG_COMMIT ?= c004cea788748c293e2f9e5c9bd7469ff7e2c613
 XG_REPO   ?= "dmlc/xgboost"
+
+.PHONY: xgboost-Dockerfile
+xgboost-Dockerfile:
+	if [ "$(NSIGHT_FILE)" != "" ]; then \
+	    cpp -o Dockerfile \
+	        -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	        -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
+	        -DXGB_REPO="$(XG_REPO)" \
+	        -DXGB_ARCH="$(__XG_ARCH)" \
+	        -DXGB_COMMIT="$(XG_COMMIT)" \
+	        -DNSIGHT_FILE="contexts/nsight-systems.run" \
+	        Dockerfile.cpp; \
+	else \
+	    cpp -o Dockerfile \
+	        -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	        -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
+	        -DXGB_REPO="$(XG_REPO)" \
+	        -DXGB_ARCH="$(__XG_ARCH)" \
+	        -DXGB_COMMIT="$(XG_COMMIT)" \
+	        -UNSIGHT_FILE \
+	        Dockerfile.cpp; \
+	fi
+
 .PHONY: xgboost
 xgboost: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
-	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
-	    -DXGB_REPO="$(XG_REPO)" \
-	    -DXGB_ARCH="$(__XG_ARCH)" \
-	    -DXGB_COMMIT="$(XG_COMMIT)" \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
+	$(MAKE) -f ../Makefile xgboost-Dockerfile && \
+	$(MAKE) -f ../Makefile genContextOnly && \
+	$(MAKE) -f ../Makefile genNsightSystems && \
 	docker build -t xgboost:latest-$(__SHORT) . && \
-	make -f ../Makefile delContext
+	$(MAKE) -f ../Makefile delContext
 
 .PHONY: xgboost80
 xgboost80:
-	$(MAKE) __CUDA_MINIFIED="80" __SHORT="8.0" __NCCL_TAG="2.2.13" __XG_ARCH="35;50;52;60;61" xgboost
+	$(MAKE) \
+	    __CUDA_MINIFIED="80" \
+	    __SHORT="8.0" \
+	    __NCCL_TAG="2.2.13" \
+	    __XG_ARCH="35;50;52;60;61" \
+	    xgboost
 
 .PHONY: xgboost90
 xgboost90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" xgboost
+	$(MAKE) \
+	    __CUDA_MINIFIED="90" \
+	    __SHORT="9.0" \
+	    __NCCL_TAG="2.2.13" \
+	    xgboost
 
 .PHONY: xgboost91
 xgboost91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" xgboost
+	$(MAKE) \
+	    __CUDA_MINIFIED="91" \
+	    __SHORT="9.1" \
+	    __NCCL_TAG="2.2.12" \
+	    xgboost
 
 .PHONY: xgboost92
 xgboost92:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" xgboost
+	$(MAKE) \
+	    __CUDA_MINIFIED="92" \
+	    __SHORT="9.2" \
+	    __NCCL_TAG="2.2.13" \
+	    xgboost
 
 .PHONY: xgboost100
 xgboost100:
-	$(MAKE) __CUDA_MINIFIED="100" __SHORT="10.0" __NCCL_TAG="2.3.7" xgboost
+	$(MAKE) \
+	    __CUDA_MINIFIED="100" \
+	    __SHORT="10.0" \
+	    __NCCL_TAG="2.3.7" \
+	    xgboost
 ## xgboost env's end ##
 
 

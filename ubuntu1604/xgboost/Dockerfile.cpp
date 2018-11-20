@@ -8,3 +8,4 @@ FROM cuda:BASE_TAG
 
 #include "../../reusables/xgboost-install"
 #include "../../reusables/jupyter"
+#include "../../reusables/nsight-systems"

@@ -1,0 +1,20 @@
+#ifndef NSIGHT_SYSTEMS
+#define NSIGHT_SYSTEMS
+
+#ifdef NSIGHT_FILE
+
+#include "ssh"
+
+COPY NSIGHT_FILE /opt/nsight-systems.run
+
+RUN chmod +x /opt/nsight-systems.run && \\
+    yes | PAGER=cat bash /opt/nsight-systems.run --nox11 --target /opt/nsight-sys && \\
+    /opt/nsight-sys/NsightSystems-*/Target-x86_64/x86_64/setup_nsys_env && \\
+    ln -s /opt/nsight-sys/NsightSystems-*/Target-x86_64/x86_64/nsys /opt/nsight-sys/nsys && \\
+    ln -s /opt/nsight-sys/NsightSystems-*/Host-x86_64/QdstrmImporter /opt/nsight-sys/QdstrmImporter
+
+ENV PATH /opt/nsight-sys:${PATH}
+
+#endif // NSIGHT_FILE
+
+#endif // NSIGHT_SYSTEMS
