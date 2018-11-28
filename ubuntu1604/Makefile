@@ -40,7 +40,7 @@ help:
 	@echo "    . GBM_CAT_COMMIT - catboost commit ID. [$(GBM_CAT_COMMIT)]"
 	@echo
 	@echo "  ml-dev"
-	@echo "    ML development environment (over and above cuda v10.0)"
+	@echo "    ML development environment (over and above rapids v9.2)"
 	@echo
 	@echo "Old Images (looked at only when needed!):"
 	@echo
@@ -538,11 +538,9 @@ gbm-bench92:
 
 
 .PHONY: ml-dev
-ml-dev: cuda100-dev
+ml-dev: rapids92
 	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="10.0" \
-	    Dockerfile.cpp && \
+	cpp -o Dockerfile Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
 	docker build -t ml:dev . && \
 	make -f ../Makefile delContext

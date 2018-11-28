@@ -1,8 +1,6 @@
-FROM cuda:10.0-dev
+FROM rapids:latest-9.2
 
-#include "../../reusables/cmake-build"
 #include "../../reusables/ssh"
-#include "../../reusables/conda-ml-env"
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
@@ -15,3 +13,5 @@ RUN apt-get update && \\
         zlib1g-dev && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
+
+#include "../../reusables/openmpi"

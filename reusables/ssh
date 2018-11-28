@@ -20,7 +20,7 @@ COPY "contexts/ssh" "/opt/ssh/"
 ENV RUNAS_PRE_SWITCH_CMD "/opt/ssh/start.sh"
 
 // /etc/pam.d/sshd: SSH login fix. Otherwise user is kicked off after login
-RUN mkdir /var/run/sshd && \\
+RUN mkdir -p /var/run/sshd && \\
     sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \\
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \\
     sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \\

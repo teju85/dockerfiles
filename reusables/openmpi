@@ -1,0 +1,12 @@
+#ifndef __OPENMPI__
+#define __OPENMPI__
+
+RUN wget "https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.3.tar.gz" -O /opt/openmpi.tar.gz && \\
+    cd /opt && \\
+    tar xf /opt/openmpi.tar.gz
+
+RUN cd /opt/openmpi-3.1.3 && \\
+    ./configure --with-cuda && \\
+    make all install
+
+#endif // __OPENMPI__

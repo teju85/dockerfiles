@@ -10,7 +10,7 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN conda install -c numba -c conda-forge -c rapidsai -c defaults \\
+RUN conda install -c numba -c conda-forge -c nvidia -c rapidsai -c defaults \\
         cffi \\
         cmake \\
         llvmlite \\
@@ -20,7 +20,6 @@ RUN conda install -c numba -c conda-forge -c rapidsai -c defaults \\
         pyarrow && \\
     conda clean -ya
 
-// NVStrings integration is not working right now!
 #ifndef CUDF_COMMIT
 #define CUDF_COMMIT HEAD
 #endif
