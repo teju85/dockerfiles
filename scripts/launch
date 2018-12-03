@@ -118,7 +118,7 @@ class Launcher:
 
     def launch(self):
         args = self.args
-        finalcmd = ["nvidia-docker", "run", "-it", "--rm"]
+        finalcmd = ["docker", "run", "-it", "--rm", "--runtime", "nvidia"]
         finalcmd += self.getPort(args.image)
         finalcmd += self.getVols(args)
         finalcmd += self.getNFSmount(args)
