@@ -12,7 +12,7 @@ RUN apt-get update && \\
 
 RUN conda install -c numba -c conda-forge -c nvidia -c rapidsai -c defaults \\
         cffi \\
-        cmake \\
+        cmake=3.13 \\
         Cython \\
         llvmlite \\
         numba \\
