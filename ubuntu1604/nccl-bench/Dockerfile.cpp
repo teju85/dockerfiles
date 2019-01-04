@@ -13,6 +13,7 @@ RUN apt-get update && \\
 #include "../../reusables/openmpi"
 #include "../../reusables/ssh"
 
-RUN git clone "https://github.com/teju85/nccl-bench" /opt/nccl-bench && \\
+RUN ldconfig && \\
+    git clone "https://github.com/teju85/nccl-bench" /opt/nccl-bench && \   \
     cd /opt/nccl-bench && \\
-    make build
+    MPICXX=/usr/local/bin/mpiCC make build
