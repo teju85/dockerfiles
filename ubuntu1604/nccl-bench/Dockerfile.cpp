@@ -4,6 +4,15 @@ FROM cuda:9.2-dev
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
-        make && \\
+        make \\
+        tar \\
+        wget && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
+
+#include "../../reusables/openmpi"
+#include "../../reusables/ssh"
+
+RUN git clone "https://github.com/teju85/nccl-bench" /opt/nccl-bench && \\
+    cd /opt/nccl-bench && \\
+    make build
