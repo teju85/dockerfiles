@@ -1,0 +1,107 @@
+#!/bin/bash
+# Script to help during cuml development
+
+function find_first() {
+    local file=$1
+    if [ "$file" = "" ]; then
+        return 1
+    fi
+    while [ true ]; do
+        if [ -e "$file" ]; then
+            readlink -f $file
+            return 0
+        fi
+        cd ..
+        if [ "`pwd`" = "/" ]; then
+            return 1
+        fi
+    done
+}
+
+function find_root() {
+    # Step1: try to look for .git folder
+    local root=`find_first .git`
+    root=`dirname $root`
+    export ROOT=
+    if [ -d "$root" ]; then
+        export ROOT=$root
+        return
+    fi
+    # Step2: look for /work/cuml
+    root="/work/cuml"
+    if [ -d "$root" ]; then
+        export ROOT=$root
+        return
+    fi
+    # Step3: look for /opt/cuml
+    root="/opt/cuml"
+    if [ -d "$root" ]; then
+        export ROOT=$root
+        return
+    fi
+    # Give up!
+    if [ ! -d "$ROOT" ]; then
+        echo "cuml repo '$ROOT' does not exist!"
+        exit 1
+    fi
+    # found something
+    echo "Found Root = $ROOT"
+}
+
+function build() {
+    mkdir -p build && \
+        cd build && \
+        echo "__build: PWD: " `pwd` && \
+        cmake .. $CMAKEARGS && \
+        make -j
+}
+
+function clean() {
+    echo "__clean: PWD: " `pwd` && \
+        rm -rf build
+}
+
+function ctest() {
+    local dir=$1
+    if [ "$dir" = "m" ]; then
+        cd build && \
+            ./ml_test
+    elif [ "$dir" = "p" ]; then
+        cd build && \
+            ./test/mlcommon_test
+    fi
+}
+
+function pytest() {
+    cd ../python && \
+        py.test cuML/test
+}
+
+# figure out the root of cuml repo
+find_root
+source activate cudf
+# default dir type
+dir=m
+# execute command(s) passed by the user
+while [ "$1" != "" ]; do
+    case "$1" in
+        "m")
+            dir=$1
+            cd $ROOT/cuML
+            shift;;
+        "p")
+            dir=$1
+            cd $ROOT/ml-prims
+            shift;;
+        "build"|"clean"|"ctest"|"pytest")
+            $1 $dir
+            shift;;
+        "help"|"h")
+            cmds="build|clean|ctest|pytest"
+            echo "USAGE: $0 (m|p) ($cmds) [(m|p) ($cmds) [..]]"
+            exit 0;;
+        *)
+            echo "Error: Bad arg passed! '$1'"
+            exit 1;;
+    esac
+done

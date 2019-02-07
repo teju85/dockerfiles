@@ -1,16 +1,10 @@
-
 #ifndef __CUDF__
 #define __CUDF__
 
 #include "conda-ml-env"
 
-RUN apt-get update && \\
-    apt-get install -y --no-install-recommends \\
-        libboost-all-dev && \\
-    rm -rf /var/lib/apt/lists && \\
-    mkdir /var/lib/apt/lists
-
 RUN conda install -c numba -c conda-forge -c nvidia -c rapidsai -c defaults \\
+        boost \\
         cffi \\
         cmake=3.13 \\
         Cython \\
@@ -24,25 +18,25 @@ RUN conda install -c numba -c conda-forge -c nvidia -c rapidsai -c defaults \\
 ENV NUMBAPRO_NVVM=/usr/local/cuda/nvvm/lib64/libnvvm.so
 ENV NUMBAPRO_LIBDEVICE=/usr/local/cuda/nvvm/libdevice/
 
-RUN git clone --recursive -b v0.3.0 "https://github.com/rapidsai/cudf" /opt/cudf && \\
+RUN git clone --recursive "https://github.com/rapidsai/cudf" /opt/cudf && \\
     cd /opt/cudf && \\
-    mkdir -p cpp/build && \\
-    cd cpp/build && \\
-    cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \\
-    make -j && \\
-    make install && \\
-    make python_cffi && \\
-    make install_python && \\
-    cd ../../python && \\
-    python setup.py build_ext --inplace && \\
-    python setup.py install && \\
-    cd /opt && \\
-    rm -rf /opt/cudf
+    conda env create --name cudf --file conda/environments/cudf_dev.yml
 
-RUN git clone "https://github.com/rapidsai/dask-cudf" /opt/dask-cudf && \\
-    cd /opt/dask-cudf && \\
-    python setup.py install && \\
-    cd /opt && \\
-    rm -rf /opt/dask-cudf
+RUN /bin/bash -c "source activate cudf && \
+        cd /opt/cudf && \
+        mkdir -p cpp/build && \
+        cd cpp/build && \
+        cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
+        make -j install && \
+        make python_cffi && \
+        make install_python && \
+        cd ../../python && \
+        python setup.py build_ext --inplace && \
+        python setup.py install"
+
+RUN /bin/bash -c "source activate cudf && \
+        git clone https://github.com/rapidsai/dask-cudf /opt/dask-cudf && \
+        cd /opt/dask-cudf && \
+        python setup.py install"
 
 #endif // __CUDF__

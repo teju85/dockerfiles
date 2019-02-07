@@ -15,7 +15,6 @@ RUN curl -o /opt/miniconda.sh \\
     chmod +x /opt/miniconda.sh && \\
     /opt/miniconda.sh -b -p /opt/conda && \\
     /opt/conda/bin/conda update -n base conda && \\
-    /opt/conda/bin/conda install python=3.5 && \\
     rm /opt/miniconda.sh
 
 ENV PATH /opt/conda/bin:$PATH

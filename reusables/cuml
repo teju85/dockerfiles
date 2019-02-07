@@ -5,31 +5,39 @@
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
-        libpthread-stubs0-dev \\
+        libopenblas-dev \\
         zlib1g-dev && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
-RUN conda install \\
+RUN conda install -c anaconda -c pytorch \\
         cmake=3.13 \\
-        Cython && \\
+        Cython \\
+        faiss-gpu \\
+        pytest \\
+        scikit-learn && \\
     conda clean -ya
 
-RUN git clone --recursive "https://github.com/rapidsai/cuml" /opt/cuml && \\
-    cd /opt/cuml/cuML && \\
-    mkdir build && \\
-    cd build && \\
-    cmake .. && \\
-    make -j && \\
-    make install && \\
-    cd ../../python && \\
-    python setup.py build_ext --inplace && \\
-    python setup.py install
+RUN git clone --recursive "https://github.com/rapidsai/cuml" /opt/cuml
 
-RUN conda install -c anaconda pytest && \\
-    conda clean -ya
+RUN /bin/bash -c "source activate cudf && \
+        cd /opt/cuml/cuML && \
+        mkdir build && \
+        cd build && \
+        cmake .. && \
+        make -j && \
+        make install"
 
-RUN conda install -c pytorch faiss-gpu && \\
-    conda clean -ya
+///HACK!!! until the issue with cuml python build gets fixed!!
+// RUN /bin/bash -c "source activate cudf && \
+//         cd /opt/cuml/python && \
+//         python setup.py build_ext --inplace && \
+//         python setup.py install"
+
+COPY contexts/dev-cuml /opt/dev-cuml
+
+RUN chmod a+x /opt/dev-cuml/cuml
+
+ENV PATH=/opt/dev-cuml:$PATH
 
 #endif // __CUML__
