@@ -28,16 +28,9 @@ RUN /bin/bash -c "source activate cudf && \
         make -j && \
         make install"
 
-///HACK!!! until the issue with cuml python build gets fixed!!
-// RUN /bin/bash -c "source activate cudf && \
-//         cd /opt/cuml/python && \
-//         python setup.py build_ext --inplace && \
-//         python setup.py install"
-
-COPY contexts/dev-cuml /opt/dev-cuml
-
-RUN chmod a+x /opt/dev-cuml/cuml
-
-ENV PATH=/opt/dev-cuml:$PATH
+RUN /bin/bash -c "source activate cudf && \
+        cd /opt/cuml/python && \
+        python setup.py build_ext --inplace && \
+        python setup.py install"
 
 #endif // __CUML__
