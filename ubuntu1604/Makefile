@@ -13,10 +13,15 @@ help:
 	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71|100_73)-dev"
 	@echo "    cudnn dev images."
 	@echo
-	@echo "  pytorch(60|80_70|90_70|90_71|91_71|92_71)"
-	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
+	@echo "  rapids(90|91|92|100)"
+	@echo "    install latest version of rapids. Some flags to customize"
 	@echo "    behavior:"
-	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
+	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
+	@echo
+	@echo "  ml(92|100)-dev"
+	@echo "    ML development environment (based on rapids v9.2/v10.0)"
+	@echo
+	@echo "Old Images (looked at only when needed!):"
 	@echo
 	@echo "  xgboost(80|90|91|92|100)"
 	@echo "    install latest version of xgboost. Some flags to customize"
@@ -27,11 +32,6 @@ help:
 	@echo "  dask-xgboost(80|90|91|92)"
 	@echo "    install latest version of dask over xgboost."
 	@echo
-	@echo "  rapids(90|91|92)"
-	@echo "    install latest version of rapids. Some flags to customize"
-	@echo "    behavior:"
-	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
-	@echo
 	@echo "  gbm-bench(80|90|91|92)"
 	@echo "    gbm benchmarking images. Some flags to customize behavior:"
 	@echo "    . XG_ARCH        - cuda arch(s) to build. [$(XG_ARCH)]"
@@ -39,10 +39,10 @@ help:
 	@echo "    . GBM_LG_COMMIT  - lightgbm commit ID. [$(GBM_LG_COMMIT)]"
 	@echo "    . GBM_CAT_COMMIT - catboost commit ID. [$(GBM_CAT_COMMIT)]"
 	@echo
-	@echo "  ml-dev"
-	@echo "    ML development environment (over and above rapids v9.2)"
-	@echo
-	@echo "Old Images (looked at only when needed!):"
+	@echo "  pytorch(60|80_70|90_70|90_71|91_71|92_71)"
+	@echo "    gpu enabled pytorch (with pyml-env). Some flags to customize"
+	@echo "    behavior:"
+	@echo "    . PT_PORT - Jupyter port to be exposed [$(PT_PORT)]"
 	@echo
 	@echo "  nccl-bench"
 	@echo "    A dev container for benchmarking nccl performance. (@cuda v9.2)"
@@ -287,82 +287,57 @@ cudnn100_73-dev:
 ## cudnn with v9.2 env related targets end ##
 
 
-## pytorch env's start ##
-PT_PORT ?= 8888
-.PHONY: pytorch
-pytorch: cudnn$(__CUDNN_MINIFIED)-dev
+## rapids env's start ##
+.PHONY: rapids
+rapids: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
-	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)-dev" \
-	    -D__NCCL_VERSION_TAG=$(__NCCL_TAG) \
-	    -DPT_ARCH="$(PT_ARCH)" \
-	    -D__MAGMA="$(__MAGMA)" \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
+	    -DXGB_ARCH="$(__XG_ARCH)" \
 	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
-	docker build -t pytorch:latest-$(__CUDNN_MINIFIED) \
-	    --build-arg port=$(PT_PORT) . && \
+	docker build -t rapids:latest-$(__SHORT) . && \
 	make -f ../Makefile delContext
 
-.PHONY: pytorch60
-pytorch60:
-	$(MAKE) \
-	    __MAGMA="magma-cuda80" \
-	    __CUDNN_MINIFIED="60" \
-	    __CUDNN_TAG="8.0-6.0.21" \
-	    PT_ARCH="3.5 5.2 6.0 6.1+PTX" \
-	    __NCCL_TAG="2.1.15" \
-	    pytorch
+.PHONY: rapids90
+rapids90:
+	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" rapids
 
-.PHONY: pytorch80_70
-pytorch80_70:
-	$(MAKE) \
-	    __MAGMA="magma-cuda80" \
-	    __CUDNN_MINIFIED="80_70" \
-	    __CUDNN_TAG="8.0-7.0.5.15" \
-	    PT_ARCH="3.5 5.2 6.0 6.1+PTX" \
-	    __NCCL_TAG="2.1.15" \
-	    pytorch
+.PHONY: rapids91
+rapids91:
+	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" rapids
 
-.PHONY: pytorch90_70
-pytorch90_70:
-	$(MAKE) \
-	    __MAGMA="magma-cuda90" \
-	    __CUDNN_MINIFIED="90_70" \
-	    __CUDNN_TAG="9.0-7.0.5.15" \
-	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
-	    __NCCL_TAG="2.1.15" \
-	    pytorch
+.PHONY: rapids92
+rapids92:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" rapids
 
-.PHONY: pytorch90_71
-pytorch90_71:
-	$(MAKE) \
-	    __MAGMA="magma-cuda90" \
-	    __CUDNN_MINIFIED="90_71" \
-	    __CUDNN_TAG="9.0-7.1.3.16" \
-	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
-	    __NCCL_TAG="2.1.15" \
-	    pytorch
+.PHONY: rapids100
+rapids100:
+	$(MAKE) __CUDA_MINIFIED="100" __SHORT="10.0" __NCCL_TAG="2.4.2" rapids
+## rapids env's end ##
 
-.PHONY: pytorch91_71
-pytorch91_71:
-	$(MAKE) \
-	    __MAGMA="magma-cuda90" \
-	    __CUDNN_MINIFIED="91_71" \
-	    __CUDNN_TAG="9.1-7.1.3.16" \
-	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
-	    __NCCL_TAG="2.1.15" \
-	    pytorch
 
-.PHONY: pytorch92_71
-pytorch92_71:
-	$(MAKE) \
-	    __MAGMA="magma-cuda90" \
-	    __CUDNN_MINIFIED="92_71" \
-	    __CUDNN_TAG="9.2-7.1.4.18" \
-	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
-	    __NCCL_TAG="2.2.12" \
-	    pytorch
-## pytorch env's end ##
+.PHONY: ml-dev
+ml-dev: rapids$(__CUDA_MINIFIED)
+	cd $@ && \
+	cpp -o Dockerfile \
+	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
+	    Dockerfile.cpp && \
+	make -f ../Makefile genContextOnly && \
+	docker build -t ml:$(__SHORT)-dev . && \
+	make -f ../Makefile delContext
+
+.PHONY: ml92-dev
+ml92-dev:
+	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" ml-dev
+
+.PHONY: ml100-dev
+ml100-dev:
+	$(MAKE) __CUDA_MINIFIED="100" __SHORT="10.0" ml-dev
+
+
+### Old Images (fixed/updated only when required!)
 
 
 ## xgboost env's start ##
@@ -473,33 +448,6 @@ dask-xgboost92:
 ## dask-xgboost env's end ##
 
 
-## rapids env's start ##
-.PHONY: rapids
-rapids: cuda$(__CUDA_MINIFIED)-dev
-	cd $@ && \
-	cpp -o Dockerfile \
-	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \
-	    -D__NCCL_VERSION_TAG="$(__NCCL_TAG)" \
-	    -DXGB_ARCH="$(__XG_ARCH)" \
-	    Dockerfile.cpp && \
-	make -f ../Makefile genContextOnly && \
-	docker build -t rapids:latest-$(__SHORT) . && \
-	make -f ../Makefile delContext
-
-.PHONY: rapids90
-rapids90:
-	$(MAKE) __CUDA_MINIFIED="90" __SHORT="9.0" __NCCL_TAG="2.2.13" rapids
-
-.PHONY: rapids91
-rapids91:
-	$(MAKE) __CUDA_MINIFIED="91" __SHORT="9.1" __NCCL_TAG="2.2.12" rapids
-
-.PHONY: rapids92
-rapids92:
-	$(MAKE) __CUDA_MINIFIED="92" __SHORT="9.2" __NCCL_TAG="2.2.13" rapids
-## rapids env's end ##
-
-
 ## gbm-bench env's start ##
 GBM_XG_COMMIT  ?= c004cea788748c293e2f9e5c9bd7469ff7e2c613
 GBM_LG_COMMIT  ?= c6cdea75a3f7732a13c21c760c1bf221441a5c79
@@ -537,16 +485,82 @@ gbm-bench92:
 ## gbm-bench env's end ##
 
 
-.PHONY: ml-dev
-ml-dev: rapids92
+## pytorch env's start ##
+PT_PORT ?= 8888
+.PHONY: pytorch
+pytorch: cudnn$(__CUDNN_MINIFIED)-dev
 	cd $@ && \
-	cpp -o Dockerfile Dockerfile.cpp && \
+	cpp -o Dockerfile \
+	    -D__CUDNN_VERSION_TAG="$(__CUDNN_TAG)-dev" \
+	    -D__NCCL_VERSION_TAG=$(__NCCL_TAG) \
+	    -DPT_ARCH="$(PT_ARCH)" \
+	    -D__MAGMA="$(__MAGMA)" \
+	    Dockerfile.cpp && \
 	make -f ../Makefile genContextOnly && \
-	docker build -t ml:dev . && \
+	docker build -t pytorch:latest-$(__CUDNN_MINIFIED) \
+	    --build-arg port=$(PT_PORT) . && \
 	make -f ../Makefile delContext
 
+.PHONY: pytorch60
+pytorch60:
+	$(MAKE) \
+	    __MAGMA="magma-cuda80" \
+	    __CUDNN_MINIFIED="60" \
+	    __CUDNN_TAG="8.0-6.0.21" \
+	    PT_ARCH="3.5 5.2 6.0 6.1+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
 
-### Old Images (fixed/updated only when required!)
+.PHONY: pytorch80_70
+pytorch80_70:
+	$(MAKE) \
+	    __MAGMA="magma-cuda80" \
+	    __CUDNN_MINIFIED="80_70" \
+	    __CUDNN_TAG="8.0-7.0.5.15" \
+	    PT_ARCH="3.5 5.2 6.0 6.1+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
+
+.PHONY: pytorch90_70
+pytorch90_70:
+	$(MAKE) \
+	    __MAGMA="magma-cuda90" \
+	    __CUDNN_MINIFIED="90_70" \
+	    __CUDNN_TAG="9.0-7.0.5.15" \
+	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
+
+.PHONY: pytorch90_71
+pytorch90_71:
+	$(MAKE) \
+	    __MAGMA="magma-cuda90" \
+	    __CUDNN_MINIFIED="90_71" \
+	    __CUDNN_TAG="9.0-7.1.3.16" \
+	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
+
+.PHONY: pytorch91_71
+pytorch91_71:
+	$(MAKE) \
+	    __MAGMA="magma-cuda90" \
+	    __CUDNN_MINIFIED="91_71" \
+	    __CUDNN_TAG="9.1-7.1.3.16" \
+	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
+	    __NCCL_TAG="2.1.15" \
+	    pytorch
+
+.PHONY: pytorch92_71
+pytorch92_71:
+	$(MAKE) \
+	    __MAGMA="magma-cuda90" \
+	    __CUDNN_MINIFIED="92_71" \
+	    __CUDNN_TAG="9.2-7.1.4.18" \
+	    PT_ARCH="3.5 5.2 6.0 6.1 7.0+PTX" \
+	    __NCCL_TAG="2.2.12" \
+	    pytorch
+## pytorch env's end ##
 
 
 ## llvm env's start ##

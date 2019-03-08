@@ -1,4 +1,10 @@
-FROM rapids:latest-9.2
+
+#ifndef __CUDA_VERSION_SHORT
+#define "__CUDA_VERSION_SHORT is a mandatory define! Eg: 8.0"
+#endif
+
+#define BASE_TAG "latest-"__CUDA_VERSION_SHORT
+FROM rapids:BASE_TAG
 
 #include "../../reusables/ssh"
 
