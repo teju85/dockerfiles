@@ -19,7 +19,7 @@ help:
 	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
 	@echo
 	@echo "  ml(92|100|101)-dev"
-	@echo "    ML development environment (based on rapids v9.2/v10.[01])"
+	@echo "    RAPIDS ML development environment"
 	@echo
 	@echo "Old Images (looked at only when needed!):"
 	@echo
@@ -338,7 +338,7 @@ rapids100:
 
 
 .PHONY: ml-dev
-ml-dev: rapids$(__CUDA_MINIFIED)
+ml-dev: cuda$(__CUDA_MINIFIED)-dev
 	cd $@ && \
 	cpp -o Dockerfile \
 	    -D__CUDA_VERSION_SHORT="$(__SHORT)" \

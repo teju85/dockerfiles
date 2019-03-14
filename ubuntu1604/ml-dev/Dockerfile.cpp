@@ -3,9 +3,12 @@
 #define "__CUDA_VERSION_SHORT is a mandatory define! Eg: 8.0"
 #endif
 
-#define BASE_TAG "latest-"__CUDA_VERSION_SHORT
-FROM rapids:BASE_TAG
+#define BASE_TAG __CUDA_VERSION_SHORT"-dev"
+FROM cuda:BASE_TAG
 
+#include "../../reusables/cudf"
+#include "../../reusables/cuml-dev"
+#include "../../reusables/jupyter"
 #include "../../reusables/ssh"
 
 RUN apt-get update && \\

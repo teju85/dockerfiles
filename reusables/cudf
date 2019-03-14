@@ -8,11 +8,13 @@ RUN conda install -c numba -c conda-forge -c nvidia -c rapidsai -c defaults \\
         cffi \\
         cmake=3.13 \\
         Cython \\
+        distributed \\
         llvmlite \\
         numba \\
         nvstrings \\
         pandas=0.20.3 \\
-        pyarrow && \\
+        pyarrow \\
+        pytest && \\
     conda clean -ya
 
 ENV NUMBAPRO_NVVM=/usr/local/cuda/nvvm/lib64/libnvvm.so

@@ -1,0 +1,17 @@
+#ifndef __CUML_DEV__
+#define __CUML_DEV__
+
+#include "cudf"
+
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+        libopenblas-dev \\
+        zlib1g-dev && \\
+    rm -rf /var/lib/apt/lists && \\
+    mkdir /var/lib/apt/lists
+
+RUN conda install -c anaconda -c pytorch \\
+        scikit-learn && \\
+    conda clean -ya
+
+#endif // __CUML_DEV__
