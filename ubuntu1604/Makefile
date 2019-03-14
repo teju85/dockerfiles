@@ -2,24 +2,24 @@
 help:
 	@echo "make what? Available targets are:"
 	@echo "Frequently used images (thus, maintained/updated regularly)"
-	@echo "  cuda(80|90|91|92|100)"
-	@echo "    cuda v8.0/9.[012]/10.0 runtimes. These, in addition, come"
+	@echo "  cuda(80|90|91|92|100|101)"
+	@echo "    cuda v8.0/9.[012]/10.[01] runtimes. These, in addition, come"
 	@echo "    with 'runas' ability."
-	@echo "  cuda(80|90|91|92|100)-dev"
-	@echo "    cuda v8.0/9.[012]/10.0 devels. These, in addition, come with"
-	@echo "    'runas' ability."
-	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71|100_73)"
+	@echo "  cuda(80|90|91|92|100|101)-dev"
+	@echo "    cuda v8.0/9.[012]/10.[01] devels. These, in addition, come"
+	@echo "    with 'runas' ability."
+	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71|100_73|101_75)"
 	@echo "    cudnn runtimes."
-	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71|100_73)-dev"
+	@echo "  cudnn(51|60|80_70|90_70|90_71|91_71|92_71|100_73|101_75)-dev"
 	@echo "    cudnn dev images."
 	@echo
-	@echo "  rapids(90|91|92|100)"
+	@echo "  rapids(90|91|92|100|101)"
 	@echo "    install latest version of rapids. Some flags to customize"
 	@echo "    behavior:"
 	@echo "    . XG_ARCH   - cuda arch(s) to build. [$(XG_ARCH)]"
 	@echo
-	@echo "  ml(92|100)-dev"
-	@echo "    ML development environment (based on rapids v9.2/v10.0)"
+	@echo "  ml(92|100|101)-dev"
+	@echo "    ML development environment (based on rapids v9.2/v10.[01])"
 	@echo
 	@echo "Old Images (looked at only when needed!):"
 	@echo
@@ -178,6 +178,14 @@ cuda100:
 .PHONY: cuda100-dev
 cuda100-dev:
 	$(MAKE) __FULL="10.0.130" __PKG="10-0=10.0.130-1" __SHORT="10.0" cuda-dev
+
+.PHONY: cuda101
+cuda101:
+	$(MAKE) __FULL="10.1.105" __PKG="10-1=10.1.105-1" __SHORT="10.1" cuda
+
+.PHONY: cuda101-dev
+cuda101-dev:
+	$(MAKE) __FULL="10.1.105" __PKG="10-1=10.1.105-1" __SHORT="10.1" cuda-dev
 ## cuda env related targets end ##
 
 
@@ -284,7 +292,18 @@ cudnn100_73:
 .PHONY: cudnn100_73-dev
 cudnn100_73-dev:
 	$(MAKE) __CUDNN="7.3.1.20" __CUDNN_SHORT="7" __SHORT="10.0" __CUDA_MINIFIED="100" cudnn-dev
-## cudnn with v9.2 env related targets end ##
+## cudnn with v10.0 env related targets end ##
+
+
+## cudnn with v10.1 env related targets begin ##
+.PHONY: cudnn101_75
+cudnn101_75:
+	$(MAKE) __CUDNN="7.5.0.56" __CUDNN_SHORT="7" __SHORT="10.1" __CUDA_MINIFIED="101" cudnn
+
+.PHONY: cudnn101_75-dev
+cudnn101_75-dev:
+	$(MAKE) __CUDNN="7.5.0.56" __CUDNN_SHORT="7" __SHORT="10.1" __CUDA_MINIFIED="101" cudnn-dev
+## cudnn with v10.1 env related targets end ##
 
 
 ## rapids env's start ##

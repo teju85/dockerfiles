@@ -22,21 +22,19 @@ RUN git clone --recursive "https://github.com/rapidsai/cudf" /opt/cudf && \\
     cd /opt/cudf && \\
     conda env create --name cudf --file conda/environments/cudf_dev.yml
 
-RUN /bin/bash -c "source activate cudf && \
-        cd /opt/cudf && \
-        mkdir -p cpp/build && \
-        cd cpp/build && \
-        cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \
-        make -j install && \
-        make python_cffi && \
-        make install_python && \
-        cd ../../python && \
-        python setup.py build_ext --inplace && \
-        python setup.py install"
+RUN cd /opt/cudf && \\
+    mkdir -p cpp/build && \\
+    cd cpp/build && \\
+    cmake .. -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} && \\
+    make -j install && \\
+    make python_cffi && \\
+    make install_python && \\
+    cd ../../python && \\
+    python setup.py build_ext --inplace && \\
+    python setup.py install
 
-RUN /bin/bash -c "source activate cudf && \
-        git clone https://github.com/rapidsai/dask-cudf /opt/dask-cudf && \
-        cd /opt/dask-cudf && \
-        python setup.py install"
+RUN git clone "https://github.com/rapidsai/dask-cudf" /opt/dask-cudf && \\
+    cd /opt/dask-cudf && \\
+    python setup.py install
 
 #endif // __CUDF__
