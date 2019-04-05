@@ -3,7 +3,9 @@
 
 #include "conda-ml-env"
 
-RUN conda install -c numba -c conda-forge -c nvidia -c rapidsai -c defaults \\
+RUN conda install -c numba -c conda-forge \\
+        -c nvidia/label/cuda$CUDA_VERSION_SHORT \\
+        -c rapidsai/label/cuda$CUDA_VERSION_SHORT -c defaults \\
         boost \\
         cffi \\
         cmake=3.13 \\

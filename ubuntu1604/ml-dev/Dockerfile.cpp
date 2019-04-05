@@ -23,4 +23,5 @@ RUN apt-get update && \\
     rm -rf /var/lib/apt/lists && \\
     mkdir /var/lib/apt/lists
 
+#define OPENMPI_DEV_BUILD
 #include "../../reusables/openmpi"
