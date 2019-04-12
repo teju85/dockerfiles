@@ -5,6 +5,8 @@
 
 RUN apt-get update && \\
     apt-get install -y --no-install-recommends \\
+        doxygen \\
+        graphviz \\
         libopenblas-dev \\
         zlib1g-dev && \\
     rm -rf /var/lib/apt/lists && \\
